@@ -1,8 +1,6 @@
 defmodule Auth0Ex.Consumer do
   @behaviour GenServer
 
-  alias __MODULE__
-
   @enforce_keys [:base_url, :client_id, :client_secret]
   defstruct [:base_url, :client_id, :client_secret, tokens: %{}]
 
@@ -29,7 +27,7 @@ defmodule Auth0Ex.Consumer do
   def handle_call({:token_for, audience}, _from, state) do
     token = state.tokens[audience]
 
-    if fresh?(token) do
+    if valid?(token) do
       {:reply, token, state}
     else
       {:ok, token} =
@@ -45,9 +43,12 @@ defmodule Auth0Ex.Consumer do
     end
   end
 
-  defp fresh?(nil), do: false
+  defp valid?(nil), do: false
 
-  defp fresh?(_jwt_token) do
-    true
+  defp valid?(token) do
+    minimum_remaining_time = 10 * 60
+    {:ok, claims} = Joken.peek_claims(token)
+
+    claims["exp"] > Joken.current_time() + minimum_remaining_time
   end
 end

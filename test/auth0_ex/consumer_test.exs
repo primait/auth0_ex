@@ -45,4 +45,23 @@ defmodule Auth0Ex.ConsumerTest do
 
     assert token == Consumer.token_for(pid, "target_audience")
   end
+
+  test "refreshes token for target audience synchronously when the persisted token is no longer valid" do
+    expired_token = JwtUtils.expired_jwt_for("target_audience")
+    token = JwtUtils.new_jwt_for("target_audience")
+
+    expect(
+      AuthorizationServiceMock,
+      :retrieve_token,
+      1,
+      fn "base_url", "client_id", "client_secret", "target_audience" -> {:ok, token} end
+    )
+
+    {:ok, pid} =
+      Consumer.start_link(%{@sample_config | tokens: %{"target_audience" => expired_token}})
+
+    allow(AuthorizationServiceMock, self(), pid)
+
+    assert token == Consumer.token_for(pid, "target_audience")
+  end
 end
