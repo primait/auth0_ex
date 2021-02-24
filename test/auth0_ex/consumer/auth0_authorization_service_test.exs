@@ -1,7 +1,7 @@
-defmodule Auth0Ex.Consumer.AuthorizationServiceTest do
+defmodule Auth0Ex.Consumer.Auth0AuthorizationServiceTest do
   use ExUnit.Case, async: true
 
-  alias Auth0Ex.Consumer.AuthorizationService
+  alias Auth0Ex.Consumer.Auth0AuthorizationService
 
   @valid_auth0_response ~s<{"access_token":"my-token","expires_in":86400,"token_type":"Bearer"}>
   @invalid_auth0_response ~s<{"error": "I am an invalid response from auth0"}>
@@ -17,7 +17,7 @@ defmodule Auth0Ex.Consumer.AuthorizationServiceTest do
     end)
 
     {:ok, _token} =
-      AuthorizationService.retrieve_token(
+      Auth0AuthorizationService.retrieve_token(
         "http://localhost:#{bypass.port}",
         "client-id",
         "client-secret",
@@ -32,7 +32,7 @@ defmodule Auth0Ex.Consumer.AuthorizationServiceTest do
     end)
 
     {:error, :invalid_auth0_response} =
-      AuthorizationService.retrieve_token(
+      Auth0AuthorizationService.retrieve_token(
         "http://localhost:#{bypass.port}",
         "client-id",
         "client-secret",
@@ -46,7 +46,7 @@ defmodule Auth0Ex.Consumer.AuthorizationServiceTest do
     end)
 
     {:error, :request_error} =
-      AuthorizationService.retrieve_token(
+      Auth0AuthorizationService.retrieve_token(
         "http://localhost:#{bypass.port}",
         "client-id",
         "client-secret",
