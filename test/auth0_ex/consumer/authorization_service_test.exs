@@ -3,9 +3,54 @@ defmodule Auth0Ex.Consumer.AuthorizationServiceTest do
 
   alias Auth0Ex.Consumer.AuthorizationService
 
-  test "obtains a JWT from auth0" do
-    {:ok, token} = AuthorizationService.retrieve_token()
+  @valid_auth0_response ~s<{"access_token":"my-token","expires_in":86400,"token_type":"Bearer"}>
+  @invalid_auth0_response ~s<{"error": "I am an invalid response from auth0"}>
 
-    assert {:ok, %{"alg" => "RS256", "kid" => _kid, "typ" => "JWT"}} = Joken.peek_header(token)
+  setup do
+    bypass = Bypass.open()
+    {:ok, bypass: bypass}
+  end
+
+  test "returns JWT obtained from Auth0", %{bypass: bypass} do
+    Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
+      Plug.Conn.resp(conn, 200, @valid_auth0_response)
+    end)
+
+    {:ok, _token} =
+      AuthorizationService.retrieve_token(
+        "http://localhost:#{bypass.port}",
+        "client-id",
+        "client-secret",
+        "audience"
+      )
+  end
+
+  test "returns error :invalid_auth0_response on unexpected response from Auth0",
+       %{bypass: bypass} do
+    Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
+      Plug.Conn.resp(conn, 200, @invalid_auth0_response)
+    end)
+
+    {:error, :invalid_auth0_response} =
+      AuthorizationService.retrieve_token(
+        "http://localhost:#{bypass.port}",
+        "client-id",
+        "client-secret",
+        "audience"
+      )
+  end
+
+  test "returns error :request_error if request to Auth0 is not successful", %{bypass: bypass} do
+    Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
+      Plug.Conn.resp(conn, 500, "any response")
+    end)
+
+    {:error, :request_error} =
+      AuthorizationService.retrieve_token(
+        "http://localhost:#{bypass.port}",
+        "client-id",
+        "client-secret",
+        "audience"
+      )
   end
 end

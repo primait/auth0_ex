@@ -3,9 +3,14 @@ defmodule Auth0Ex.Consumer.AuthorizationService do
 
   require Logger
 
-  def retrieve_token(audience \\ default_audience()) do
-    url()
-    |> Telepoison.post(body(audience), "content-type": "application/json")
+  @auth0_token_api_path "/oauth/token"
+
+  def retrieve_token(base_url, client_id, client_secret, audience) do
+    request_body = body(client_id, client_secret, audience)
+    url = base_url <> @auth0_token_api_path
+
+    url
+    |> Telepoison.post(request_body, "content-type": "application/json")
     |> parse_response()
   end
 
@@ -20,22 +25,13 @@ defmodule Auth0Ex.Consumer.AuthorizationService do
     {:error, :request_error}
   end
 
-  defp body(audience) do
+  defp body(client_id, client_secret, audience) do
     %{
       grant_type: "client_credentials",
-      client_id: client_id(),
-      client_secret: client_secret(),
+      client_id: client_id,
+      client_secret: client_secret,
       audience: audience
     }
     |> Jason.encode!()
   end
-
-  defp url do
-    "https://#{domain()}/oauth/token"
-  end
-
-  defp domain, do: Application.fetch_env!(:auth0_ex, :domain)
-  defp default_audience, do: Application.fetch_env!(:auth0_ex, :default_audience)
-  defp client_id, do: Application.fetch_env!(:auth0_ex, :client_id)
-  defp client_secret, do: Application.fetch_env!(:auth0_ex, :client_secret)
 end
