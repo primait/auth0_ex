@@ -25,7 +25,12 @@ defmodule Auth0Ex.MixProject do
       {:bypass, "~> 2.1.0"},
       {:jason, "~> 1.2.2"},
       {:joken, "~> 2.3.0"},
-      {:telepoison, "~> 0.1.1"},
+      {:telepoison, "~> 0.1.1"}
+    ] ++ dev_deps()
+  end
+
+  defp dev_deps do
+    [
       {:hammox, "~> 0.4", only: :test}
     ]
   end
