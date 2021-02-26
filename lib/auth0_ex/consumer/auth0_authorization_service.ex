@@ -6,9 +6,10 @@ defmodule Auth0Ex.Consumer.Auth0AuthorizationService do
 
   @auth0_token_api_path "/oauth/token"
 
-  def retrieve_token(base_url, client_id, client_secret, audience) do
-    request_body = body(client_id, client_secret, audience)
-    url = base_url <> @auth0_token_api_path
+  @impl Auth0Ex.Consumer.AuthorizationService
+  def retrieve_token(credentials, audience) do
+    request_body = body(credentials, audience)
+    url = credentials.base_url <> @auth0_token_api_path
 
     url
     |> Telepoison.post(request_body, "content-type": "application/json")
@@ -26,11 +27,11 @@ defmodule Auth0Ex.Consumer.Auth0AuthorizationService do
     {:error, :request_error}
   end
 
-  defp body(client_id, client_secret, audience) do
+  defp body(credentials, audience) do
     %{
       grant_type: "client_credentials",
-      client_id: client_id,
-      client_secret: client_secret,
+      client_id: credentials.client_id,
+      client_secret: credentials.client_secret,
       audience: audience
     }
     |> Jason.encode!()

@@ -1,8 +1,8 @@
 defmodule Auth0Ex.Consumer do
   @behaviour GenServer
 
-  @enforce_keys [:base_url, :client_id, :client_secret]
-  defstruct [:base_url, :client_id, :client_secret, tokens: %{}]
+  @enforce_keys [:credentials]
+  defstruct [:credentials, tokens: %{}]
 
   @authorization_service Application.compile_env!(:auth0_ex, :authorization_service)
   @token_cache Application.compile_env!(:auth0_ex, :token_cache)
@@ -34,9 +34,7 @@ defmodule Auth0Ex.Consumer do
       {:error, :not_found} ->
         {:ok, token} =
           @authorization_service.retrieve_token(
-            state.base_url,
-            state.client_id,
-            state.client_secret,
+            state.credentials,
             audience
           )
 

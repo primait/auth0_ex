@@ -4,7 +4,7 @@ defmodule Auth0Ex.ConsumerTest do
   import Hammox
   alias Auth0Ex.Consumer
 
-  @sample_config %Consumer{
+  @sample_credentials %Auth0Ex.Auth0Credentials{
     base_url: "base_url",
     client_id: "client_id",
     client_secret: "client_secret"
@@ -13,7 +13,7 @@ defmodule Auth0Ex.ConsumerTest do
   setup :verify_on_exit!
 
   setup do
-    {:ok, pid} = Consumer.start_link(@sample_config)
+    {:ok, pid} = Consumer.start_link(%Consumer{credentials: @sample_credentials})
     allow(AuthorizationServiceMock, self(), pid)
     allow(TokenCacheMock, self(), pid)
 
@@ -28,7 +28,7 @@ defmodule Auth0Ex.ConsumerTest do
       AuthorizationServiceMock,
       :retrieve_token,
       1,
-      fn "base_url", "client_id", "client_secret", "target_audience" -> {:ok, token} end
+      fn @sample_credentials, "target_audience" -> {:ok, token} end
     )
 
     expect(TokenCacheMock, :get_token_for, fn "target_audience" -> {:error, :not_found} end)
