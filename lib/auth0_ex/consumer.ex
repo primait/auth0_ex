@@ -26,16 +26,23 @@ defmodule Auth0Ex.Consumer do
 
   @impl true
   def handle_call({:token_for, audience}, _from, state) do
-    {:ok, token} =
-      @authorization_service.retrieve_token(
-        state.base_url,
-        state.client_id,
-        state.client_secret,
-        audience
-      )
+    case @token_cache.get_token_for(audience) do
+      {:ok, token} ->
+        new_state = put_in(state.tokens[audience], token)
+        {:reply, token, new_state}
 
-    state = put_in(state.tokens[audience], token)
-    @token_cache.set_token_for(audience, token)
-    {:reply, token, state}
+      {:error, :not_found} ->
+        {:ok, token} =
+          @authorization_service.retrieve_token(
+            state.base_url,
+            state.client_id,
+            state.client_secret,
+            audience
+          )
+
+        state = put_in(state.tokens[audience], token)
+        @token_cache.set_token_for(audience, token)
+        {:reply, token, state}
+    end
   end
 end

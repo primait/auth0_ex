@@ -31,7 +31,16 @@ defmodule Auth0Ex.ConsumerTest do
       fn "base_url", "client_id", "client_secret", "target_audience" -> {:ok, token} end
     )
 
+    expect(TokenCacheMock, :get_token_for, fn "target_audience" -> {:error, :not_found} end)
     expect(TokenCacheMock, :set_token_for, fn "target_audience", ^token -> :ok end)
+
+    assert token == Consumer.token_for(pid, "target_audience")
+  end
+
+  test "when no valid token can be found in memory, try to retrieve it from cache", %{pid: pid} do
+    token = "MY-TOKEN"
+
+    expect(TokenCacheMock, :get_token_for, fn "target_audience" -> {:ok, token} end)
 
     assert token == Consumer.token_for(pid, "target_audience")
   end
