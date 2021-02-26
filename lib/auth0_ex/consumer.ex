@@ -26,10 +26,20 @@ defmodule Auth0Ex.Consumer do
 
   @impl true
   def handle_call({:token_for, audience}, _from, state) do
+    case state.tokens[audience] do
+      nil ->
+        token = retrieve_token_for(audience, state)
+        {:reply, token, set_token(state, audience, token)}
+
+      token ->
+        {:reply, token, state}
+    end
+  end
+
+  defp retrieve_token_for(audience, state) do
     case @token_cache.get_token_for(audience) do
       {:ok, token} ->
-        new_state = put_in(state.tokens[audience], token)
-        {:reply, token, new_state}
+        token
 
       {:error, :not_found} ->
         {:ok, token} =
@@ -38,9 +48,12 @@ defmodule Auth0Ex.Consumer do
             audience
           )
 
-        state = put_in(state.tokens[audience], token)
         @token_cache.set_token_for(audience, token)
-        {:reply, token, state}
+        token
     end
+  end
+
+  defp set_token(state, audience, token) do
+    put_in(state.tokens[audience], token)
   end
 end

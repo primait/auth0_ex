@@ -14,6 +14,7 @@ defmodule Auth0Ex.ConsumerTest do
 
   setup do
     {:ok, pid} = Consumer.start_link(%Consumer{credentials: @sample_credentials})
+
     allow(AuthorizationServiceMock, self(), pid)
     allow(TokenCacheMock, self(), pid)
 
@@ -43,5 +44,17 @@ defmodule Auth0Ex.ConsumerTest do
     expect(TokenCacheMock, :get_token_for, fn "target_audience" -> {:ok, token} end)
 
     assert token == Consumer.token_for(pid, "target_audience")
+  end
+
+  test "when a valid token is found in memory, return it", %{pid: pid} do
+    token = "MY_TOKEN"
+    populate_local_state_for("target_audience", token, pid)
+
+    assert token == Consumer.token_for(pid, "target_audience")
+  end
+
+  defp populate_local_state_for(audience, token, pid) do
+    expect(TokenCacheMock, :get_token_for, 1, fn ^audience -> {:ok, token} end)
+    Consumer.token_for(pid, audience)
   end
 end
