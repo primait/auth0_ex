@@ -3,7 +3,6 @@ defmodule Auth0Ex.ConsumerTest do
 
   import Hammox
   alias Auth0Ex.Consumer
-  alias Auth0Ex.TestSupport.JwtUtils
 
   @sample_config %Consumer{
     base_url: "base_url",
@@ -13,42 +12,17 @@ defmodule Auth0Ex.ConsumerTest do
 
   setup :verify_on_exit!
 
-  test "when no token for the given audience exists, retrieves and returns a new token" do
-    token = JwtUtils.new_jwt_for("target_audience")
-
-    expect(
-      AuthorizationServiceMock,
-      :retrieve_token,
-      1,
-      fn "base_url", "client_id", "client_secret", "target_audience" -> {:ok, token} end
-    )
-
-    {:ok, pid} = Consumer.start_link(@sample_config)
-
-    allow(AuthorizationServiceMock, self(), pid)
-    assert token == Consumer.token_for(pid, "target_audience")
-  end
-
-  test "stores tokens and reuses them as long as they are valid" do
-    token = JwtUtils.new_jwt_for("target_audience")
-
-    expect(
-      AuthorizationServiceMock,
-      :retrieve_token,
-      1,
-      fn "base_url", "client_id", "client_secret", "target_audience" -> {:ok, token} end
-    )
-
+  setup do
     {:ok, pid} = Consumer.start_link(@sample_config)
     allow(AuthorizationServiceMock, self(), pid)
-    Consumer.token_for(pid, "target_audience")
+    allow(TokenCacheMock, self(), pid)
 
-    assert token == Consumer.token_for(pid, "target_audience")
+    {:ok, %{pid: pid}}
   end
 
-  test "refreshes token for target audience synchronously when the persisted token is no longer valid" do
-    expired_token = JwtUtils.expired_jwt_for("target_audience")
-    token = JwtUtils.new_jwt_for("target_audience")
+  test "when no valid token can be found in memory or in cache, retrieves a new token and updates the cache",
+       %{pid: pid} do
+    token = "MY-TOKEN"
 
     expect(
       AuthorizationServiceMock,
@@ -57,10 +31,7 @@ defmodule Auth0Ex.ConsumerTest do
       fn "base_url", "client_id", "client_secret", "target_audience" -> {:ok, token} end
     )
 
-    {:ok, pid} =
-      Consumer.start_link(%{@sample_config | tokens: %{"target_audience" => expired_token}})
-
-    allow(AuthorizationServiceMock, self(), pid)
+    expect(TokenCacheMock, :set_token_for, fn "target_audience", ^token -> :ok end)
 
     assert token == Consumer.token_for(pid, "target_audience")
   end

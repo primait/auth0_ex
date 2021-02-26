@@ -5,6 +5,7 @@ defmodule Auth0Ex.Consumer do
   defstruct [:base_url, :client_id, :client_secret, tokens: %{}]
 
   @authorization_service Application.compile_env!(:auth0_ex, :authorization_service)
+  @token_cache Application.compile_env!(:auth0_ex, :token_cache)
 
   # Client
 
@@ -25,30 +26,16 @@ defmodule Auth0Ex.Consumer do
 
   @impl true
   def handle_call({:token_for, audience}, _from, state) do
-    token = state.tokens[audience]
+    {:ok, token} =
+      @authorization_service.retrieve_token(
+        state.base_url,
+        state.client_id,
+        state.client_secret,
+        audience
+      )
 
-    if valid?(token) do
-      {:reply, token, state}
-    else
-      {:ok, token} =
-        @authorization_service.retrieve_token(
-          state.base_url,
-          state.client_id,
-          state.client_secret,
-          audience
-        )
-
-      state = put_in(state.tokens[audience], token)
-      {:reply, token, state}
-    end
-  end
-
-  defp valid?(nil), do: false
-
-  defp valid?(token) do
-    minimum_remaining_time = 10 * 60
-    {:ok, claims} = Joken.peek_claims(token)
-
-    claims["exp"] > Joken.current_time() + minimum_remaining_time
+    state = put_in(state.tokens[audience], token)
+    @token_cache.set_token_for(audience, token)
+    {:reply, token, state}
   end
 end
