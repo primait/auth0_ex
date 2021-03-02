@@ -2,10 +2,11 @@ use Mix.Config
 
 config :auth0_ex,
   authorization_service: Auth0Ex.Consumer.Auth0AuthorizationService,
-  refresh_strategy: RefreshStrategyMock,
+  refresh_strategy: Auth0Ex.Consumer.ProbabilisticRefreshStrategy,
   token_cache: TokenCacheMock,
-  token_service: TokenServiceMock,
-  token_check_interval: :timer.minutes(1)
+  token_service: Auth0Ex.Consumer.CachedTokenService,
+  token_check_interval: :timer.minutes(1),
+  refresh_window_duration_seconds: 12 * 60 * 60
 
 if Mix.env() == :test do
   config :auth0_ex,
