@@ -36,8 +36,7 @@ defmodule Auth0Ex.Consumer.Auth0AuthorizationServiceTest do
 
     credentials = %{@sample_credentials | base_url: "http://localhost:#{bypass.port}"}
 
-    {:error, :invalid_auth0_response} =
-      Auth0AuthorizationService.retrieve_token(credentials, "audience")
+    {:error, :invalid_auth0_response} = Auth0AuthorizationService.retrieve_token(credentials, "audience")
   end
 
   test "returns error :request_error if request to Auth0 is not successful", %{bypass: bypass} do

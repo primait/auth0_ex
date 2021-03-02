@@ -2,9 +2,9 @@ defmodule Auth0Ex.ConsumerTest do
   use ExUnit.Case
 
   import Hammox
-  alias Auth0Ex.Consumer
+  alias Auth0Ex.{Auth0Credentials, Consumer}
 
-  @sample_credentials %Auth0Ex.Auth0Credentials{
+  @sample_credentials %Auth0Credentials{
     base_url: "base_url",
     client_id: "client_id",
     client_secret: "client_secret"
@@ -21,73 +21,39 @@ defmodule Auth0Ex.ConsumerTest do
     {:ok, %{pid: pid}}
   end
 
-  test "when no valid token can be found in memory or in cache, retrieves a new token and updates the cache",
-       %{pid: pid} do
-    token = "MY-TOKEN"
+  test "the first time a token for an audience is requested, the token is retrieved externally", %{pid: pid} do
+    expect(TokenServiceMock, :retrieve_token, fn @sample_credentials, "target_audience" -> {:ok, "MY-TOKEN"} end)
 
-    expect(
-      AuthorizationServiceMock,
-      :retrieve_token,
-      1,
-      fn @sample_credentials, "target_audience" -> {:ok, token} end
-    )
-
-    expect(TokenCacheMock, :get_token_for, fn "target_audience" -> {:error, :not_found} end)
-    expect(TokenCacheMock, :set_token_for, fn "target_audience", ^token -> :ok end)
-
-    assert token == Consumer.token_for(pid, "target_audience")
-  end
-
-  test "when no valid token can be found in memory, try to retrieve it from cache", %{pid: pid} do
-    token = "MY-TOKEN"
-
-    expect(TokenCacheMock, :get_token_for, fn "target_audience" -> {:ok, token} end)
-
-    assert token == Consumer.token_for(pid, "target_audience")
+    assert "MY-TOKEN" == Consumer.token_for(pid, "target_audience")
   end
 
   test "when a valid token is found in memory, return it", %{pid: pid} do
-    token = "MY-TOKEN"
-    initialize_for_audience("target_audience", token, pid)
+    initialize_for_audience("target_audience", "MY-TOKEN", pid)
 
-    assert token == Consumer.token_for(pid, "target_audience")
+    assert "MY-TOKEN" == Consumer.token_for(pid, "target_audience")
   end
 
   test "periodically check for necessity to refresh its tokens", %{pid: pid} do
-    token = "MY-TOKEN"
-    initialize_for_audience("target_audience", token, pid)
+    initialize_for_audience("target_audience", "INITIAL-TOKEN", pid)
 
     expect(RefreshStrategyMock, :should_refresh?, fn _ -> true end)
-    expect(TokenCacheMock, :get_token_for, fn _ -> {:ok, token} end)
-    expect(TokenCacheMock, :set_token_for, fn _, _ -> :ok end)
 
     expect(
-      AuthorizationServiceMock,
-      :retrieve_token,
-      1,
-      fn @sample_credentials, "target_audience" -> {:ok, "A-NEW-TOKEN"} end
-    )
+      TokenServiceMock,
+      :refresh_token,
+      fn @sample_credentials, "target_audience", "INITIAL-TOKEN" -> {:ok, "A-NEW-TOKEN"} end
+      )
 
-    :timer.sleep(@token_check_interval + 500)
+    wait_for_first_check_to_complete()
 
     assert "A-NEW-TOKEN" == Consumer.token_for(pid, "target_audience")
   end
 
-  test "if token has been updated on shared cache by someone else, do not refresh it", %{pid: pid} do
-    token = "MY-TOKEN"
-    initialize_for_audience("target_audience", token, pid)
-
-    expect(RefreshStrategyMock, :should_refresh?, fn _ -> true end)
-
-    expect(TokenCacheMock, :get_token_for, fn "target_audience" -> {:ok, "A-NEW-CACHED-TOKEN"} end)
-
-    :timer.sleep(@token_check_interval + 500)
-
-    assert "A-NEW-CACHED-TOKEN" == Consumer.token_for(pid, "target_audience")
-  end
-
   defp initialize_for_audience(audience, token, pid) do
-    expect(TokenCacheMock, :get_token_for, 1, fn ^audience -> {:ok, token} end)
+    expect(TokenServiceMock, :retrieve_token, fn %Auth0Credentials{}, ^audience -> {:ok, token} end)
+
     Consumer.token_for(pid, audience)
   end
+
+  defp wait_for_first_check_to_complete, do: :timer.sleep(@token_check_interval + 500)
 end

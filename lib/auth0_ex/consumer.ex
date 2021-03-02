@@ -4,9 +4,9 @@ defmodule Auth0Ex.Consumer do
   @enforce_keys [:credentials]
   defstruct [:credentials, tokens: %{}]
 
-  @authorization_service Application.compile_env!(:auth0_ex, :authorization_service)
   @refresh_strategy Application.compile_env!(:auth0_ex, :refresh_strategy)
-  @token_cache Application.compile_env!(:auth0_ex, :token_cache)
+  @token_service Application.compile_env!(:auth0_ex, :token_service)
+
   @token_check_interval Application.compile_env!(:auth0_ex, :token_check_interval)
 
   # Client
@@ -46,7 +46,7 @@ defmodule Auth0Ex.Consumer do
       self_pid = self()
 
       spawn(fn ->
-        {:ok, new_token} = refresh_token_for(audience, state.credentials, token)
+        {:ok, new_token} = @token_service.refresh_token(state.credentials, audience, token)
         GenServer.cast(self_pid, {:set_token_for, audience, new_token})
       end)
     end
@@ -63,28 +63,8 @@ defmodule Auth0Ex.Consumer do
   defp initialize_token_for(audience, state) do
     schedule_periodic_check_for(audience)
 
-    {:ok, token} = refresh_token_for(audience, state.credentials)
+    {:ok, token} = @token_service.retrieve_token(state.credentials, audience)
     token
-  end
-
-  defp refresh_token_for(audience, credentials, current_token \\ nil) do
-    token_from_cache =
-      case @token_cache.get_token_for(audience) do
-        {:error, :not_found} -> nil
-        {:ok, token} -> token
-      end
-
-    token =
-      if token_from_cache == current_token or !token_from_cache do
-        {:ok, token} = @authorization_service.retrieve_token(credentials, audience)
-        @token_cache.set_token_for(audience, token)
-
-        token
-      else
-        token_from_cache
-      end
-
-    {:ok, token}
   end
 
   defp schedule_periodic_check_for(audience) do
