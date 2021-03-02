@@ -1,5 +1,5 @@
 defmodule Auth0Ex.ConsumerTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
   import Hammox
   alias Auth0Ex.Consumer
@@ -10,13 +10,13 @@ defmodule Auth0Ex.ConsumerTest do
     client_secret: "client_secret"
   }
 
+  @token_check_interval Application.fetch_env!(:auth0_ex, :token_check_interval)
+
+  setup :set_mox_global
   setup :verify_on_exit!
 
   setup do
     {:ok, pid} = Consumer.start_link(%Consumer{credentials: @sample_credentials})
-
-    allow(AuthorizationServiceMock, self(), pid)
-    allow(TokenCacheMock, self(), pid)
 
     {:ok, %{pid: pid}}
   end
@@ -47,13 +47,32 @@ defmodule Auth0Ex.ConsumerTest do
   end
 
   test "when a valid token is found in memory, return it", %{pid: pid} do
-    token = "MY_TOKEN"
-    populate_local_state_for("target_audience", token, pid)
+    token = "MY-TOKEN"
+    initialize_for_audience("target_audience", token, pid)
 
     assert token == Consumer.token_for(pid, "target_audience")
   end
 
-  defp populate_local_state_for(audience, token, pid) do
+  test "periodically checks for necessity to refresh its tokens", %{pid: pid} do
+    token = "MY-TOKEN"
+    initialize_for_audience("target_audience", token, pid)
+
+    expect(RefreshStrategyMock, :should_refresh?, 2, fn _ -> true end)
+    expect(TokenCacheMock, :set_token_for, fn _, _ -> :ok end)
+
+    expect(
+      AuthorizationServiceMock,
+      :retrieve_token,
+      1,
+      fn @sample_credentials, "target_audience" -> {:ok, "A-NEW-TOKEN"} end
+    )
+
+    :timer.sleep(@token_check_interval + :timer.seconds(1))
+
+    assert "A-NEW-TOKEN" == Consumer.token_for(pid, "target_audience")
+  end
+
+  defp initialize_for_audience(audience, token, pid) do
     expect(TokenCacheMock, :get_token_for, 1, fn ^audience -> {:ok, token} end)
     Consumer.token_for(pid, audience)
   end
