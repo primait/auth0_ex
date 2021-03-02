@@ -23,13 +23,13 @@ defmodule Auth0Ex.ConsumerTest do
     assert "MY-TOKEN" == Consumer.token_for(pid, "target_audience")
   end
 
-  test "when a valid token is found in memory, return it", %{pid: pid} do
+  test "when a valid token is found in memory, returns it", %{pid: pid} do
     initialize_for_audience("target_audience", "MY-TOKEN", pid)
 
     assert "MY-TOKEN" == Consumer.token_for(pid, "target_audience")
   end
 
-  test "periodically check for necessity to refresh its tokens", %{pid: pid} do
+  test "periodically checks for necessity to refresh its tokens", %{pid: pid} do
     initialize_for_audience("target_audience", "INITIAL-TOKEN", pid)
 
     expect(RefreshStrategyMock, :should_refresh?, fn _ -> true end)
