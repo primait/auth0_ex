@@ -24,6 +24,16 @@ defmodule Auth0Ex.Consumer.CachedTokenService do
 
   @impl TokenService
   def refresh_token(credentials, audience, current_token) do
-    {:ok, ""}
+    {:ok, cached_token} = @token_cache.get_token_for(audience)
+
+    token = if cached_token == current_token do
+      {:ok, token} = @authorization_service.retrieve_token(credentials, audience)
+      @token_cache.set_token_for(audience, token)
+      token
+    else
+      cached_token
+    end
+
+    {:ok, token}
   end
 end

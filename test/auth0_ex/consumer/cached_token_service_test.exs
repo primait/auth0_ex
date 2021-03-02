@@ -13,7 +13,7 @@ defmodule Auth0Ex.Consumer.CachedTokenServiceTest do
     test "returns a token from cache, when available" do
       expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:ok, "CACHED-TOKEN"} end)
 
-      assert {:ok, "CACHED-TOKEN"} = CachedTokenService.retrieve_token(@credentials, "target-audience")
+      assert {:ok, "CACHED-TOKEN"} == CachedTokenService.retrieve_token(@credentials, "target-audience")
     end
 
     test "returns a fresh token and updates cache if a cached token is not available" do
@@ -21,7 +21,25 @@ defmodule Auth0Ex.Consumer.CachedTokenServiceTest do
       expect(AuthorizationServiceMock, :retrieve_token, fn @credentials, "target-audience" -> {:ok, "FRESH-TOKEN"} end)
       expect(TokenCacheMock, :set_token_for, fn "target-audience", "FRESH-TOKEN" -> :ok end)
 
-      assert {:ok, "FRESH-TOKEN"} = CachedTokenService.retrieve_token(@credentials, "target-audience")
+      assert {:ok, "FRESH-TOKEN"} == CachedTokenService.retrieve_token(@credentials, "target-audience")
+    end
+  end
+
+  describe "refresh_token/3" do
+    test "when cached token has been updated by an external entity, simply return the new cached token" do
+      expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:ok, "NEW-CACHED-TOKEN"} end)
+
+      assert {:ok, "NEW-CACHED-TOKEN"} ==
+               CachedTokenService.refresh_token(@credentials, "target-audience", "CURRENT-TOKEN")
+    end
+
+    test "when cached token has not changed, update it with a fresh token" do
+      expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:ok, "CURRENT-TOKEN"} end)
+      expect(AuthorizationServiceMock, :retrieve_token, fn @credentials, "target-audience" -> {:ok, "FRESH-TOKEN"} end)
+      expect(TokenCacheMock, :set_token_for, fn "target-audience", "FRESH-TOKEN" -> :ok end)
+
+      assert {:ok, "FRESH-TOKEN"} ==
+               CachedTokenService.refresh_token(@credentials, "target-audience", "CURRENT-TOKEN")
     end
   end
 end
