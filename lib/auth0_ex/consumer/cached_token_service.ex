@@ -9,31 +9,38 @@ defmodule Auth0Ex.Consumer.CachedTokenService do
   @impl TokenService
   def retrieve_token(credentials, audience) do
     token =
-      case @token_cache.get_token_for(audience) do
-        {:ok, token} ->
-          token
-
-        {:error, :not_found} ->
-          {:ok, token} = @authorization_service.retrieve_token(credentials, audience)
-          @token_cache.set_token_for(audience, token)
-          token
-      end
+      audience
+      |> @token_cache.get_token_for()
+      |> refresh_token_on_cache_miss(credentials, audience)
 
     {:ok, token}
   end
 
   @impl TokenService
   def refresh_token(credentials, audience, current_token) do
-    {:ok, cached_token} = @token_cache.get_token_for(audience)
-
-    token = if cached_token == current_token do
-      {:ok, token} = @authorization_service.retrieve_token(credentials, audience)
-      @token_cache.set_token_for(audience, token)
-      token
-    else
-      cached_token
-    end
+    token =
+      audience
+      |> @token_cache.get_token_for()
+      |> refresh_token_unless_it_changed(current_token, credentials, audience)
 
     {:ok, token}
+  end
+
+  defp refresh_token_on_cache_miss({:ok, token}, _credentials, _audience), do: token
+
+  defp refresh_token_on_cache_miss({:error, :not_found}, credentials, audience) do
+    {:ok, token} = @authorization_service.retrieve_token(credentials, audience)
+    @token_cache.set_token_for(audience, token)
+    token
+  end
+
+  defp refresh_token_unless_it_changed({:ok, cached_token}, current_token, _, _) when cached_token != current_token do
+    cached_token
+  end
+
+  defp refresh_token_unless_it_changed({:ok, _cached_token}, _, credentials, audience) do
+    {:ok, token} = @authorization_service.retrieve_token(credentials, audience)
+    @token_cache.set_token_for(audience, token)
+    token
   end
 end
