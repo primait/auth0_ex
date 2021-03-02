@@ -53,11 +53,12 @@ defmodule Auth0Ex.ConsumerTest do
     assert token == Consumer.token_for(pid, "target_audience")
   end
 
-  test "periodically checks for necessity to refresh its tokens", %{pid: pid} do
+  test "periodically check for necessity to refresh its tokens", %{pid: pid} do
     token = "MY-TOKEN"
     initialize_for_audience("target_audience", token, pid)
 
-    expect(RefreshStrategyMock, :should_refresh?, 2, fn _ -> true end)
+    expect(RefreshStrategyMock, :should_refresh?, fn _ -> true end)
+    expect(TokenCacheMock, :get_token_for, fn _ -> {:ok, token} end)
     expect(TokenCacheMock, :set_token_for, fn _, _ -> :ok end)
 
     expect(
@@ -67,9 +68,22 @@ defmodule Auth0Ex.ConsumerTest do
       fn @sample_credentials, "target_audience" -> {:ok, "A-NEW-TOKEN"} end
     )
 
-    :timer.sleep(@token_check_interval + :timer.seconds(1))
+    :timer.sleep(@token_check_interval + 500)
 
     assert "A-NEW-TOKEN" == Consumer.token_for(pid, "target_audience")
+  end
+
+  test "if token has been updated on shared cache by someone else, do not refresh it", %{pid: pid} do
+    token = "MY-TOKEN"
+    initialize_for_audience("target_audience", token, pid)
+
+    expect(RefreshStrategyMock, :should_refresh?, fn _ -> true end)
+
+    expect(TokenCacheMock, :get_token_for, fn "target_audience" -> {:ok, "A-NEW-CACHED-TOKEN"} end)
+
+    :timer.sleep(@token_check_interval + 500)
+
+    assert "A-NEW-CACHED-TOKEN" == Consumer.token_for(pid, "target_audience")
   end
 
   defp initialize_for_audience(audience, token, pid) do
