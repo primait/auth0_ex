@@ -11,7 +11,7 @@ defmodule Auth0Ex.Consumer do
 
   # Client
 
-  def start_link(initial_state) when is_struct(initial_state, __MODULE__) do
+  def start_link(initial_state \\ initial_state_from_env()) when is_struct(initial_state, __MODULE__) do
     GenServer.start_link(__MODULE__, initial_state)
   end
 
@@ -71,7 +71,7 @@ defmodule Auth0Ex.Consumer do
     Process.send_after(self(), {:periodic_check_for, audience}, @token_check_interval)
   end
 
-  defp set_token(state, audience, token) do
-    put_in(state.tokens[audience], token)
-  end
+  defp set_token(state, audience, token), do: put_in(state.tokens[audience], token)
+
+  defp initial_state_from_env, do: %__MODULE__{credentials: Auth0Ex.Auth0Credentials.from_env()}
 end
