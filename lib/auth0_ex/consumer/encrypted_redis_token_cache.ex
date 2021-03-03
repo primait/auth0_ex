@@ -11,10 +11,11 @@ defmodule Auth0Ex.Consumer.EncryptedRedisTokenCache do
 
   @impl TokenCache
   def get_token_for(audience) do
-    {:ok, encrypted} = Redix.command(@redix_instance_name, ["GET", key_for(audience)])
-    token = decrypt(encrypted)
-
-    {:ok, token}
+    case Redix.command(@redix_instance_name, ["GET", key_for(audience)]) do
+      {:ok, nil} -> {:ok, nil}
+      {:ok, encrypted_token} -> {:ok, decrypt(encrypted_token)}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   @impl TokenCache

@@ -17,7 +17,7 @@ defmodule Auth0Ex.Consumer.CachedTokenServiceTest do
     end
 
     test "returns a fresh token and updates cache if a cached token is not available" do
-      expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:error, :not_found} end)
+      expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:ok, nil} end)
       expect(AuthorizationServiceMock, :retrieve_token, fn @credentials, "target-audience" -> {:ok, "FRESH-TOKEN"} end)
       expect(TokenCacheMock, :set_token_for, fn "target-audience", "FRESH-TOKEN" -> :ok end)
 

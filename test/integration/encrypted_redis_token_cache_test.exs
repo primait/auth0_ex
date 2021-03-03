@@ -7,6 +7,8 @@ defmodule Auth0Ex.Consumer.EncryptedRedisTokenCacheTest do
 
   setup do
     Redix.start_link(name: :redix)
+    Redix.command!(:redix, ["DEL", token_key("audience")])
+
     :ok
   end
 
@@ -14,6 +16,10 @@ defmodule Auth0Ex.Consumer.EncryptedRedisTokenCacheTest do
     EncryptedRedisTokenCache.set_token_for("audience", "token")
 
     assert {:ok, "token"} == EncryptedRedisTokenCache.get_token_for("audience")
+  end
+
+  test "returns {:ok, nil} when token is not cached" do
+    assert {:ok, nil} == EncryptedRedisTokenCache.get_token_for("audience")
   end
 
   test "encrypts tokens" do
