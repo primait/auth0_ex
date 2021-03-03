@@ -8,6 +8,7 @@ config :auth0_ex,
   token_check_interval: :timer.minutes(1),
   refresh_window_duration_seconds: 12 * 60 * 60,
   redix_instance_name: :redix,
+  token_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
   cache_namespace: "my-service"
 
 config :auth0_ex, :auth0,
