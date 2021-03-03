@@ -6,7 +6,9 @@ config :auth0_ex,
   token_cache: TokenCacheMock,
   token_service: Auth0Ex.Consumer.CachedTokenService,
   token_check_interval: :timer.minutes(1),
-  refresh_window_duration_seconds: 12 * 60 * 60
+  refresh_window_duration_seconds: 12 * 60 * 60,
+  redix_instance_name: :redix,
+  cache_namespace: "my-service"
 
 config :auth0_ex, :auth0,
   client_id: "",

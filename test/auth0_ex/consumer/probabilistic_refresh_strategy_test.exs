@@ -1,5 +1,5 @@
 defmodule Auth0Ex.Consumer.ProbabilisticRefreshStrategyTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias Auth0Ex.Consumer.ProbabilisticRefreshStrategy
   alias Auth0Ex.TestSupport.JwtUtils
