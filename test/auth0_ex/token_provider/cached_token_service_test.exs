@@ -39,8 +39,6 @@ defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
         {:error, :error_description}
       end)
 
-      expect(TokenCacheMock, :set_token_for, 0, fn "target-audience", _ -> :ok end)
-
       assert {:error, _description} = CachedTokenService.retrieve_token(@credentials, "target-audience")
     end
   end
@@ -62,6 +60,17 @@ defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
                CachedTokenService.refresh_token(@credentials, "target-audience", "CURRENT-TOKEN")
     end
 
+    test "when cache does not contain any token for the given audience, update it with a fresh one" do
+      # this should be very unlikely, as the cache should always be already set at this point
+
+      expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:ok, nil} end)
+      expect(AuthorizationServiceMock, :retrieve_token, fn @credentials, "target-audience" -> {:ok, "FRESH-TOKEN"} end)
+      expect(TokenCacheMock, :set_token_for, fn "target-audience", "FRESH-TOKEN" -> :ok end)
+
+      assert {:ok, "FRESH-TOKEN"} ==
+               CachedTokenService.refresh_token(@credentials, "target-audience", "CURRENT-TOKEN")
+    end
+
     test "when cache lookup fails, retrieve and return a fresh token" do
       expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:error, :error_description} end)
       expect(AuthorizationServiceMock, :retrieve_token, fn @credentials, "target-audience" -> {:ok, "FRESH-TOKEN"} end)
@@ -69,6 +78,16 @@ defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
 
       assert {:ok, "FRESH-TOKEN"} ==
                CachedTokenService.refresh_token(@credentials, "target-audience", "CURRENT-TOKEN")
+    end
+
+    test "when retrieval from auth0 fails, returns {:error, description}" do
+      expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:ok, "CURRENT-TOKEN"} end)
+
+      expect(AuthorizationServiceMock, :retrieve_token, fn @credentials, "target-audience" ->
+        {:error, :error_description}
+      end)
+
+      assert {:error, _} = CachedTokenService.refresh_token(@credentials, "target-audience", "CURRENT-TOKEN")
     end
   end
 end

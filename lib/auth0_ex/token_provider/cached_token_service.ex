@@ -28,6 +28,10 @@ defmodule Auth0Ex.TokenProvider.CachedTokenService do
     do_refresh_token(credentials, audience)
   end
 
+  defp refresh_token_unless_it_changed({:ok, nil}, _, credentials, audience) do
+    do_refresh_token(credentials, audience)
+  end
+
   defp refresh_token_unless_it_changed({:ok, cached_token}, current_token, _, _) when cached_token != current_token do
     {:ok, cached_token}
   end
