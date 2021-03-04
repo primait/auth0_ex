@@ -10,6 +10,7 @@ config :auth0_ex,
 
 config :auth0_ex, :cache,
   enabled: true,
+  redis_connection_uri: "redis://localhost:6379",
   namespace: "my-service",
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
 

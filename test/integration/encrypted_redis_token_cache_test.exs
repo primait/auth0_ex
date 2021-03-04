@@ -6,7 +6,8 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
   @namespace Application.compile_env!(:auth0_ex, :cache)[:namespace]
 
   setup do
-    Redix.start_link(name: :redix)
+    redis_connection_uri = Application.fetch_env!(:auth0_ex, :cache)[:redis_connection_uri]
+    Redix.start_link(redis_connection_uri, name: :redix)
     Redix.command!(:redix, ["DEL", token_key("audience")])
 
     :ok
