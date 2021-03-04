@@ -32,7 +32,10 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp key_for(audience), do: "auth0ex_tokens:#{@namespace}:#{audience}"
 
   defp save(value, key) do
-    Redix.command(:redix, ["SET", key, value])
+    case Redix.command(:redix, ["SET", key, value]) do
+      {:ok, _} -> :ok
+      {:error, description} -> {:error, description}
+    end
   end
 
   defp enabled?, do: Application.fetch_env!(:auth0_ex, :cache)[:enabled]

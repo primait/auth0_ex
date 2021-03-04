@@ -14,7 +14,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
   end
 
   test "persists and retrieves tokens" do
-    EncryptedRedisTokenCache.set_token_for("audience", "token")
+    :ok = EncryptedRedisTokenCache.set_token_for("audience", "token")
 
     assert {:ok, "token"} == EncryptedRedisTokenCache.get_token_for("audience")
   end
@@ -24,7 +24,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
   end
 
   test "encrypts tokens" do
-    EncryptedRedisTokenCache.set_token_for("audience", "token")
+    :ok = EncryptedRedisTokenCache.set_token_for("audience", "token")
 
     persisted_token = Redix.command!(:redix, ["GET", token_key("audience")])
 
