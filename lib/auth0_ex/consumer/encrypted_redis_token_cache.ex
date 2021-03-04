@@ -3,12 +3,11 @@ defmodule Auth0Ex.Consumer.EncryptedRedisTokenCache do
 
   @behaviour TokenCache
 
-  @cache_namespace Application.compile_env!(:auth0_ex, :redix_instance_name)
-  @redix_instance_name Application.compile_env!(:auth0_ex, :redix_instance_name)
+  @cache_namespace Application.compile_env!(:auth0_ex, :cache_namespace)
 
   @impl TokenCache
   def get_token_for(audience) do
-    case Redix.command(@redix_instance_name, ["GET", key_for(audience)]) do
+    case Redix.command(:redix, ["GET", key_for(audience)]) do
       {:ok, nil} -> {:ok, nil}
       {:ok, encrypted_token} -> {:ok, TokenEncryptor.decrypt(encrypted_token)}
       {:error, reason} -> {:error, reason}
@@ -25,6 +24,6 @@ defmodule Auth0Ex.Consumer.EncryptedRedisTokenCache do
   defp key_for(audience), do: "auth0ex_tokens:#{@cache_namespace}:#{audience}"
 
   defp save(value, key) do
-    Redix.command(@redix_instance_name, ["SET", key, value])
+    Redix.command(:redix, ["SET", key, value])
   end
 end

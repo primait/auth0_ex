@@ -12,7 +12,7 @@ defmodule Auth0Ex.ConsumerTest do
   setup :verify_on_exit!
 
   setup do
-    {:ok, pid} = Consumer.start_link(%Consumer{credentials: @sample_credentials})
+    {:ok, pid} = Consumer.start_link(credentials: @sample_credentials)
 
     {:ok, %{pid: pid}}
   end

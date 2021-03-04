@@ -1,5 +1,5 @@
 defmodule Auth0Ex.Consumer do
-  @behaviour GenServer
+  use GenServer
 
   @enforce_keys [:credentials]
   defstruct [:credentials, tokens: %{}]
@@ -11,8 +11,8 @@ defmodule Auth0Ex.Consumer do
 
   # Client
 
-  def start_link(initial_state \\ initial_state_from_env()) when is_struct(initial_state, __MODULE__) do
-    GenServer.start_link(__MODULE__, initial_state)
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, opts[:credentials], opts)
   end
 
   def token_for(pid, target_audience) do
@@ -22,8 +22,8 @@ defmodule Auth0Ex.Consumer do
   # Callbacks
 
   @impl true
-  def init(initial_state) do
-    {:ok, initial_state}
+  def init(auth0_credentials) do
+    {:ok, %__MODULE__{credentials: auth0_credentials}}
   end
 
   @impl true
@@ -72,6 +72,4 @@ defmodule Auth0Ex.Consumer do
   end
 
   defp set_token(state, audience, token), do: put_in(state.tokens[audience], token)
-
-  defp initial_state_from_env, do: %__MODULE__{credentials: Auth0Ex.Auth0Credentials.from_env()}
 end

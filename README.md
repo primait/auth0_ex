@@ -29,8 +29,6 @@ config :auth0_ex,
   token_check_interval: :timer.minutes(1),
   # time (in seconds) before token expiration when tokens can be refreshed. Default should be OK.
   refresh_window_duration_seconds: 12 * 60 * 60,
-  # name of the Redix process. Default should be OK.
-  redix_instance_name: :redix,
   # AES 256 key. Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
   token_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
   # namespace of cached tokens on shared cache (eg. redis). Should be unique per service.
