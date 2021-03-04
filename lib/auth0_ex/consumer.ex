@@ -47,7 +47,7 @@ defmodule Auth0Ex.Consumer do
 
       spawn(fn ->
         {:ok, new_token} = @token_service.refresh_token(state.credentials, audience, token)
-        GenServer.cast(self_pid, {:set_token_for, audience, new_token})
+        send(self_pid, {:set_token_for, audience, new_token})
       end)
     end
 
@@ -56,7 +56,7 @@ defmodule Auth0Ex.Consumer do
   end
 
   @impl true
-  def handle_cast({:set_token_for, audience, token}, state) do
+  def handle_info({:set_token_for, audience, token}, state) do
     {:noreply, set_token(state, audience, token)}
   end
 
