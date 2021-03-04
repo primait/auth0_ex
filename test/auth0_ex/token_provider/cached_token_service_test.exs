@@ -31,6 +31,18 @@ defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
 
       assert {:ok, "FRESH-TOKEN"} == CachedTokenService.retrieve_token(@credentials, "target-audience")
     end
+
+    test "returns {:error, description} when token retrieval from auth0 fails" do
+      expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:ok, nil} end)
+
+      expect(AuthorizationServiceMock, :retrieve_token, fn @credentials, "target-audience" ->
+        {:error, :error_description}
+      end)
+
+      expect(TokenCacheMock, :set_token_for, 0, fn "target-audience", _ -> :ok end)
+
+      assert {:error, _description} = CachedTokenService.retrieve_token(@credentials, "target-audience")
+    end
   end
 
   describe "refresh_token/3" do
