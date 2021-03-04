@@ -1,7 +1,7 @@
 defmodule Integration.Auth0AuthorizationServiceTest do
   use ExUnit.Case, async: true
 
-  alias Auth0Ex.Consumer.Auth0AuthorizationService
+  alias Auth0Ex.TokenProvider.Auth0AuthorizationService
 
   test "obtains a JWT from Auth0" do
     credentials = Auth0Ex.Auth0Credentials.from_env()

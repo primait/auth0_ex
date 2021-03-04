@@ -1,11 +1,11 @@
 defmodule Auth0Ex.Application do
   use Application
 
-  alias Auth0Ex.Consumer
+  alias Auth0Ex.TokenProvider
 
   def start(_type, _args) do
     children = [
-      {Consumer, credentials: Auth0Ex.Auth0Credentials.from_env(), name: Consumer},
+      {TokenProvider, credentials: Auth0Ex.Auth0Credentials.from_env(), name: TokenProvider},
       {Redix, name: :redix}
     ]
 

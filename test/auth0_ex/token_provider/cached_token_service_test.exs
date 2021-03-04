@@ -1,9 +1,9 @@
-defmodule Auth0Ex.Consumer.CachedTokenServiceTest do
+defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
   use ExUnit.Case, async: true
 
   import Hammox
   alias Auth0Ex.Auth0Credentials
-  alias Auth0Ex.Consumer.CachedTokenService
+  alias Auth0Ex.TokenProvider.CachedTokenService
 
   @credentials %Auth0Credentials{base_url: "base_url", client_id: "client_id", client_secret: "client_secret"}
 

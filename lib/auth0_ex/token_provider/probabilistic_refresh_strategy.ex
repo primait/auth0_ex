@@ -1,5 +1,5 @@
-defmodule Auth0Ex.Consumer.ProbabilisticRefreshStrategy do
-  alias Auth0Ex.Consumer.RefreshStrategy
+defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
+  alias Auth0Ex.TokenProvider.RefreshStrategy
 
   @behaviour RefreshStrategy
 

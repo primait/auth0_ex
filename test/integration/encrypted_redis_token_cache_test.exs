@@ -1,7 +1,7 @@
-defmodule Auth0Ex.Consumer.EncryptedRedisTokenCacheTest do
+defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
   use ExUnit.Case
 
-  alias Auth0Ex.Consumer.EncryptedRedisTokenCache
+  alias Auth0Ex.TokenProvider.EncryptedRedisTokenCache
 
   @namespace Application.compile_env!(:auth0_ex, :cache)[:namespace]
 

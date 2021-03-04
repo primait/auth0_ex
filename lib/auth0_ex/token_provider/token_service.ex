@@ -1,4 +1,4 @@
-defmodule Auth0Ex.Consumer.TokenService do
+defmodule Auth0Ex.TokenProvider.TokenService do
   alias Auth0Ex.Auth0Credentials
 
   @callback retrieve_token(Auth0Credentials.t(), String.t()) :: {:ok, String.t()} | {:error, any()}

@@ -1,7 +1,7 @@
-defmodule Auth0Ex.Consumer.ProbabilisticRefreshStrategyTest do
+defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategyTest do
   use ExUnit.Case, async: true
 
-  alias Auth0Ex.Consumer.ProbabilisticRefreshStrategy
+  alias Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy
   alias Auth0Ex.TestSupport.JwtUtils
 
   @hours 60 * 60

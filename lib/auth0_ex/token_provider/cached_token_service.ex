@@ -1,5 +1,5 @@
-defmodule Auth0Ex.Consumer.CachedTokenService do
-  alias Auth0Ex.Consumer.TokenService
+defmodule Auth0Ex.TokenProvider.CachedTokenService do
+  alias Auth0Ex.TokenProvider.TokenService
 
   @behaviour TokenService
 

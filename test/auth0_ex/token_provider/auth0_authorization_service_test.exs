@@ -1,8 +1,8 @@
-defmodule Auth0Ex.Consumer.Auth0AuthorizationServiceTest do
+defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
   use ExUnit.Case, async: true
 
   alias Auth0Ex.Auth0Credentials
-  alias Auth0Ex.Consumer.Auth0AuthorizationService
+  alias Auth0Ex.TokenProvider.Auth0AuthorizationService
 
   @valid_auth0_response ~s<{"access_token":"my-token","expires_in":86400,"token_type":"Bearer"}>
   @invalid_auth0_response ~s<{"error": "I am an invalid response from auth0"}>

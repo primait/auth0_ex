@@ -1,3 +1,3 @@
-defmodule Auth0Ex.Consumer.RefreshStrategy do
+defmodule Auth0Ex.TokenProvider.RefreshStrategy do
   @callback should_refresh?(String.t()) :: boolean()
 end

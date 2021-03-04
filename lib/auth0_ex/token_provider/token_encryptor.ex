@@ -1,4 +1,4 @@
-defmodule Auth0Ex.Consumer.TokenEncryptor do
+defmodule Auth0Ex.TokenProvider.TokenEncryptor do
   @aad "AES256GCM"
 
   def encrypt(plaintext) do

@@ -1,8 +1,8 @@
-defmodule Auth0Ex.ConsumerTest do
+defmodule Auth0Ex.TokenProviderTest do
   use ExUnit.Case
 
   import Hammox
-  alias Auth0Ex.{Auth0Credentials, Consumer}
+  alias Auth0Ex.{Auth0Credentials, TokenProvider}
 
   @sample_credentials %Auth0Credentials{base_url: "base_url", client_id: "client_id", client_secret: "client_secret"}
 
@@ -12,7 +12,7 @@ defmodule Auth0Ex.ConsumerTest do
   setup :verify_on_exit!
 
   setup do
-    {:ok, pid} = Consumer.start_link(credentials: @sample_credentials)
+    {:ok, pid} = TokenProvider.start_link(credentials: @sample_credentials)
 
     {:ok, %{pid: pid}}
   end
@@ -20,13 +20,13 @@ defmodule Auth0Ex.ConsumerTest do
   test "the first time a token for an audience is requested, the token is retrieved externally", %{pid: pid} do
     expect(TokenServiceMock, :retrieve_token, fn @sample_credentials, "target_audience" -> {:ok, "MY-TOKEN"} end)
 
-    assert "MY-TOKEN" == Consumer.token_for(pid, "target_audience")
+    assert "MY-TOKEN" == TokenProvider.token_for(pid, "target_audience")
   end
 
   test "when a valid token is found in memory, returns it", %{pid: pid} do
     initialize_for_audience("target_audience", "MY-TOKEN", pid)
 
-    assert "MY-TOKEN" == Consumer.token_for(pid, "target_audience")
+    assert "MY-TOKEN" == TokenProvider.token_for(pid, "target_audience")
   end
 
   test "periodically checks for necessity to refresh its tokens", %{pid: pid} do
@@ -42,13 +42,13 @@ defmodule Auth0Ex.ConsumerTest do
 
     wait_for_first_check_to_complete()
 
-    assert "A-NEW-TOKEN" == Consumer.token_for(pid, "target_audience")
+    assert "A-NEW-TOKEN" == TokenProvider.token_for(pid, "target_audience")
   end
 
   defp initialize_for_audience(audience, token, pid) do
     expect(TokenServiceMock, :retrieve_token, fn %Auth0Credentials{}, ^audience -> {:ok, token} end)
 
-    Consumer.token_for(pid, audience)
+    TokenProvider.token_for(pid, audience)
   end
 
   defp wait_for_first_check_to_complete, do: :timer.sleep(@token_check_interval + 500)

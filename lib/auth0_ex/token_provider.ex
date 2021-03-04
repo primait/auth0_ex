@@ -1,4 +1,4 @@
-defmodule Auth0Ex.Consumer do
+defmodule Auth0Ex.TokenProvider do
   use GenServer
 
   @enforce_keys [:credentials]

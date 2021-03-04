@@ -1,12 +1,12 @@
-defmodule Auth0Ex.Consumer.Auth0AuthorizationService do
+defmodule Auth0Ex.TokenProvider.Auth0AuthorizationService do
   @moduledoc false
-  @behaviour Auth0Ex.Consumer.AuthorizationService
+  @behaviour Auth0Ex.TokenProvider.AuthorizationService
 
   require Logger
 
   @auth0_token_api_path "/oauth/token"
 
-  @impl Auth0Ex.Consumer.AuthorizationService
+  @impl Auth0Ex.TokenProvider.AuthorizationService
   def retrieve_token(credentials, audience) do
     request_body = body(credentials, audience)
     url = credentials.base_url <> @auth0_token_api_path

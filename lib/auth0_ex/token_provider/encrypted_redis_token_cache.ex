@@ -1,5 +1,5 @@
-defmodule Auth0Ex.Consumer.EncryptedRedisTokenCache do
-  alias Auth0Ex.Consumer.{TokenEncryptor, TokenCache}
+defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
+  alias Auth0Ex.TokenProvider.{TokenEncryptor, TokenCache}
 
   @behaviour TokenCache
 
