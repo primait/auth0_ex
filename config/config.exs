@@ -6,9 +6,12 @@ config :auth0_ex,
   token_cache: Auth0Ex.Consumer.EncryptedRedisTokenCache,
   token_service: Auth0Ex.Consumer.CachedTokenService,
   token_check_interval: :timer.minutes(1),
-  refresh_window_duration_seconds: 12 * 60 * 60,
-  token_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
-  cache_namespace: "my-service"
+  refresh_window_duration_seconds: 12 * 60 * 60
+
+config :auth0_ex, :cache,
+  enabled: true,
+  namespace: "my-service",
+  encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
 
 config :auth0_ex, :auth0,
   client_id: "",

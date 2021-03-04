@@ -16,7 +16,7 @@ defmodule Auth0Ex.Consumer.TokenEncryptor do
   end
 
   defp token_encryption_key do
-    encoded_key = Application.fetch_env!(:auth0_ex, :token_encryption_key)
+    encoded_key = Application.fetch_env!(:auth0_ex, :cache)[:encryption_key]
     Base.decode64!(encoded_key)
   end
 end

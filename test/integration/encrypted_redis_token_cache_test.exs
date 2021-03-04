@@ -3,7 +3,7 @@ defmodule Auth0Ex.Consumer.EncryptedRedisTokenCacheTest do
 
   alias Auth0Ex.Consumer.EncryptedRedisTokenCache
 
-  @cache_namespace Application.compile_env!(:auth0_ex, :cache_namespace)
+  @namespace Application.compile_env!(:auth0_ex, :cache)[:namespace]
 
   setup do
     Redix.start_link(name: :redix)
@@ -31,5 +31,5 @@ defmodule Auth0Ex.Consumer.EncryptedRedisTokenCacheTest do
     assert persisted_token != "token"
   end
 
-  defp token_key(audience), do: "auth0ex_tokens:#{@cache_namespace}:#{audience}"
+  defp token_key(audience), do: "auth0ex_tokens:#{@namespace}:#{audience}"
 end
