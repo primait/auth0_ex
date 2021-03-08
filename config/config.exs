@@ -15,10 +15,9 @@ config :auth0_ex, :cache,
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
 
 config :auth0_ex, :auth0,
-  audience: "borat",
+  audience: "",
   client_id: "",
   client_secret: "",
-  default_audience: "",
   issuer: "https://dallagi.eu.auth0.com/",
   base_url: "https://dallagi.eu.auth0.com"
 

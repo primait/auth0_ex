@@ -7,7 +7,7 @@ defmodule Integration.TokenTest do
 
   test "verifies token obtained from auth0" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
-    audience = Application.fetch_env!(:auth0_ex, :auth0)[:default_audience]
+    audience = Application.fetch_env!(:auth0_ex, :auth0)[:audience]
     {:ok, auth0_token} = Auth0AuthorizationService.retrieve_token(credentials, audience)
 
     assert {:ok, _} = Token.verify_and_validate(auth0_token)
