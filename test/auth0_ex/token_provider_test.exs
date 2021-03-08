@@ -20,13 +20,21 @@ defmodule Auth0Ex.TokenProviderTest do
   test "the first time a token for an audience is requested, the token is retrieved externally", %{pid: pid} do
     expect(TokenServiceMock, :retrieve_token, fn @sample_credentials, "target_audience" -> {:ok, "MY-TOKEN"} end)
 
-    assert "MY-TOKEN" == TokenProvider.token_for(pid, "target_audience")
+    assert {:ok, "MY-TOKEN"} == TokenProvider.token_for(pid, "target_audience")
+  end
+
+  test "if the first retrieval of the token fails, returns error", %{pid: pid} do
+    expect(TokenServiceMock, :retrieve_token, fn @sample_credentials, "target_audience" ->
+      {:error, :error_description}
+    end)
+
+    assert {:error, _} = TokenProvider.token_for(pid, "target_audience")
   end
 
   test "when a valid token is found in memory, returns it", %{pid: pid} do
     initialize_for_audience("target_audience", "MY-TOKEN", pid)
 
-    assert "MY-TOKEN" == TokenProvider.token_for(pid, "target_audience")
+    assert {:ok, "MY-TOKEN"} == TokenProvider.token_for(pid, "target_audience")
   end
 
   test "periodically checks for necessity to refresh its tokens", %{pid: pid} do
@@ -42,7 +50,7 @@ defmodule Auth0Ex.TokenProviderTest do
 
     wait_for_first_check_to_complete()
 
-    assert "A-NEW-TOKEN" == TokenProvider.token_for(pid, "target_audience")
+    assert {:ok, "A-NEW-TOKEN"} == TokenProvider.token_for(pid, "target_audience")
   end
 
   defp initialize_for_audience(audience, token, pid) do

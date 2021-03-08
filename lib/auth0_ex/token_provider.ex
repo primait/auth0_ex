@@ -30,11 +30,13 @@ defmodule Auth0Ex.TokenProvider do
   def handle_call({:token_for, audience}, _from, state) do
     case state.tokens[audience] do
       nil ->
-        token = initialize_token_for(audience, state)
-        {:reply, token, set_token(state, audience, token)}
+        case initialize_token_for(audience, state) do
+          {:ok, token} -> {:reply, {:ok, token}, set_token(state, audience, token)}
+          {:error, reason} -> {:reply, {:error, reason}, state}
+        end
 
       token ->
-        {:reply, token, state}
+        {:reply, {:ok, token}, state}
     end
   end
 
@@ -63,8 +65,7 @@ defmodule Auth0Ex.TokenProvider do
   defp initialize_token_for(audience, state) do
     schedule_periodic_check_for(audience)
 
-    {:ok, token} = @token_service.retrieve_token(state.credentials, audience)
-    token
+    @token_service.retrieve_token(state.credentials, audience)
   end
 
   defp schedule_periodic_check_for(audience) do
