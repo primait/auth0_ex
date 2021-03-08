@@ -1,12 +1,13 @@
 defmodule Auth0Ex.Application do
   use Application
 
-  alias Auth0Ex.TokenProvider
+  alias Auth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
     children = [
-      {TokenProvider, credentials: Auth0Ex.Auth0Credentials.from_env(), name: TokenProvider},
-      {Redix, {redis_connection_uri(), [name: :redix]}}
+      {JwksStrategy, []},
+      {Redix, {redis_connection_uri(), [name: :redix]}},
+      {TokenProvider, credentials: Auth0Ex.Auth0Credentials.from_env(), name: TokenProvider}
     ]
 
     opts = [strategy: :one_for_one, name: Auth0Ex.Supervisor]

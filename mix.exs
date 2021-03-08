@@ -23,9 +23,9 @@ defmodule Auth0Ex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:bypass, "~> 2.1.0"},
       {:jason, "~> 1.2.2"},
       {:joken, "~> 2.3.0"},
+      {:joken_jwks, "~> 1.1.0"},
       {:redix, "~> 1.0.0"},
       {:telepoison, "~> 0.1.1"}
     ] ++ dev_deps()
@@ -33,6 +33,7 @@ defmodule Auth0Ex.MixProject do
 
   defp dev_deps do
     [
+      {:bypass, "~> 2.1.0", only: :test},
       {:hammox, "~> 0.4", only: :test}
     ]
   end
