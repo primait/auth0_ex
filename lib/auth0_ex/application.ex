@@ -5,7 +5,7 @@ defmodule Auth0Ex.Application do
 
   def start(_type, _args) do
     children = [
-      {JwksStrategy, []},
+      {JwksStrategy, [first_fetch_sync: true]},
       {Redix, {redis_connection_uri(), [name: :redix]}},
       {TokenProvider, credentials: Auth0Ex.Auth0Credentials.from_env(), name: TokenProvider}
     ]

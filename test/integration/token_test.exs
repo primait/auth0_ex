@@ -10,12 +10,12 @@ defmodule Integration.TokenTest do
     audience = Application.fetch_env!(:auth0_ex, :auth0)[:default_audience]
     {:ok, auth0_token} = Auth0AuthorizationService.retrieve_token(credentials, audience)
 
-    assert {:ok, _} = Token.verify(auth0_token)
+    assert {:ok, _} = Token.verify_and_validate(auth0_token)
   end
 
   test "does not verify other tokens" do
     locally_forged_token = JwtUtils.jwt_that_expires_in(10000)
 
-    assert {:error, _} = Token.verify(locally_forged_token)
+    assert {:error, _} = Token.verify_and_validate(locally_forged_token)
   end
 end
