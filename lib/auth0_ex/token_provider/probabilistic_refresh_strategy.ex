@@ -3,26 +3,34 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
   @behaviour RefreshStrategy
 
-  @hours 60 * 60
-  @refresh_window_duration_seconds 12 * @hours
+  @min_token_duration 0.5
+  @max_token_duration 0.75
 
   @impl RefreshStrategy
   def should_refresh?(token) do
-    case seconds_to_expiration(token) do
-      s when s < 0 -> true
-      s when s > @refresh_window_duration_seconds -> false
-      s -> probabilistic_choice(s)
-    end
+    {issued_at, expires_at} = peek_token_claims(token)
+    token_lifespan = expires_at - issued_at
+
+    refresh_window_start = issued_at + trunc(token_lifespan * @min_token_duration)
+    refresh_window_end = issued_at + trunc(token_lifespan * @max_token_duration)
+
+    current_time = Joken.current_time()
+
+    probabilistic_choice(current_time, refresh_window_start, refresh_window_end)
   end
 
-  defp seconds_to_expiration(token) do
-    {:ok, %{"exp" => expiration_time}} = Joken.peek_claims(token)
+  defp peek_token_claims(token) do
+    {:ok, %{"iat" => issued_at, "exp" => expires_at}} = Joken.peek_claims(token)
 
-    expiration_time - Joken.current_time()
+    {issued_at, expires_at}
   end
 
-  defp probabilistic_choice(seconds_to_expiration) do
-    # gets more likely the more we approach expiration time
-    :rand.uniform(@refresh_window_duration_seconds) > seconds_to_expiration
+  defp probabilistic_choice(current_time, refresh_window_start, refresh_window_end) do
+    refresh_window_duration = refresh_window_end - refresh_window_start
+
+    # always false when current_time < refresh_window_start
+    # always true when current_time > refresh_window_end
+    # otherwise, it gets more likely the more we approach refresh_window_end
+    :rand.uniform(refresh_window_duration) < current_time - refresh_window_start
   end
 end

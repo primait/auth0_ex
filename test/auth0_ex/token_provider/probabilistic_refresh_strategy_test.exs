@@ -10,14 +10,22 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategyTest do
     assert true == ProbabilisticRefreshStrategy.should_refresh?(JwtUtils.expired_jwt())
   end
 
-  test "should never refresh tokens when more than X time is remaining for expiration" do
-    assert false == ProbabilisticRefreshStrategy.should_refresh?(JwtUtils.jwt_that_expires_in(24 * @hours))
+  test "should never refresh new tokens" do
+    new_token = test_jwt(current_time(), current_time() + 12 * @hours)
+
+    assert false == ProbabilisticRefreshStrategy.should_refresh?(new_token)
   end
 
-  test "returns either true or false when approaching expiration time, following a probabilistic distribution" do
+  test "returns either true or false when approaching expiration time" do
     :rand.seed(:exsplus, 0)
 
-    assert true == ProbabilisticRefreshStrategy.should_refresh?(JwtUtils.jwt_that_expires_in(1 * @hours))
-    assert false == ProbabilisticRefreshStrategy.should_refresh?(JwtUtils.jwt_that_expires_in(11 * @hours))
+    old_jwt = test_jwt(current_time() - 23 * @hours, current_time() + 1 * @hours)
+    recent_jwt = test_jwt(current_time() - 1 * @hours, current_time() + 23 * @hours)
+
+    assert true == ProbabilisticRefreshStrategy.should_refresh?(old_jwt)
+    assert false == ProbabilisticRefreshStrategy.should_refresh?(recent_jwt)
   end
+
+  defp current_time, do: Joken.current_time()
+  defp test_jwt(issued_at, expires_at), do: JwtUtils.jwt_with_claims(%{"iat" => issued_at, "exp" => expires_at})
 end

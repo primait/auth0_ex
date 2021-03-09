@@ -3,6 +3,14 @@ defmodule Auth0Ex.TestSupport.JwtUtils do
 
   @days 60 * 60 * 24
 
+  def jwt_with_claims(claims) do
+    Joken.generate_and_sign!(
+      %{},
+      claims,
+      @test_signer
+    )
+  end
+
   def jwt_that_expires_in(time_seconds) do
     expiration = Joken.current_time() + time_seconds
     one_day_before_expiration = expiration - 1 * @days
