@@ -26,6 +26,7 @@ defmodule Auth0Ex.MixProject do
       {:jason, "~> 1.2.2"},
       {:joken, "~> 2.3.0"},
       {:joken_jwks, "~> 1.1.0"},
+      {:plug, "~> 1.11"},
       {:redix, "~> 1.0.0"},
       {:telepoison, "~> 0.1.1"}
     ] ++ dev_deps()
