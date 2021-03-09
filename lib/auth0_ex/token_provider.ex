@@ -53,7 +53,6 @@ defmodule Auth0Ex.TokenProvider do
       end)
     end
 
-    schedule_periodic_check_for(audience)
     {:noreply, state}
   end
 
@@ -63,13 +62,9 @@ defmodule Auth0Ex.TokenProvider do
   end
 
   defp initialize_token_for(audience, state) do
-    schedule_periodic_check_for(audience)
+    :timer.send_interval(@token_check_interval, {:periodic_check_for, audience})
 
     @token_service.retrieve_token(state.credentials, audience)
-  end
-
-  defp schedule_periodic_check_for(audience) do
-    Process.send_after(self(), {:periodic_check_for, audience}, @token_check_interval)
   end
 
   defp set_token(state, audience, token), do: put_in(state.tokens[audience], token)
