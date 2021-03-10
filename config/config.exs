@@ -22,6 +22,7 @@ config :auth0_ex, :client,
 
 config :auth0_ex, :server,
   audience: "",
-  issuer: "https://tenant.eu.auth0.com/"
+  issuer: "https://tenant.eu.auth0.com/",
+  first_jwks_fetch_sync: true
 
 import_config "#{Mix.env()}.exs"
