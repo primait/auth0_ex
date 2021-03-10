@@ -47,7 +47,6 @@ config :auth0_ex, :auth0,
   client_id: "my-client-id",
   client_secret: "my-client-secret",
   base_url: "https://my-tenant.eu.auth0.com"
-
 ```
 
 ## Usage

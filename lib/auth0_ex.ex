@@ -5,7 +5,9 @@ defmodule Auth0Ex do
     TokenProvider.token_for(TokenProvider, audience)
   end
 
-  def verify_and_validate(token) do
-    Token.verify_and_validate(token)
+  def verify_and_validate(token, audience \\ default_audience(), permissions \\ []) do
+    Token.verify_and_validate_token(token, audience, permissions)
   end
+
+  defp default_audience, do: Application.fetch_env!(:auth0_ex, :auth0)[:audience]
 end

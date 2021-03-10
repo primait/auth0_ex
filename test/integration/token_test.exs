@@ -7,15 +7,16 @@ defmodule Integration.TokenTest do
 
   test "verifies token obtained from auth0" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
-    audience = Application.fetch_env!(:auth0_ex, :auth0)[:audience]
-    {:ok, auth0_token} = Auth0AuthorizationService.retrieve_token(credentials, audience)
+    {:ok, auth0_token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
-    assert {:ok, _} = Token.verify_and_validate(auth0_token)
+    assert {:ok, _} = Token.verify_and_validate_token(auth0_token, audience())
   end
 
   test "does not verify other tokens" do
     locally_forged_token = JwtUtils.jwt_that_expires_in(10000)
 
-    assert {:error, _} = Token.verify_and_validate(locally_forged_token)
+    assert {:error, _} = Token.verify_and_validate_token(locally_forged_token, audience)
   end
+
+  defp audience, do: Application.fetch_env!(:auth0_ex, :auth0)[:audience]
 end
