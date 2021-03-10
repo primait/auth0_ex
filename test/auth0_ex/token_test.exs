@@ -78,5 +78,5 @@ defmodule Auth0Ex.TokenTest do
     }
   end
 
-  defp issuer, do: Application.fetch_env!(:auth0_ex, :auth0)[:issuer]
+  defp issuer, do: Application.fetch_env!(:auth0_ex, :server)[:issuer]
 end

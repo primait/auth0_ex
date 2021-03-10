@@ -25,28 +25,37 @@ This library supports the following configurations:
 
 ```elixir
 config :auth0_ex,
-  # time (in milliseconds) between pollings to check the freshness of tokens, and refresh them if necessary
-  token_check_interval: :timer.minutes(1),
-  # length of time window (in seconds) before token expiration when token refreshes can happen
-  refresh_window_duration_seconds: 12 * 60 * 60,
+  # Base url for Auth0 API
+  auth0_base_url: "https://dallagi.eu.auth0.com"
 
 config :auth0_ex, :cache,
+  # Enables cache of tokens obtained from Auth0
   enabled: true,
   redis_connection_uri: "redis://localhost:6379",
-  # namespace of cached tokens on shared cache (eg. redis). Should be unique per service.
+  # Namespace for tokens of this service on the shared cache. Should be unique per service (e.g., the service name)
   namespace: "my-service",
-  # AES 256 key. Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
+  # AES 256 key used to encrypt tokens on the shared cache.
+  # Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
 
-config :auth0_ex, :auth0,
-  # audience and issuer to validate when verifying tokens
-  audience: "my-audience",
-  issuer: "https://tenant.eu.auth0.com/",
+config :auth0_ex, :client,
+  # Interval (in milliseconds) at which to evaluate whether to refresh locally stored tokens.
+  token_check_interval: :timer.minutes(1),
+  # Start and end of refresh window for tokens, relative to their lifespans.
+  # e.g. if a token is issued at timestamp 1000 and expires at timestamp 2000,
+  # and min_token_duration is 0.5 and max_token duration is 0.75,
+  # then the refresh will happen at a random time between timestamps 1500 and 1750.
+  min_token_duration: 0.5,
+  max_token_duration: 0.75,
+  # Credentials on Auth0
+  client_id: "ZBmXe2UgXV1sccLW9pWyY6W0HV9CRXBV",
+  client_secret: "gg4xxqV3304uYIQj17LUjiPNU1GaoWLltlLL1-FycjEZ7GZLFlDvLcQFqJ6v2oPH"
 
-  # credentials for auth0 used to obtain tokens
-  client_id: "my-client-id",
-  client_secret: "my-client-secret",
-  base_url: "https://my-tenant.eu.auth0.com"
+config :auth0_ex, :server,
+  # Default audience used to verify tokens
+  audience: "borat",
+  # Issuer used to verify tokens
+  issuer: "https://dallagi.eu.auth0.com/"
 ```
 
 ## Usage

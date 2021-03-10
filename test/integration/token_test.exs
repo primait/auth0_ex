@@ -15,8 +15,8 @@ defmodule Integration.TokenTest do
   test "does not verify other tokens" do
     locally_forged_token = JwtUtils.jwt_that_expires_in(10000)
 
-    assert {:error, _} = Token.verify_and_validate_token(locally_forged_token, audience)
+    assert {:error, _} = Token.verify_and_validate_token(locally_forged_token, audience())
   end
 
-  defp audience, do: Application.fetch_env!(:auth0_ex, :auth0)[:audience]
+  defp audience, do: Application.fetch_env!(:auth0_ex, :server)[:audience]
 end

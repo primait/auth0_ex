@@ -9,8 +9,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
   test "does nothing when token is valid" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
-    audience = Application.fetch_env!(:auth0_ex, :auth0)[:audience]
-    {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience)
+    {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     conn =
       conn(:get, "/")
@@ -57,10 +56,9 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
   test "supports setting a custom audience for validation" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
-    audience = Application.fetch_env!(:auth0_ex, :auth0)[:audience]
-    {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience)
+    {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())
 
-    opts = VerifyAndValidateToken.init(audience: "something-different-than-" <> audience)
+    opts = VerifyAndValidateToken.init(audience: "something-different-than-" <> audience())
 
     conn =
       conn(:get, "/")
@@ -72,8 +70,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
   test "supports setting required permissions" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
-    audience = Application.fetch_env!(:auth0_ex, :auth0)[:audience]
-    {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience)
+    {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     opts = VerifyAndValidateToken.init(required_permissions: ["permission-that-user-on-auth0-should-not-have"])
 
@@ -84,4 +81,6 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
     assert conn.status == 401
   end
+
+  defp audience, do: Application.fetch_env!(:auth0_ex, :server)[:audience]
 end

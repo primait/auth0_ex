@@ -3,8 +3,6 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   @behaviour TokenCache
 
-  @namespace Application.compile_env!(:auth0_ex, :cache)[:namespace]
-
   @impl TokenCache
   def get_token_for(audience) do
     if enabled?(), do: do_get_token_for(audience), else: {:ok, nil}
@@ -29,7 +27,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
     |> save(key_for(audience))
   end
 
-  defp key_for(audience), do: "auth0ex_tokens:#{@namespace}:#{audience}"
+  defp key_for(audience), do: "auth0ex_tokens:#{namespace()}:#{audience}"
 
   defp save(value, key) do
     case Redix.command(:redix, ["SET", key, value]) do
@@ -39,4 +37,5 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
   end
 
   defp enabled?, do: Application.fetch_env!(:auth0_ex, :cache)[:enabled]
+  defp namespace, do: Application.fetch_env!(:auth0_ex, :cache)[:namespace]
 end

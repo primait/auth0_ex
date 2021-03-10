@@ -15,7 +15,7 @@ defmodule Auth0Ex.Token do
     verify_and_validate(token, __default_signer__(), %{audience: audience, required_permissions: required_permissions})
   end
 
-  defp issuer, do: Application.fetch_env!(:auth0_ex, :auth0)[:issuer]
+  defp issuer, do: Application.fetch_env!(:auth0_ex, :server)[:issuer]
 
   defp validate_audience(token_audience, _claims, context) do
     expected_audience = context[:audience]

@@ -10,5 +10,5 @@ defmodule Auth0Ex do
     Token.verify_and_validate_token(token, audience, permissions)
   end
 
-  defp default_audience, do: Application.fetch_env!(:auth0_ex, :auth0)[:audience]
+  defp default_audience, do: Application.fetch_env!(:auth0_ex, :server)[:audience]
 end

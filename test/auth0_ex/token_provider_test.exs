@@ -6,7 +6,7 @@ defmodule Auth0Ex.TokenProviderTest do
 
   @sample_credentials %Auth0Credentials{base_url: "base_url", client_id: "client_id", client_secret: "client_secret"}
 
-  @token_check_interval Application.fetch_env!(:auth0_ex, :token_check_interval)
+  @token_check_interval Application.fetch_env!(:auth0_ex, :client)[:token_check_interval]
 
   setup :set_mox_global
   setup :verify_on_exit!

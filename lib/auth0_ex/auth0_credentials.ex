@@ -5,9 +5,9 @@ defmodule Auth0Ex.Auth0Credentials do
 
   def from_env do
     %__MODULE__{
-      base_url: Application.fetch_env!(:auth0_ex, :auth0)[:base_url],
-      client_id: Application.fetch_env!(:auth0_ex, :auth0)[:client_id],
-      client_secret: Application.fetch_env!(:auth0_ex, :auth0)[:client_secret]
+      base_url: Application.fetch_env!(:auth0_ex, :auth0_base_url),
+      client_id: Application.fetch_env!(:auth0_ex, :client)[:client_id],
+      client_secret: Application.fetch_env!(:auth0_ex, :client)[:client_secret]
     }
   end
 end

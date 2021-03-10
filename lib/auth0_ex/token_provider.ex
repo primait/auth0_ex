@@ -7,7 +7,7 @@ defmodule Auth0Ex.TokenProvider do
   @refresh_strategy Application.compile_env!(:auth0_ex, :refresh_strategy)
   @token_service Application.compile_env!(:auth0_ex, :token_service)
 
-  @token_check_interval Application.compile_env!(:auth0_ex, :token_check_interval)
+  @token_check_interval Application.compile_env!(:auth0_ex, :client)[:token_check_interval]
 
   # Client
 

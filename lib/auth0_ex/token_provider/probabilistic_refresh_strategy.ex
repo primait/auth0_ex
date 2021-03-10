@@ -31,6 +31,6 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
     :rand.uniform(refresh_window_duration) < current_time - refresh_window_start
   end
 
-  defp min_token_duration, do: Application.fetch_env!(:auth0_ex, :min_token_duration)
-  defp max_token_duration, do: Application.fetch_env!(:auth0_ex, :max_token_duration)
+  defp min_token_duration, do: Application.fetch_env!(:auth0_ex, :client)[:min_token_duration]
+  defp max_token_duration, do: Application.fetch_env!(:auth0_ex, :client)[:max_token_duration]
 end
