@@ -5,7 +5,8 @@ defmodule Auth0Ex do
     TokenProvider.token_for(TokenProvider, audience)
   end
 
-  def verify_and_validate(token, audience \\ default_audience(), permissions \\ []) do
+  def verify_and_validate(token, audience \\ nil, permissions \\ []) do
+    audience = audience || default_audience()
     Token.verify_and_validate_token(token, audience, permissions)
   end
 

@@ -3,22 +3,25 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
 
   def init(options), do: options
 
-  def call(%Plug.Conn{} = conn, _opts) do
-    case authorized?(conn) do
+  def call(%Plug.Conn{} = conn, opts) do
+    audience = opts[:audience]
+    required_permissions = opts[:required_permissions] || []
+
+    case authorized?(conn, audience, required_permissions) do
       true -> conn
       false -> forbidden(conn)
     end
   end
 
-  defp authorized?(conn) do
+  defp authorized?(conn, audience, required_permissions) do
     case get_req_header(conn, "authorization") do
-      ["Bearer " <> token] -> valid_token?(token)
+      ["Bearer " <> token] -> valid_token?(token, audience, required_permissions)
       _other -> false
     end
   end
 
-  defp valid_token?(token) do
-    case Auth0Ex.verify_and_validate(token) do
+  defp valid_token?(token, audience, required_permissions) do
+    case Auth0Ex.verify_and_validate(token, audience, required_permissions) do
       {:ok, _} -> true
       {:error, _} -> false
     end
