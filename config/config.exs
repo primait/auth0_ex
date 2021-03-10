@@ -6,6 +6,8 @@ config :auth0_ex,
   token_cache: Auth0Ex.TokenProvider.EncryptedRedisTokenCache,
   token_service: Auth0Ex.TokenProvider.CachedTokenService,
   token_check_interval: :timer.minutes(1),
+  min_token_duration: 0.5,
+  max_token_duration: 0.75,
   refresh_window_duration_seconds: 12 * 60 * 60
 
 config :auth0_ex, :cache,
