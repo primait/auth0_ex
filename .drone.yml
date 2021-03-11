@@ -97,14 +97,14 @@ steps:
   depends_on:
   - elixir-compile
 
-# - name: elixir-test
-#   image: prima/auth0_ex-ci:${DRONE_COMMIT}
-#   commands:
-#   - mix test
-#   environment:
-#     MIX_ENV: test
-#   depends_on:
-#   - elixir-compile
+- name: elixir-test
+  image: prima/auth0_ex-ci:${DRONE_COMMIT}
+  commands:
+  - mix test
+  environment:
+    MIX_ENV: test
+  depends_on:
+  - elixir-compile
 
 - name: elixir-credo
   image: prima/auth0_ex-ci:${DRONE_COMMIT}
@@ -144,7 +144,7 @@ steps:
   depends_on:
   - elixir-compile
   - elixir-format
-  # - elixir-test
+  - elixir-test
   - elixir-credo
   - elixir-dialyzer
   - elixir-dep-check

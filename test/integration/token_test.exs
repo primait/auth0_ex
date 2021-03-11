@@ -5,6 +5,7 @@ defmodule Integration.TokenTest do
   alias Auth0Ex.TokenProvider.Auth0AuthorizationService
   alias Auth0Ex.TestSupport.JwtUtils
 
+  @tag :external
   test "verifies token obtained from auth0" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
     {:ok, auth0_token} = Auth0AuthorizationService.retrieve_token(credentials, audience())

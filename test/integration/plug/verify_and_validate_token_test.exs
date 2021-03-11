@@ -7,6 +7,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
   @opts VerifyAndValidateToken.init([])
 
+  @tag :external
   test "does nothing when token is valid" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
     {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())
@@ -55,6 +56,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
     assert conn.status == 401
   end
 
+  @tag :external
   test "supports setting a custom audience for validation" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
     {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())
@@ -69,6 +71,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
     assert conn.status == 401
   end
 
+  @tag :external
   test "supports setting required permissions" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
     {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())

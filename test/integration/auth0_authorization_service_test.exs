@@ -3,6 +3,7 @@ defmodule Integration.Auth0AuthorizationServiceTest do
 
   alias Auth0Ex.TokenProvider.{Auth0AuthorizationService, TokenInfo}
 
+  @tag :external
   test "obtains a JWT from Auth0" do
     credentials = Auth0Ex.Auth0Credentials.from_env()
     audience = Application.fetch_env!(:auth0_ex, :server)[:audience]
