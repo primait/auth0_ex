@@ -8,7 +8,13 @@ defmodule Auth0Ex.MixProject do
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        plt_add_apps: [:mix, :ex_unit],
+        plt_add_deps: :transitive,
+        ignore_warnings: ".dialyzerignore",
+        list_unused_filters: true
+      ]
     ]
   end
 
@@ -35,6 +41,7 @@ defmodule Auth0Ex.MixProject do
   defp dev_deps do
     [
       {:bypass, "~> 2.1.0", only: :test},
+      {:dialyxir, "1.0.0", only: [:test], runtime: false},
       {:hammox, "~> 0.4", only: :test},
       {:timex, "~> 3.6", only: :test}
     ]
