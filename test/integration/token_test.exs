@@ -1,9 +1,9 @@
 defmodule Integration.TokenTest do
   use ExUnit.Case, async: true
 
+  alias Auth0Ex.TestSupport.JwtUtils
   alias Auth0Ex.Token
   alias Auth0Ex.TokenProvider.Auth0AuthorizationService
-  alias Auth0Ex.TestSupport.JwtUtils
 
   @tag :external
   test "verifies token obtained from auth0" do

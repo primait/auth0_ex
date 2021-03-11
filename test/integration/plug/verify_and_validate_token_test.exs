@@ -2,15 +2,17 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
   use ExUnit.Case, async: true
   use Plug.Test
 
+  alias Auth0Ex.Auth0Credentials
   alias Auth0Ex.Plug.VerifyAndValidateToken
   alias Auth0Ex.TestSupport.JwtUtils
+  alias Auth0Ex.TokenProvider.Auth0AuthorizationService
 
   @opts VerifyAndValidateToken.init([])
 
   @tag :external
   test "does nothing when token is valid" do
-    credentials = Auth0Ex.Auth0Credentials.from_env()
-    {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())
+    credentials = Auth0Credentials.from_env()
+    {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     conn =
       :get
@@ -58,8 +60,8 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
   @tag :external
   test "supports setting a custom audience for validation" do
-    credentials = Auth0Ex.Auth0Credentials.from_env()
-    {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())
+    credentials = Auth0Credentials.from_env()
+    {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     opts = VerifyAndValidateToken.init(audience: "something-different-than-" <> audience())
 
@@ -73,8 +75,8 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
   @tag :external
   test "supports setting required permissions" do
-    credentials = Auth0Ex.Auth0Credentials.from_env()
-    {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())
+    credentials = Auth0Credentials.from_env()
+    {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     opts = VerifyAndValidateToken.init(required_permissions: ["permission-that-user-on-auth0-should-not-have"])
 
