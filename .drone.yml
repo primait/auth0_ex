@@ -149,6 +149,12 @@ steps:
   - elixir-dialyzer
   - elixir-dep-check
 
+services:
+- name: redis
+  image: public.ecr.aws/bitnami/redis:5.0
+  environment:
+    ALLOW_EMPTY_PASSWORD: true
+  
 volumes:
 - name: docker
   host:
