@@ -1,10 +1,10 @@
 defmodule Auth0Ex.TokenTest do
   use ExUnit.Case, async: true
 
+  import Auth0Ex.TestSupport.TimeUtils
   alias Auth0Ex.Token
 
   @audience "some-audience"
-  @one_day 24 * 60 * 60
 
   test "a token is valid if all its claims pass validation" do
     assert {:ok, _} = Token.validate(valid_token_claims(), %{audience: @audience})
@@ -12,8 +12,7 @@ defmodule Auth0Ex.TokenTest do
 
   test "when permissions are required, a token is valid if its permissions are a superset of the required ones" do
     claims_with_valid_permissions =
-      valid_token_claims()
-      |> Map.put("permissions", ["1st:perm", "2nd:perm", "3rd:perm", "4th:perm"])
+      Map.put(valid_token_claims(), "permissions", ["1st:perm", "2nd:perm", "3rd:perm", "4th:perm"])
 
     assert {:ok, _} =
              Token.validate(
@@ -23,13 +22,13 @@ defmodule Auth0Ex.TokenTest do
   end
 
   test "a token is not valid when its expiration date has passed" do
-    expired_token_claims = %{valid_token_claims() | "exp" => Joken.current_time() - @one_day}
+    expired_token_claims = %{valid_token_claims() | "exp" => one_hour_ago()}
 
     assert {:error, _} = Token.validate(expired_token_claims, %{audience: @audience})
   end
 
   test "a token is not valid when its 'not-before-date' is in the future" do
-    not_yet_valid_token_claims = %{valid_token_claims() | "nbf" => Joken.current_time() + @one_day}
+    not_yet_valid_token_claims = %{valid_token_claims() | "nbf" => in_one_hour()}
 
     assert {:error, _} = Token.validate(not_yet_valid_token_claims, %{audience: @audience})
   end
@@ -71,10 +70,10 @@ defmodule Auth0Ex.TokenTest do
   defp valid_token_claims do
     %{
       "aud" => @audience,
-      "exp" => Joken.current_time() + @one_day,
-      "iat" => Joken.current_time() - @one_day,
+      "exp" => in_one_hour(),
+      "iat" => one_hour_ago(),
       "iss" => issuer(),
-      "nbf" => Joken.current_time() - @one_day
+      "nbf" => one_hour_ago()
     }
   end
 

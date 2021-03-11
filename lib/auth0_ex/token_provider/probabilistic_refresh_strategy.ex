@@ -10,9 +10,7 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
     refresh_window_start = token.issued_at + trunc(token_lifespan * min_token_duration())
     refresh_window_end = token.issued_at + trunc(token_lifespan * max_token_duration())
 
-    current_time = Joken.current_time()
-
-    probabilistic_choice(current_time, refresh_window_start, refresh_window_end)
+    probabilistic_choice(current_time(), refresh_window_start, refresh_window_end)
   end
 
   defp probabilistic_choice(current_time, refresh_window_start, refresh_window_end) do
@@ -24,6 +22,7 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
     :rand.uniform(refresh_window_duration) < current_time - refresh_window_start
   end
 
+  defp current_time, do: Timex.to_unix(Timex.now())
   defp min_token_duration, do: Application.fetch_env!(:auth0_ex, :client)[:min_token_duration]
   defp max_token_duration, do: Application.fetch_env!(:auth0_ex, :client)[:max_token_duration]
 end

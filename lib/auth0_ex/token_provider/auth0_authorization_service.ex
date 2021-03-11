@@ -29,12 +29,11 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationService do
   end
 
   defp body(credentials, audience) do
-    %{
+    Jason.encode!(%{
       grant_type: "client_credentials",
       client_id: credentials.client_id,
       client_secret: credentials.client_secret,
       audience: audience
-    }
-    |> Jason.encode!()
+    })
   end
 end

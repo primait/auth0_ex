@@ -12,7 +12,8 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
     {:ok, token} = Auth0Ex.TokenProvider.Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     conn =
-      conn(:get, "/")
+      :get
+      |> conn("/")
       |> put_req_header("authorization", "Bearer " <> token.jwt)
       |> VerifyAndValidateToken.call(@opts)
 
@@ -20,7 +21,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
   end
 
   test "returns 401 when no authorization header is set" do
-    conn = conn(:get, "/") |> VerifyAndValidateToken.call(@opts)
+    conn = :get |> conn("/") |> VerifyAndValidateToken.call(@opts)
 
     assert conn.status == 401
   end

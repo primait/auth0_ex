@@ -34,7 +34,8 @@ defmodule Auth0Ex.MixProject do
       {:joken_jwks, "~> 1.1.0"},
       {:plug, "~> 1.11"},
       {:redix, "~> 1.0.0"},
-      {:telepoison, "~> 0.1.1"}
+      {:telepoison, "~> 0.1.1"},
+      {:timex, "~> 3.6"}
     ] ++ dev_deps()
   end
 
@@ -42,9 +43,8 @@ defmodule Auth0Ex.MixProject do
     [
       {:bypass, "~> 2.1.0", only: :test},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
-      {:dialyxir, "1.0.0", only: [:dev], runtime: false},
-      {:hammox, "~> 0.4", only: :test},
-      {:timex, "~> 3.6", only: :test}
+      {:dialyxir, "1.0.0", only: [:dev, :test], runtime: false},
+      {:hammox, "~> 0.4", only: :test}
     ]
   end
 
