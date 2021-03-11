@@ -7,5 +7,5 @@ defmodule Auth0Ex.JwksStrategy do
 
   defp jwks_url, do: base_url() <> "/.well-known/jwks.json"
 
-  def base_url, do: Application.fetch_env!(:auth0_ex, :auth0_base_url)
+  defp base_url, do: Application.fetch_env!(:auth0_ex, :auth0_base_url)
 end

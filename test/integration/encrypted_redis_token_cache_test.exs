@@ -44,6 +44,6 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
   end
 
   defp sample_token, do: %TokenInfo{jwt: "my-token", issued_at: one_hour_ago(), expires_at: in_one_hour()}
-  defp token_key(audience), do: "auth0ex_tokens:#{@namespace}:#{@test_audience}"
+  defp token_key(audience), do: "auth0ex_tokens:#{@namespace}:#{audience}"
   defp in_one_second, do: Timex.now() |> Timex.shift(seconds: 1) |> Timex.to_unix()
 end

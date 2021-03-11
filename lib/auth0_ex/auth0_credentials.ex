@@ -3,6 +3,7 @@ defmodule Auth0Ex.Auth0Credentials do
   @enforce_keys [:base_url, :client_id, :client_secret]
   defstruct [:base_url, :client_id, :client_secret]
 
+  @spec from_env :: __MODULE__.t()
   def from_env do
     %__MODULE__{
       base_url: Application.fetch_env!(:auth0_ex, :auth0_base_url),

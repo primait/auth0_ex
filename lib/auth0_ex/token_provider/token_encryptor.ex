@@ -1,6 +1,7 @@
 defmodule Auth0Ex.TokenProvider.TokenEncryptor do
   @aad "AES256GCM"
 
+  @spec encrypt(String.t()) :: String.t()
   def encrypt(plaintext) do
     iv = :crypto.strong_rand_bytes(16)
     {ciphertext, tag} = :crypto.crypto_one_time_aead(:aes_256_gcm, token_encryption_key(), iv, plaintext, @aad, true)
@@ -9,6 +10,7 @@ defmodule Auth0Ex.TokenProvider.TokenEncryptor do
     Base.encode64(encrypted)
   end
 
+  @spec decrypt(String.t()) :: String.t()
   def decrypt(encrypted) do
     <<iv::binary-16, tag::binary-16, ciphertext::binary>> = Base.decode64!(encrypted)
 

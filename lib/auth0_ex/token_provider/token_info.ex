@@ -5,6 +5,7 @@ defmodule Auth0Ex.TokenProvider.TokenInfo do
 
   @type t() :: %__MODULE__{jwt: String.t(), issued_at: non_neg_integer(), expires_at: non_neg_integer()}
 
+  @spec from_jwt(String.t()) :: __MODULE__.t()
   def from_jwt(jwt) do
     {:ok, %{"iat" => issued_at, "exp" => expires_at}} = Joken.peek_claims(jwt)
 
