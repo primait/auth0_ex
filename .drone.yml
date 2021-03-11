@@ -144,7 +144,7 @@ steps:
   depends_on:
   - elixir-compile
   - elixir-format
-  - elixir-test
+  # - elixir-test
   - elixir-credo
   - elixir-dialyzer
   - elixir-dep-check
@@ -200,6 +200,6 @@ depends_on:
 
 ---
 kind: signature
-hmac: 2718e280a62c3f8ec36f33f0c7eac67be4cb096df270b2ac958308ae060647ad
+hmac: 9542f01f63f43fa3966c102eecbf712e2018e43f94d54ff91a5b2190b7182c21
 
 ...
