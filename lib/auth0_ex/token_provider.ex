@@ -1,4 +1,12 @@
 defmodule Auth0Ex.TokenProvider do
+  @moduledoc """
+  GenServer that handles the storage and refresh of tokens.
+
+  Every time a token for a new audience is requested, it retrieves it either from a cache (when possible)
+  or from an authorization provider.
+  Then, it runs periodic checks to ensure that all tokens are still valid, and it refreshes them when necessary.
+  """
+
   use GenServer
 
   alias Auth0Ex.TokenProvider.TokenInfo

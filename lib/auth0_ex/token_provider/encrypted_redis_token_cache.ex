@@ -1,4 +1,10 @@
 defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
+  @moduledoc """
+  Implementation of `Auth0Ex.TokenProvider.TokenCache` that persists encrypted copies of tokens on Redis.
+
+  Encryption-related functionalities are implemented in `Auth0Ex.TokenProvider.TokenEncryptor`.
+  """
+
   alias Auth0Ex.TokenProvider.{TokenCache, TokenEncryptor, TokenInfo}
 
   @behaviour TokenCache

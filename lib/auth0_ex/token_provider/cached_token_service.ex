@@ -1,4 +1,13 @@
 defmodule Auth0Ex.TokenProvider.CachedTokenService do
+  @moduledoc """
+  Implementation of `Auth0Ex.TokenProvider.TokenService` that caches tokens on
+  an external cache in order to limit the requests made to Auth0 by reusing tokens.
+
+  The external cache can be shared among different instances of the same service: in that
+  case, when one of the instances refreshes the token and updates the shared cache, the other
+  instances will retrieve the new token from the new cache and will not have to generate a new
+  one from the authorization provider.
+  """
   alias Auth0Ex.TokenProvider.TokenService
 
   @behaviour TokenService

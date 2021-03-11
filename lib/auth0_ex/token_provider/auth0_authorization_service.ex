@@ -1,5 +1,8 @@
 defmodule Auth0Ex.TokenProvider.Auth0AuthorizationService do
-  @moduledoc false
+  @moduledoc """
+  Implementation of `Auth0Ex.TokenProvider.AuthorizationService` for Auth0.
+  """
+
   @behaviour Auth0Ex.TokenProvider.AuthorizationService
 
   require Logger

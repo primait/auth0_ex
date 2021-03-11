@@ -1,4 +1,12 @@
 defmodule Auth0Ex.TokenProvider.TokenEncryptor do
+  @moduledoc """
+  Module to perform authenticated symmetric encryption of binaries.
+
+  The key used for encryption is set from config:
+
+    config :auth0_ex, :cache,
+      encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
+  """
   @aad "AES256GCM"
 
   @spec encrypt(String.t()) :: String.t()

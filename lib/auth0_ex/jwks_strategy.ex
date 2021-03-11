@@ -1,4 +1,8 @@
 defmodule Auth0Ex.JwksStrategy do
+  @moduledoc """
+  Strategy used by `Joken` to obtain JWKS from Auth0.
+  """
+
   use JokenJwks.DefaultStrategyTemplate
 
   def init_opts(opts) do

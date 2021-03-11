@@ -1,4 +1,6 @@
 defmodule Auth0Ex.Application do
+  @moduledoc false
+
   use Application
 
   alias Auth0Ex.{JwksStrategy, TokenProvider}

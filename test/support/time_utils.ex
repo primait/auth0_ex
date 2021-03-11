@@ -1,4 +1,6 @@
 defmodule Auth0Ex.TestSupport.TimeUtils do
+  @moduledoc false
+
   def one_hour_ago, do: shifted_by_hours(-1)
   def two_hours_ago, do: shifted_by_hours(-2)
   def now, do: shifted_by_hours(0)

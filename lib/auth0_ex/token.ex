@@ -1,4 +1,8 @@
 defmodule Auth0Ex.Token do
+  @moduledoc """
+  Module to verify the integrity and validate the claims of tokens.
+  """
+
   use Joken.Config
 
   add_hook(JokenJwks, strategy: Auth0Ex.JwksStrategy)

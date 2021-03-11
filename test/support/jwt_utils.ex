@@ -1,4 +1,6 @@
 defmodule Auth0Ex.TestSupport.JwtUtils do
+  @moduledoc false
+
   @test_signer Joken.Signer.create("HS256", "secret")
 
   @days 60 * 60 * 24

@@ -1,4 +1,6 @@
 defmodule Auth0Ex.Auth0Credentials do
+  @moduledoc false
+
   @type t() :: %__MODULE__{base_url: String.t(), client_id: String.t(), client_secret: String.t()}
   @enforce_keys [:base_url, :client_id, :client_secret]
   defstruct [:base_url, :client_id, :client_secret]

@@ -1,4 +1,8 @@
 defmodule Auth0Ex.TokenProvider.TokenService do
+  @moduledoc """
+  Behaviour to deal with retrieval and refresh of tokens
+  """
+
   alias Auth0Ex.Auth0Credentials
   alias Auth0Ex.TokenProvider.TokenInfo
 
