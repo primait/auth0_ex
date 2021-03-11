@@ -41,6 +41,7 @@ defmodule Auth0Ex.MixProject do
   defp dev_deps do
     [
       {:bypass, "~> 2.1.0", only: :test},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "1.0.0", only: [:dev], runtime: false},
       {:hammox, "~> 0.4", only: :test},
       {:timex, "~> 3.6", only: :test}

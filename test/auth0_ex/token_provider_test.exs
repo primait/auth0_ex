@@ -9,8 +9,6 @@ defmodule Auth0Ex.TokenProviderTest do
   @sample_token %TokenInfo{jwt: "SAMPLE-TOKEN", issued_at: 123, expires_at: 234}
   @another_sample_token %TokenInfo{jwt: "ANOTHER-SAMPLE-TOKEN", issued_at: 123, expires_at: 234}
 
-  @token_check_interval Application.fetch_env!(:auth0_ex, :client)[:token_check_interval]
-
   setup :set_mox_global
   setup :verify_on_exit!
 
@@ -62,5 +60,7 @@ defmodule Auth0Ex.TokenProviderTest do
     TokenProvider.token_for(pid, audience)
   end
 
-  defp wait_for_first_check_to_complete, do: :timer.sleep(@token_check_interval + 500)
+  defp wait_for_first_check_to_complete, do: :timer.sleep(token_check_interval() + 500)
+
+  defp token_check_interval, do: Application.fetch_env!(:auth0_ex, :client)[:token_check_interval]
 end

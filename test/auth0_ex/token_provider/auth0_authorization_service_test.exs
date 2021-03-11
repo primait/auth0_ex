@@ -48,6 +48,6 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
     {:error, :request_error} = Auth0AuthorizationService.retrieve_token(credentials, "audience")
   end
 
-  defp sample_token, do: Auth0Ex.TestSupport.JwtUtils.jwt_that_expires_in(86400)
+  defp sample_token, do: Auth0Ex.TestSupport.JwtUtils.jwt_that_expires_in(86_400)
   defp valid_auth0_response, do: ~s<{"access_token":"#{sample_token()}","expires_in":86400,"token_type":"Bearer"}>
 end
