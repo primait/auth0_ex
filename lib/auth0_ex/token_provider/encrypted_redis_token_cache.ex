@@ -14,7 +14,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
   end
 
   defp do_get_token_for(audience) do
-    case Redix.command(:redix, ["GET", key_for(audience)]) do
+    case Redix.command(Auth0Ex.Redix, ["GET", key_for(audience)]) do
       {:ok, nil} -> {:ok, nil}
       {:ok, cached_value} -> parse_and_decrypt(cached_value)
       {:error, reason} -> {:error, reason}
@@ -31,7 +31,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp key_for(audience), do: "auth0ex_tokens:#{namespace()}:#{audience}"
 
   defp save(value, key, expires_at) do
-    case Redix.command(:redix, ["SET", key, value, "EXAT", expires_at]) do
+    case Redix.command(Auth0Ex.Redix, ["SET", key, value, "EXAT", expires_at]) do
       {:ok, _} -> :ok
       {:error, description} -> {:error, description}
     end

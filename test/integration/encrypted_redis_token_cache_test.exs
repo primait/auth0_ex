@@ -9,8 +9,8 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
 
   setup do
     redis_connection_uri = Application.fetch_env!(:auth0_ex, :cache)[:redis_connection_uri]
-    Redix.start_link(redis_connection_uri, name: :redix)
-    Redix.command!(:redix, ["DEL", token_key(@test_audience)])
+    Redix.start_link(redis_connection_uri, name: Auth0Ex.Redix)
+    Redix.command!(Auth0Ex.Redix, ["DEL", token_key(@test_audience)])
 
     :ok
   end
@@ -28,7 +28,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
   test "encrypts tokens" do
     :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, sample_token())
 
-    persisted_token = Redix.command!(:redix, ["GET", token_key(@test_audience)])
+    persisted_token = Redix.command!(Auth0Ex.Redix, ["GET", token_key(@test_audience)])
 
     assert is_binary(persisted_token)
     assert {:error, _} = Jason.decode(persisted_token)
