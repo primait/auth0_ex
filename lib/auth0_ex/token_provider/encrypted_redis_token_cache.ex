@@ -25,13 +25,13 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
     token
     |> to_json()
     |> TokenEncryptor.encrypt()
-    |> save(key_for(audience))
+    |> save(key_for(audience), token.expires_at)
   end
 
   defp key_for(audience), do: "auth0ex_tokens:#{namespace()}:#{audience}"
 
-  defp save(value, key) do
-    case Redix.command(:redix, ["SET", key, value]) do
+  defp save(value, key, expires_at) do
+    case Redix.command(:redix, ["SET", key, value, "EXAT", expires_at]) do
       {:ok, _} -> :ok
       {:error, description} -> {:error, description}
     end
