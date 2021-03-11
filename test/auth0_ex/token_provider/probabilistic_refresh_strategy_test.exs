@@ -1,17 +1,19 @@
 defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategyTest do
   use ExUnit.Case, async: true
 
-  alias Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy
-  alias Auth0Ex.TestSupport.JwtUtils
+  import Auth0Ex.TestSupport.TimeUtils
+  alias Auth0Ex.TokenProvider.{ProbabilisticRefreshStrategy, TokenInfo}
 
   @hours 60 * 60
 
   test "should always refresh expired tokens" do
-    assert true == ProbabilisticRefreshStrategy.should_refresh?(JwtUtils.expired_jwt())
+    expired_token = %TokenInfo{jwt: "any", issued_at: two_hours_ago(), expires_at: one_hour_ago()}
+
+    assert true == ProbabilisticRefreshStrategy.should_refresh?(expired_token)
   end
 
   test "should never refresh new tokens" do
-    new_token = test_jwt(current_time(), current_time() + 12 * @hours)
+    new_token = %TokenInfo{jwt: "any", issued_at: now(), expires_at: in_two_hours()}
 
     assert false == ProbabilisticRefreshStrategy.should_refresh?(new_token)
   end
@@ -19,13 +21,10 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategyTest do
   test "returns either true or false when approaching expiration time" do
     :rand.seed(:exsplus, 0)
 
-    old_jwt = test_jwt(current_time() - 23 * @hours, current_time() + 1 * @hours)
-    recent_jwt = test_jwt(current_time() - 1 * @hours, current_time() + 23 * @hours)
+    old_jwt = %TokenInfo{jwt: "any", issued_at: now() - 23 * @hours, expires_at: in_one_hour()}
+    recent_jwt = %TokenInfo{jwt: "any", issued_at: one_hour_ago(), expires_at: now() + 23 * @hours}
 
     assert true == ProbabilisticRefreshStrategy.should_refresh?(old_jwt)
     assert false == ProbabilisticRefreshStrategy.should_refresh?(recent_jwt)
   end
-
-  defp current_time, do: Joken.current_time()
-  defp test_jwt(issued_at, expires_at), do: JwtUtils.jwt_with_claims(%{"iat" => issued_at, "exp" => expires_at})
 end

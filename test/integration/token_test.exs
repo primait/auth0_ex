@@ -9,7 +9,7 @@ defmodule Integration.TokenTest do
     credentials = Auth0Ex.Auth0Credentials.from_env()
     {:ok, auth0_token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
-    assert {:ok, _} = Token.verify_and_validate_token(auth0_token, audience())
+    assert {:ok, _} = Token.verify_and_validate_token(auth0_token.jwt, audience())
   end
 
   test "does not verify other tokens" do

@@ -5,21 +5,14 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
   @impl RefreshStrategy
   def should_refresh?(token) do
-    {issued_at, expires_at} = peek_token_claims(token)
-    token_lifespan = expires_at - issued_at
+    token_lifespan = token.expires_at - token.issued_at
 
-    refresh_window_start = issued_at + trunc(token_lifespan * min_token_duration())
-    refresh_window_end = issued_at + trunc(token_lifespan * max_token_duration())
+    refresh_window_start = token.issued_at + trunc(token_lifespan * min_token_duration())
+    refresh_window_end = token.issued_at + trunc(token_lifespan * max_token_duration())
 
     current_time = Joken.current_time()
 
     probabilistic_choice(current_time, refresh_window_start, refresh_window_end)
-  end
-
-  defp peek_token_claims(token) do
-    {:ok, %{"iat" => issued_at, "exp" => expires_at}} = Joken.peek_claims(token)
-
-    {issued_at, expires_at}
   end
 
   defp probabilistic_choice(current_time, refresh_window_start, refresh_window_end) do

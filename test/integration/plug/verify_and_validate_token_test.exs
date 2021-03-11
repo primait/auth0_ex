@@ -13,7 +13,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
     conn =
       conn(:get, "/")
-      |> put_req_header("authorization", "Bearer " <> token)
+      |> put_req_header("authorization", "Bearer " <> token.jwt)
       |> VerifyAndValidateToken.call(@opts)
 
     refute conn.status == 401
@@ -62,7 +62,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
     conn =
       conn(:get, "/")
-      |> put_req_header("authorization", "Bearer " <> token)
+      |> put_req_header("authorization", "Bearer " <> token.jwt)
       |> VerifyAndValidateToken.call(opts)
 
     assert conn.status == 401
@@ -76,7 +76,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
 
     conn =
       conn(:get, "/")
-      |> put_req_header("authorization", "Bearer " <> token)
+      |> put_req_header("authorization", "Bearer " <> token.jwt)
       |> VerifyAndValidateToken.call(opts)
 
     assert conn.status == 401

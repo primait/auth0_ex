@@ -3,6 +3,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationService do
   @behaviour Auth0Ex.TokenProvider.AuthorizationService
 
   require Logger
+  alias Auth0Ex.TokenProvider.TokenInfo
 
   @auth0_token_api_path "/oauth/token"
 
@@ -18,7 +19,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationService do
 
   defp parse_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
     case Jason.decode(body) do
-      {:ok, %{"token_type" => "Bearer", "access_token" => access_token}} -> {:ok, access_token}
+      {:ok, %{"token_type" => "Bearer", "access_token" => access_token}} -> {:ok, TokenInfo.from_jwt(access_token)}
       _ -> {:error, :invalid_auth0_response}
     end
   end

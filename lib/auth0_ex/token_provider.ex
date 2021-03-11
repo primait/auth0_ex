@@ -1,6 +1,8 @@
 defmodule Auth0Ex.TokenProvider do
   use GenServer
 
+  alias Auth0Ex.TokenProvider.TokenInfo
+
   @enforce_keys [:credentials]
   defstruct [:credentials, tokens: %{}]
 
@@ -35,7 +37,7 @@ defmodule Auth0Ex.TokenProvider do
           {:error, reason} -> {:reply, {:error, reason}, state}
         end
 
-      token ->
+      %TokenInfo{jwt: token} ->
         {:reply, {:ok, token}, state}
     end
   end

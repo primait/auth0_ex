@@ -1,5 +1,5 @@
 defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
-  alias Auth0Ex.TokenProvider.{TokenEncryptor, TokenCache}
+  alias Auth0Ex.TokenProvider.{TokenCache, TokenEncryptor, TokenInfo}
 
   @behaviour TokenCache
 
@@ -16,13 +16,14 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp do_get_token_for(audience) do
     case Redix.command(:redix, ["GET", key_for(audience)]) do
       {:ok, nil} -> {:ok, nil}
-      {:ok, encrypted_token} -> {:ok, TokenEncryptor.decrypt(encrypted_token)}
+      {:ok, cached_value} -> parse_and_decrypt(cached_value)
       {:error, reason} -> {:error, reason}
     end
   end
 
   defp do_set_token_for(audience, token) do
     token
+    |> to_json()
     |> TokenEncryptor.encrypt()
     |> save(key_for(audience))
   end
@@ -35,6 +36,21 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
       {:error, description} -> {:error, description}
     end
   end
+
+  defp parse_and_decrypt(cached_value) do
+    with decrypted <- TokenEncryptor.decrypt(cached_value),
+         {:ok, token_attributes} <- Jason.decode(decrypted),
+         {:ok, token} <- build_token(token_attributes),
+         do: {:ok, token}
+  end
+
+  defp to_json(token), do: Jason.encode!(token)
+
+  defp build_token(%{"jwt" => jwt, "issued_at" => issued_at, "expires_at" => expires_at}) do
+    {:ok, %TokenInfo{jwt: jwt, issued_at: issued_at, expires_at: expires_at}}
+  end
+
+  defp build_token(_), do: {:error, :malformed_cached_data}
 
   defp enabled?, do: Application.fetch_env!(:auth0_ex, :cache)[:enabled]
   defp namespace, do: Application.fetch_env!(:auth0_ex, :cache)[:namespace]

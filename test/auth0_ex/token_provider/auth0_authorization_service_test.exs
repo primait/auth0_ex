@@ -4,7 +4,6 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
   alias Auth0Ex.Auth0Credentials
   alias Auth0Ex.TokenProvider.Auth0AuthorizationService
 
-  @valid_auth0_response ~s<{"access_token":"my-token","expires_in":86400,"token_type":"Bearer"}>
   @invalid_auth0_response ~s<{"error": "I am an invalid response from auth0"}>
 
   @sample_credentials %Auth0Credentials{
@@ -20,7 +19,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
 
   test "returns JWT obtained from Auth0", %{bypass: bypass} do
     Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
-      Plug.Conn.resp(conn, 200, @valid_auth0_response)
+      Plug.Conn.resp(conn, 200, valid_auth0_response())
     end)
 
     credentials = %{@sample_credentials | base_url: "http://localhost:#{bypass.port}"}
@@ -48,4 +47,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
 
     {:error, :request_error} = Auth0AuthorizationService.retrieve_token(credentials, "audience")
   end
+
+  defp sample_token, do: Auth0Ex.TestSupport.JwtUtils.jwt_that_expires_in(86400)
+  defp valid_auth0_response, do: ~s<{"access_token":"#{sample_token()}","expires_in":86400,"token_type":"Bearer"}>
 end

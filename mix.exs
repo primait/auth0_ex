@@ -35,7 +35,8 @@ defmodule Auth0Ex.MixProject do
   defp dev_deps do
     [
       {:bypass, "~> 2.1.0", only: :test},
-      {:hammox, "~> 0.4", only: :test}
+      {:hammox, "~> 0.4", only: :test},
+      {:timex, "~> 3.6", only: :test}
     ]
   end
 
