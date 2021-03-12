@@ -37,7 +37,9 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp key_for(audience), do: "auth0ex_tokens:#{namespace()}:#{audience}"
 
   defp save(value, key, expires_at) do
-    case Redix.command(Auth0Ex.Redix, ["SET", key, value, "EXAT", expires_at]) do
+    expires_in = expires_at - current_time()
+
+    case Redix.command(Auth0Ex.Redix, ["SET", key, value, "EX", expires_in]) do
       {:ok, _} -> :ok
       {:error, description} -> {:error, description}
     end
@@ -60,4 +62,5 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp enabled?, do: Application.fetch_env!(:auth0_ex, :cache)[:enabled]
   defp namespace, do: Application.fetch_env!(:auth0_ex, :cache)[:namespace]
+  defp current_time, do: Timex.to_unix(Timex.now())
 end
