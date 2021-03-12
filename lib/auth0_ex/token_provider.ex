@@ -87,8 +87,9 @@ defmodule Auth0Ex.TokenProvider do
   defp initialize_token_for(audience, state) do
     Logger.info("Initializing token", audience: audience)
 
-    :timer.send_interval(@token_check_interval, {:periodic_check_for, audience})
-    @token_service.retrieve_token(state.credentials, audience)
+    with {:ok, token} <- @token_service.retrieve_token(state.credentials, audience),
+         {:ok, _} <- :timer.send_interval(@token_check_interval, {:periodic_check_for, audience}),
+         do: {:ok, token}
   end
 
   defp set_token(state, audience, token), do: put_in(state.tokens[audience], token)
