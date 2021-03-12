@@ -12,6 +12,7 @@ defmodule Auth0Ex.TokenProvider do
   require Logger
   alias Auth0Ex.TokenProvider.{CachedTokenService, ProbabilisticRefreshStrategy, TokenInfo}
 
+  @type t() :: %__MODULE__{credentials: Auth0Ex.Auth0Credentials, tokens: %{required(String.t()) => TokenInfo.t()}}
   @enforce_keys [:credentials]
   defstruct [:credentials, tokens: %{}]
 
