@@ -1,10 +1,6 @@
 use Mix.Config
 
 config :auth0_ex,
-  authorization_service: Auth0Ex.TokenProvider.Auth0AuthorizationService,
-  refresh_strategy: Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy,
-  token_cache: Auth0Ex.TokenProvider.EncryptedRedisTokenCache,
-  token_service: Auth0Ex.TokenProvider.CachedTokenService,
   auth0_base_url: "https://dallagi.eu.auth0.com"
 
 config :auth0_ex, :cache,

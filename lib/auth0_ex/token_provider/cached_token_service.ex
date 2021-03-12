@@ -8,12 +8,12 @@ defmodule Auth0Ex.TokenProvider.CachedTokenService do
   instances will retrieve the new token from the new cache and will not have to generate a new
   one from the authorization provider.
   """
-  alias Auth0Ex.TokenProvider.TokenService
+  alias Auth0Ex.TokenProvider.{Auth0AuthorizationService, EncryptedRedisTokenCache, TokenService}
 
   @behaviour TokenService
 
-  @authorization_service Application.compile_env!(:auth0_ex, :authorization_service)
-  @token_cache Application.compile_env!(:auth0_ex, :token_cache)
+  @authorization_service Application.compile_env(:auth0_ex, :authorization_service, Auth0AuthorizationService)
+  @token_cache Application.compile_env(:auth0_ex, :token_cache, EncryptedRedisTokenCache)
 
   @impl TokenService
   def retrieve_token(credentials, audience) do
