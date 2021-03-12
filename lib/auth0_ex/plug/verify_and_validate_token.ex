@@ -46,10 +46,11 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
       {:ok, _} ->
         true
 
-      {:error, _} ->
+      {:error, error} ->
         Logger.warn("Received invalid token",
           audience: audience,
-          required_permissions: required_permissions
+          required_permissions: required_permissions,
+          error: inspect(error)
         )
 
         false
