@@ -15,6 +15,8 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationService do
     request_body = body(credentials, audience)
     url = credentials.base_url <> @auth0_token_api_path
 
+    Logger.info("Requesting token to Auth0", audience: audience, url: url)
+
     url
     |> Telepoison.post(request_body, "content-type": "application/json")
     |> parse_response()
@@ -22,13 +24,23 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationService do
 
   defp parse_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
     case Jason.decode(body) do
-      {:ok, %{"token_type" => "Bearer", "access_token" => access_token}} -> {:ok, TokenInfo.from_jwt(access_token)}
-      _ -> {:error, :invalid_auth0_response}
+      {:ok, %{"token_type" => "Bearer", "access_token" => access_token}} ->
+        {:ok, TokenInfo.from_jwt(access_token)}
+
+      _ ->
+        Logger.warn("Invalid response from Auth0")
+        {:error, :invalid_auth0_response}
     end
   end
 
-  defp parse_response(_invalid_response) do
+  defp parse_response({:ok, %HTTPoison.Response{status_code: status_code}}) do
+    Logger.warn("Request to Auth0 failed", status_code: status_code)
     {:error, :request_error}
+  end
+
+  defp parse_response({:error, message}) do
+    Logger.warn("Error sending request to Auth0")
+    {:error, message}
   end
 
   defp body(credentials, audience) do

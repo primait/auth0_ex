@@ -21,4 +21,6 @@ config :auth0_ex, :server,
   issuer: "https://tenant.eu.auth0.com/",
   first_jwks_fetch_sync: true
 
+config :logger, :console, metadata: :all
+
 import_config "#{Mix.env()}.exs"

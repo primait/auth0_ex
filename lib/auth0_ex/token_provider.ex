@@ -9,6 +9,7 @@ defmodule Auth0Ex.TokenProvider do
 
   use GenServer
 
+  require Logger
   alias Auth0Ex.TokenProvider.{CachedTokenService, ProbabilisticRefreshStrategy, TokenInfo}
 
   @enforce_keys [:credentials]
@@ -42,8 +43,12 @@ defmodule Auth0Ex.TokenProvider do
     case state.tokens[audience] do
       nil ->
         case initialize_token_for(audience, state) do
-          {:ok, token} -> {:reply, {:ok, token}, set_token(state, audience, token)}
-          {:error, reason} -> {:reply, {:error, reason}, state}
+          {:ok, token} ->
+            {:reply, {:ok, token}, set_token(state, audience, token)}
+
+          {:error, reason} ->
+            Logger.error("Error initializing token.", audience: audience)
+            {:reply, {:error, reason}, state}
         end
 
       %TokenInfo{jwt: token} ->
@@ -53,9 +58,16 @@ defmodule Auth0Ex.TokenProvider do
 
   @impl true
   def handle_info({:periodic_check_for, audience}, state) do
+    Logger.debug("Running periodic check...", audience: audience)
     token = state.tokens[audience]
 
     if @refresh_strategy.should_refresh?(token) do
+      Logger.info("Decided to refresh token.",
+        audience: audience,
+        current_token_issued_at: token.issued_at,
+        current_token_expires_at: token.expires_at
+      )
+
       self_pid = self()
 
       spawn(fn ->
@@ -73,8 +85,9 @@ defmodule Auth0Ex.TokenProvider do
   end
 
   defp initialize_token_for(audience, state) do
-    :timer.send_interval(@token_check_interval, {:periodic_check_for, audience})
+    Logger.info("Initializing token", audience: audience)
 
+    :timer.send_interval(@token_check_interval, {:periodic_check_for, audience})
     @token_service.retrieve_token(state.credentials, audience)
   end
 

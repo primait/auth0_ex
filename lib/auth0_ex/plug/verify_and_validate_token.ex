@@ -20,6 +20,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
   """
 
   import Plug.Conn
+  require Logger
 
   def init(options), do: options
 
@@ -42,8 +43,16 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
 
   defp valid_token?(token, audience, required_permissions) do
     case Auth0Ex.verify_and_validate(token, audience, required_permissions) do
-      {:ok, _} -> true
-      {:error, _} -> false
+      {:ok, _} ->
+        true
+
+      {:error, _} ->
+        Logger.warn("Received invalid token",
+          audience: audience,
+          required_permissions: required_permissions
+        )
+
+        false
     end
   end
 

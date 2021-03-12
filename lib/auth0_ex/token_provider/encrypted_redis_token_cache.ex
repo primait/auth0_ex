@@ -5,6 +5,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
   Encryption-related functionalities are implemented in `Auth0Ex.TokenProvider.TokenEncryptor`.
   """
 
+  require Logger
   alias Auth0Ex.TokenProvider.{TokenCache, TokenEncryptor, TokenInfo}
 
   @behaviour TokenCache
@@ -20,10 +21,19 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
   end
 
   defp do_get_token_for(audience) do
-    case Redix.command(Auth0Ex.Redix, ["GET", key_for(audience)]) do
-      {:ok, nil} -> {:ok, nil}
-      {:ok, cached_value} -> parse_and_decrypt(cached_value)
-      {:error, reason} -> {:error, reason}
+    key = key_for(audience)
+
+    case Redix.command(Auth0Ex.Redix, ["GET", key]) do
+      {:ok, nil} ->
+        Logger.info("Token not found on redis.", audience: audience, key: key)
+        {:ok, nil}
+
+      {:ok, cached_value} ->
+        parse_and_decrypt(cached_value)
+
+      {:error, message} ->
+        Logger.warn("Error retrieving token from redis.", audience: audience, key: key)
+        {:error, message}
     end
   end
 
@@ -39,15 +49,25 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
     expires_in = expires_at - current_time()
 
     case Redix.command(Auth0Ex.Redix, ["SET", audience, token, "EX", expires_in]) do
-      {:ok, _} -> :ok
-      {:error, description} -> {:error, description}
+      {:ok, _} ->
+        Logger.info("Update token on redis.", audience: audience)
+        :ok
+
+      {:error, reason} ->
+        Logger.warn("Error updating token on redis.")
+        {:error, reason}
     end
   end
 
   defp parse_and_decrypt(cached_value) do
     with {:ok, decrypted} <- TokenEncryptor.decrypt(cached_value),
-         {:ok, token_attributes} <- Jason.decode(decrypted),
-         do: build_token(token_attributes)
+         {:ok, token_attributes} <- Jason.decode(decrypted) do
+      build_token(token_attributes)
+    else
+      {:error, message} ->
+        Logger.warn("Found invalid data on redis.")
+        {:error, message}
+    end
   end
 
   defp to_json(token), do: Jason.encode(token)
