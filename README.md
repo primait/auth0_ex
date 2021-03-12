@@ -83,3 +83,26 @@ plug Auth0Ex.Plug.VerifyAndValidateToken
 ```
 
 This will return `401 Forbidden` to requests without a valid bearer token.
+
+## Development
+
+The test suite can be executed as follows:
+
+```bash
+mix test
+```
+
+By default tests that integrate with Auth0 are excluded.
+To run them, configure your auth0 credentials and audience in `config/test.exs` and run:
+
+```bash
+mix test --include external
+```
+
+Always run formatter, linter and dialyzer before pushing changes:
+
+```bash
+mix format
+mix credo
+mix dialyzer
+```
