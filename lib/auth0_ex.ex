@@ -14,7 +14,7 @@ defmodule Auth0Ex do
   end
 
   @doc """
-  Verify the integrity of a tokoen, and validate its claims.
+  Verify the integrity of a token, and validate its claims.
 
   The audience to be validated can be set either from config or explicitly
   from the `audience` parameter.
