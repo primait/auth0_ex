@@ -21,7 +21,7 @@ defmodule Auth0Ex.TokenProviderTest do
   test "the first time a token for an audience is requested, the token is retrieved externally", %{pid: pid} do
     expect(TokenServiceMock, :retrieve_token, fn @sample_credentials, "target_audience" -> {:ok, @sample_token} end)
 
-    assert {:ok, @sample_token} == TokenProvider.token_for(pid, "target_audience")
+    assert {:ok, "SAMPLE-TOKEN"} == TokenProvider.token_for(pid, "target_audience")
   end
 
   test "if the first retrieval of the token fails, returns error", %{pid: pid} do

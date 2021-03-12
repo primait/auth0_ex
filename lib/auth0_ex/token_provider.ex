@@ -43,16 +43,16 @@ defmodule Auth0Ex.TokenProvider do
     case state.tokens[audience] do
       nil ->
         case initialize_token_for(audience, state) do
-          {:ok, token} ->
-            {:reply, {:ok, token}, set_token(state, audience, token)}
+          {:ok, %TokenInfo{} = token} ->
+            {:reply, {:ok, token.jwt}, set_token(state, audience, token)}
 
           {:error, reason} ->
             Logger.error("Error initializing token.", audience: audience)
             {:reply, {:error, reason}, state}
         end
 
-      %TokenInfo{jwt: token} ->
-        {:reply, {:ok, token}, state}
+      %TokenInfo{jwt: jwt} ->
+        {:reply, {:ok, jwt}, state}
     end
   end
 
