@@ -26,7 +26,7 @@ defmodule Auth0Ex.TokenProvider do
     GenServer.start_link(__MODULE__, opts[:credentials], opts)
   end
 
-  @spec token_for(GenServer.server(), String.t()) :: String.t()
+  @spec token_for(GenServer.server(), String.t()) :: {:ok, String.t()} | {:error, any()}
   def token_for(pid, target_audience) do
     GenServer.call(pid, {:token_for, target_audience})
   end

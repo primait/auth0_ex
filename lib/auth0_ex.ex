@@ -8,7 +8,7 @@ defmodule Auth0Ex do
   @doc """
   Obtain a token for the given audience.
   """
-  @spec token_for(String.t()) :: String.t()
+  @spec token_for(String.t()) :: {:ok, String.t()} | {:error, any()}
   def token_for(audience) do
     TokenProvider.token_for(TokenProvider, audience)
   end
