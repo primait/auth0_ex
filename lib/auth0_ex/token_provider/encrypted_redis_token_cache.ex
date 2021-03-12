@@ -31,9 +31,9 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
       {:ok, cached_value} ->
         parse_and_decrypt(cached_value)
 
-      {:error, message} ->
-        Logger.warn("Error retrieving token from redis.", audience: audience, key: key)
-        {:error, message}
+      {:error, reason} ->
+        Logger.warn("Error retrieving token from redis.", audience: audience, key: key, reason: reason)
+        {:error, reason}
     end
   end
 
@@ -50,11 +50,11 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
     case Redix.command(Auth0Ex.Redix, ["SET", audience, token, "EX", expires_in]) do
       {:ok, _} ->
-        Logger.info("Update token on redis.", audience: audience)
+        Logger.info("Updated token on redis.", audience: audience)
         :ok
 
       {:error, reason} ->
-        Logger.warn("Error updating token on redis.")
+        Logger.warn("Error updating token on redis.", reason: inspect(reason))
         {:error, reason}
     end
   end
@@ -65,7 +65,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
       build_token(token_attributes)
     else
       {:error, message} ->
-        Logger.warn("Found invalid data on redis.")
+        Logger.warn("Found invalid data on redis.", message: inspect(message))
         {:error, message}
     end
   end

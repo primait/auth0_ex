@@ -27,8 +27,8 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationService do
       {:ok, %{"token_type" => "Bearer", "access_token" => access_token}} ->
         {:ok, TokenInfo.from_jwt(access_token)}
 
-      _ ->
-        Logger.warn("Invalid response from Auth0")
+      response ->
+        Logger.warn("Invalid response from Auth0", response: inspect(response))
         {:error, :invalid_auth0_response}
     end
   end
@@ -39,7 +39,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationService do
   end
 
   defp parse_response({:error, message}) do
-    Logger.warn("Error sending request to Auth0")
+    Logger.warn("Error sending request to Auth0", error: inspect(message))
     {:error, message}
   end
 

@@ -47,7 +47,7 @@ defmodule Auth0Ex.TokenProvider do
             {:reply, {:ok, token.jwt}, set_token(state, audience, token)}
 
           {:error, reason} ->
-            Logger.error("Error initializing token.", audience: audience)
+            Logger.error("Error initializing token.", audience: audience, reason: inspect(reason))
             {:reply, {:error, reason}, state}
         end
 
