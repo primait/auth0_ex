@@ -28,31 +28,29 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
   end
 
   defp do_set_token_for(audience, token) do
-    token
-    |> to_json()
-    |> TokenEncryptor.encrypt()
-    |> save(key_for(audience), token.expires_at)
+    with {:ok, json_token} <- to_json(token),
+         {:ok, encrypted} <- TokenEncryptor.encrypt(json_token),
+         do: save(encrypted, key_for(audience), token.expires_at)
   end
 
   defp key_for(audience), do: "auth0ex_tokens:#{namespace()}:#{audience}"
 
-  defp save(value, key, expires_at) do
+  defp save(token, audience, expires_at) do
     expires_in = expires_at - current_time()
 
-    case Redix.command(Auth0Ex.Redix, ["SET", key, value, "EX", expires_in]) do
+    case Redix.command(Auth0Ex.Redix, ["SET", audience, token, "EX", expires_in]) do
       {:ok, _} -> :ok
       {:error, description} -> {:error, description}
     end
   end
 
   defp parse_and_decrypt(cached_value) do
-    with decrypted <- TokenEncryptor.decrypt(cached_value),
+    with {:ok, decrypted} <- TokenEncryptor.decrypt(cached_value),
          {:ok, token_attributes} <- Jason.decode(decrypted),
-         {:ok, token} <- build_token(token_attributes),
-         do: {:ok, token}
+         do: build_token(token_attributes)
   end
 
-  defp to_json(token), do: Jason.encode!(token)
+  defp to_json(token), do: Jason.encode(token)
 
   defp build_token(%{"jwt" => jwt, "issued_at" => issued_at, "expires_at" => expires_at}) do
     {:ok, %TokenInfo{jwt: jwt, issued_at: issued_at, expires_at: expires_at}}

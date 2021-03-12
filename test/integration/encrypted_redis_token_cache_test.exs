@@ -34,6 +34,13 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
     assert {:error, _} = Jason.decode(persisted_token)
   end
 
+  test "returns error when persisted tokens are invalid and could not be decrypted" do
+    # this may happen e.g., if the secret key changes
+    Redix.command!(Auth0Ex.Redix, ["SET", token_key(@test_audience), "malformed-encrypted-token"])
+
+    assert {:error, _} = EncryptedRedisTokenCache.get_token_for(@test_audience)
+  end
+
   test "tokens are deleted from cache when they expire" do
     token = %TokenInfo{sample_token() | expires_at: in_one_second()}
     :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token)
