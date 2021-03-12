@@ -17,5 +17,5 @@ defmodule Auth0Ex.Application do
   end
 
   defp redis_connection_uri, do: Application.fetch_env!(:auth0_ex, :cache)[:redis_connection_uri]
-  defp first_jwks_fetch_sync, do: Application.fetch_env!(:auth0_ex, :server)[:first_jwks_fetch_sync]
+  defp first_jwks_fetch_sync, do: Keyword.get(Application.get_env(:auth0_ex, :server, []), :first_jwks_fetch_sync, true)
 end

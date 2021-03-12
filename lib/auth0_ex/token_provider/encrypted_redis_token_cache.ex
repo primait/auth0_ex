@@ -78,7 +78,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp build_token(_), do: {:error, :malformed_cached_data}
 
-  defp enabled?, do: Application.fetch_env!(:auth0_ex, :cache)[:enabled]
+  defp enabled?, do: Keyword.get(Application.get_env(:auth0_ex, :cache, []), :enabled, true)
   defp namespace, do: Application.fetch_env!(:auth0_ex, :cache)[:namespace]
   defp current_time, do: Timex.to_unix(Timex.now())
 end

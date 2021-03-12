@@ -18,8 +18,6 @@ defmodule Auth0Ex.TokenProvider do
   @refresh_strategy Application.compile_env(:auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
   @token_service Application.compile_env(:auth0_ex, :token_service, CachedTokenService)
 
-  @token_check_interval Application.compile_env!(:auth0_ex, :client)[:token_check_interval]
-
   # Client
 
   def start_link(opts) do
@@ -88,9 +86,13 @@ defmodule Auth0Ex.TokenProvider do
     Logger.info("Initializing token", audience: audience)
 
     with {:ok, token} <- @token_service.retrieve_token(state.credentials, audience),
-         {:ok, _} <- :timer.send_interval(@token_check_interval, {:periodic_check_for, audience}),
+         {:ok, _} <- :timer.send_interval(token_check_interval(), {:periodic_check_for, audience}),
          do: {:ok, token}
   end
 
   defp set_token(state, audience, token), do: put_in(state.tokens[audience], token)
+
+  defp token_check_interval do
+    Keyword.get(Application.get_env(:auth0_ex, :client, []), :token_check_interval, :timer.minutes(1))
+  end
 end

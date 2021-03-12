@@ -4,7 +4,6 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
   import Auth0Ex.TestSupport.TimeUtils
   alias Auth0Ex.TokenProvider.{EncryptedRedisTokenCache, TokenInfo}
 
-  @namespace Application.compile_env!(:auth0_ex, :cache)[:namespace]
   @test_audience "redis-integration-test-audience"
 
   setup do
@@ -51,6 +50,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
   end
 
   defp sample_token, do: %TokenInfo{jwt: "my-token", issued_at: one_hour_ago(), expires_at: in_one_hour()}
-  defp token_key(audience), do: "auth0ex_tokens:#{@namespace}:#{audience}"
+  defp token_key(audience), do: "auth0ex_tokens:#{namespace()}:#{audience}"
   defp in_one_second, do: Timex.now() |> Timex.shift(seconds: 1) |> Timex.to_unix()
+  defp namespace, do: Application.fetch_env!(:auth0_ex, :cache)[:namespace]
 end

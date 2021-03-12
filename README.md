@@ -29,7 +29,7 @@ config :auth0_ex,
   auth0_base_url: "https://dallagi.eu.auth0.com"
 
 config :auth0_ex, :cache,
-  # Enables cache of tokens obtained from Auth0
+  # Enables cache of tokens obtained from Auth0. Defaults to true.
   enabled: true,
   redis_connection_uri: "redis://localhost:6379",
   # Namespace for tokens of this service on the shared cache. Should be unique per service (e.g., the service name)
@@ -39,12 +39,13 @@ config :auth0_ex, :cache,
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
 
 config :auth0_ex, :client,
-  # Interval (in milliseconds) at which to evaluate whether to refresh locally stored tokens.
+  # Interval (in milliseconds) at which to evaluate whether to refresh locally stored tokens. Defaults to one minute
   token_check_interval: :timer.minutes(1),
   # Start and end of refresh window for tokens, relative to their lifespans.
   # e.g. if a token is issued at timestamp 1000 and expires at timestamp 2000,
   # and min_token_duration is 0.5 and max_token duration is 0.75,
   # then the refresh will happen at a random time between timestamps 1500 and 1750.
+  # Default to 0.5 and 0.75 respectively.
   min_token_duration: 0.5,
   max_token_duration: 0.75,
   # Credentials on Auth0
@@ -52,10 +53,12 @@ config :auth0_ex, :client,
   client_secret: "gg4xxqV3304uYIQj17LUjiPNU1GaoWLltlLL1-FycjEZ7GZLFlDvLcQFqJ6v2oPH"
 
 config :auth0_ex, :server,
-  # Default audience used to verify tokens
+  # Default audience used to verify tokens. Not necessary when audience is set explicitly on usage.
   audience: "borat",
   # Issuer used to verify tokens
-  issuer: "https://dallagi.eu.auth0.com/"
+  issuer: "https://tenant.eu.auth0.com/",
+  # Whether to perform the first retrieval of JWKS synchronously. Defaults to true.
+  first_jwks_fetch_sync: true
 ```
 
 ## Usage
