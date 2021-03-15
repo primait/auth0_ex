@@ -6,28 +6,39 @@ defmodule Auth0Ex.Application do
   alias Auth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
-    children = if client_enabled?(), do: client_children(), else: []
-    children = if server_enabled?(), do: children ++ server_children(), else: children
+    children = client_children() ++ cache_children() ++ server_children()
 
     opts = [strategy: :one_for_one, name: Auth0Ex.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
-  defp client_enabled?, do: Application.get_env(:auth0_ex, :client) != nil
-  defp server_enabled?, do: Application.get_env(:auth0_ex, :server) != nil
-
   defp client_children do
-    [
-      {Redix, {redis_connection_uri(), [name: Auth0Ex.Redix]}},
-      {TokenProvider, credentials: Auth0Ex.Auth0Credentials.from_env(), name: TokenProvider}
-    ]
+    if client_configured?() do
+      [{TokenProvider, credentials: Auth0Ex.Auth0Credentials.from_env(), name: TokenProvider}]
+    else
+      []
+    end
+  end
+
+  defp cache_children do
+    if cache_enabled?() do
+      [{Redix, {redis_connection_uri(), [name: Auth0Ex.Redix]}}]
+    else
+      []
+    end
   end
 
   defp server_children do
-    [
-      {JwksStrategy, [first_fetch_sync: first_jwks_fetch_sync()]}
-    ]
+    if server_configured?() do
+      [{JwksStrategy, [first_fetch_sync: first_jwks_fetch_sync()]}]
+    else
+      []
+    end
   end
+
+  defp cache_enabled?, do: Application.get_env(:auth0_ex, :cache, enabled: false)[:enabled]
+  defp client_configured?, do: Application.get_env(:auth0_ex, :client) != nil
+  defp server_configured?, do: Application.get_env(:auth0_ex, :server) != nil
 
   defp redis_connection_uri, do: Application.fetch_env!(:auth0_ex, :cache)[:redis_connection_uri]
 
