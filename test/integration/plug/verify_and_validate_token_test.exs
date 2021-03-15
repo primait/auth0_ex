@@ -88,5 +88,16 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
     assert conn.status == 401
   end
 
+  test "can be run in dry-run mode (ie. not blocking invalid requests)" do
+    opts = VerifyAndValidateToken.init(dry_run: true)
+
+    conn =
+      conn(:get, "/")
+      |> put_req_header("authorization", "Bearer invalid-jwt")
+      |> VerifyAndValidateToken.call(opts)
+
+    refute conn.status == 401
+  end
+
   defp audience, do: Application.fetch_env!(:auth0_ex, :server)[:audience]
 end

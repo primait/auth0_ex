@@ -27,10 +27,12 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
   def call(%Plug.Conn{} = conn, opts) do
     audience = opts[:audience]
     required_permissions = opts[:required_permissions] || []
+    dry_run? = opts[:dry_run] || false
 
-    case authorized?(conn, audience, required_permissions) do
-      true -> conn
-      false -> forbidden(conn)
+    cond do
+      dry_run? -> conn
+      authorized?(conn, audience, required_permissions) -> conn
+      true -> forbidden(conn)
     end
   end
 
