@@ -29,17 +29,17 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
     required_permissions = opts[:required_permissions] || []
     dry_run? = opts[:dry_run] || false
 
-    cond do
-      dry_run? -> conn
-      authorized?(conn, audience, required_permissions) -> conn
-      true -> forbidden(conn)
-    end
+    if authorized?(conn, audience, required_permissions), do: conn, else: forbidden(conn, dry_run?)
   end
 
   defp authorized?(conn, audience, required_permissions) do
     case get_req_header(conn, "authorization") do
-      ["Bearer " <> token] -> valid_token?(token, audience, required_permissions)
-      _other -> false
+      ["Bearer " <> token] ->
+        valid_token?(token, audience, required_permissions)
+
+      _other ->
+        Logger.warn("Authorization header malformed or not found")
+        false
     end
   end
 
@@ -59,7 +59,9 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
     end
   end
 
-  defp forbidden(conn) do
+  defp forbidden(conn, true = _dry_run?), do: conn
+
+  defp forbidden(conn, false = _dry_run?) do
     conn
     |> send_resp(:unauthorized, "Forbidden.")
     |> halt()
