@@ -23,4 +23,6 @@ config :auth0_ex, :server,
 
 config :logger, :console, metadata: :all
 
+config :logger, level: :info
+
 import_config "#{Mix.env()}.exs"
