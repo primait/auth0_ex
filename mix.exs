@@ -33,7 +33,7 @@ defmodule Auth0Ex.MixProject do
       {:joken, "~> 2.3.0"},
       {:joken_jwks, "~> 1.1.0"},
       {:plug, "~> 1.10"},
-      {:redix, "~> 1.0.0"},
+      {:redix, "~> 0.9 or ~> 1.0"},
       {:telepoison, "~> 0.1.1"},
       {:timex, "~> 3.6"}
     ] ++ dev_deps()
