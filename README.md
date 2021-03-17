@@ -97,6 +97,12 @@ Tokens can be verified and validated as follows:
 {:ok, claims} = Auth0Ex.verify_and_validate("my-token")
 ```
 
+The audience and the required permissions can be explicitly specified:
+
+```elixir
+{:ok, claims} = Auth0Ex.verify_and_validate("my-token", "my-audience", ["required-permission1"])
+```
+
 For `Plug`-based applications, a plug to automate this process is available:
 
 ```elixir
@@ -104,6 +110,11 @@ plug Auth0Ex.Plug.VerifyAndValidateToken
 ```
 
 This will return `401 Forbidden` to requests without a valid bearer token.
+
+The plug supports the following options:
+* `audience: "my-audience"` to explicitly set the expected audience. When not defined it defaults to the audience configured in `:auth0_ex, :server, :audience`;
+* `required_permissions: ["p1", "p2"]` to forbid access to users who do not have all the required permissions;
+* `dry_run` to allow access to the API when the token is not valid (mostly useful for testing purposes).
 
 ## Development
 
