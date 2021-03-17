@@ -2,21 +2,20 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
   @moduledoc """
   Plug to verify and validate bearer tokens
 
-  ## Usage
+  Usage:
 
-  When no parameter is set, validates tokens for the audience set in config.
+    plug Auth0Ex.Plug.VerifyAndValidateToken, required_permissions: ["some:permission"]
 
-    plug Auth0Ex.Plug.VerifyAndValidateToken
+  ## Options
 
-  To define a custom audience for token validation:
+  The following options can be set to customize the behavior of this plug:
 
-    plug Auth0Ex.Plug.VerifyAndValidateToken, audience: "my-audience"
-
-  A set of required permissions can be set as follows:
-
-    plug Auth0Ex.Plug.VerifyAndValidateToken, requried_permissions: ["some", "permissions"]
-
-  When permissions are required, only requests from users with *all* the required permissions are processed.
+  * `audience: "my-audience"` sets the expected audience. Defaults to the audience set in `config.exs`.
+  * `required_permissions: ["p1", "p2"]` sets the sets of permissions that clients are required to have.
+    Clients who do not have **all** the required permissions are forbidden from accessing the API.
+    Defaults to `[]`, ie. no permissions required.
+  * `dry_run: true` when true allows clients to access the API even when their token is missing/invalid.
+    Mostly useful for testing purposes.
   """
 
   import Plug.Conn
