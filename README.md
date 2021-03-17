@@ -1,6 +1,8 @@
 # Auth0Ex
 
-**TODO: Add description**
+An easy to use library to authenticate machine-to-machine communications through Auth0.
+
+Supports both retrieval of JWTs and their verification and validation.
 
 ## Installation
 
@@ -21,22 +23,17 @@ be found at [https://hexdocs.pm/auth0_ex](https://hexdocs.pm/auth0_ex).
 
 ### Configuration
 
-This library supports the following configurations:
+`auth0_ex` can be configured to be used for an API consumer, an API provider or both.
+
+#### API Consumer
+
+To configure the library for use from a client (ie. a service that needs to obtain tokens to access some API),
+the following configuration is supported:
 
 ```elixir
 config :auth0_ex,
   # Base url for Auth0 API
-  auth0_base_url: "https://dallagi.eu.auth0.com"
-
-config :auth0_ex, :cache,
-  # Enables cache of tokens obtained from Auth0. Defaults to true.
-  enabled: true,
-  redis_connection_uri: "redis://localhost:6379",
-  # Namespace for tokens of this service on the shared cache. Should be unique per service (e.g., the service name)
-  namespace: "my-service",
-  # AES 256 key used to encrypt tokens on the shared cache.
-  # Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
-  encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
+  auth0_base_url: "https://tenant.eu.auth0.com"
 
 config :auth0_ex, :client,
   # Interval (in milliseconds) at which to evaluate whether to refresh locally stored tokens. Defaults to one minute
@@ -49,13 +46,34 @@ config :auth0_ex, :client,
   min_token_duration: 0.5,
   max_token_duration: 0.75,
   # Credentials on Auth0
-  client_id: "ZBmXe2UgXV1sccLW9pWyY6W0HV9CRXBV",
-  client_secret: "gg4xxqV3304uYIQj17LUjiPNU1GaoWLltlLL1-FycjEZ7GZLFlDvLcQFqJ6v2oPH"
+  client_id: "",
+  client_secret: ""
+
+config :auth0_ex, :cache,
+  # Enables cache on redis for tokens obtained from Auth0. Defaults to true.
+  enabled: true,
+  redis_connection_uri: "redis://localhost:6379",
+  # Namespace for tokens of this service on the shared cache. Should be unique per service (e.g., the service name)
+  namespace: "my-service",
+  # AES 256 key used to encrypt tokens on the shared cache.
+  # Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
+  encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
+```
+
+#### API Provider
+
+To configure the library for use from a server (ie. a service that exposes an API),
+the following configuration is supported:
+
+```elixir
+config :auth0_ex,
+  # Base url for Auth0 API
+  auth0_base_url: "https://tenant.eu.auth0.com"
 
 config :auth0_ex, :server,
   # Default audience used to verify tokens. Not necessary when audience is set explicitly on usage.
-  audience: "borat",
-  # Issuer used to verify tokens
+  audience: "audience",
+  # Issuer used to verify tokens. Can be found at https://your-tenant.eu.auth0.com/.well-known/openid-configuration
   issuer: "https://tenant.eu.auth0.com/",
   # Whether to perform the first retrieval of JWKS synchronously. Defaults to true.
   first_jwks_fetch_sync: true
