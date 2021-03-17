@@ -42,8 +42,8 @@ defmodule Auth0Ex.TokenProvider do
     case state.tokens[audience] do
       nil ->
         case initialize_token_for(audience, state) do
-          {:ok, %TokenInfo{} = token} ->
-            {:reply, {:ok, token.jwt}, set_token(state, audience, token)}
+          {:ok, %TokenInfo{jwt: jwt} = token} ->
+            {:reply, {:ok, jwt}, set_token(state, audience, token)}
 
           {:error, reason} ->
             Logger.error("Error initializing token.", audience: audience, reason: inspect(reason))
@@ -67,11 +67,11 @@ defmodule Auth0Ex.TokenProvider do
         current_token_expires_at: token.expires_at
       )
 
-      self_pid = self()
+      parent = self()
 
       spawn(fn ->
         {:ok, new_token} = @token_service.refresh_token(state.credentials, audience, token)
-        send(self_pid, {:set_token_for, audience, new_token})
+        send(parent, {:set_token_for, audience, new_token})
       end)
     end
 
