@@ -15,9 +15,10 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
   end
 
   test "persists and retrieves tokens" do
-    :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, sample_token())
+    token = sample_token()
+    :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token)
 
-    assert {:ok, sample_token()} == EncryptedRedisTokenCache.get_token_for(@test_audience)
+    assert {:ok, token} == EncryptedRedisTokenCache.get_token_for(@test_audience)
   end
 
   test "returns {:ok, nil} when token is not cached" do
