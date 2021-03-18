@@ -21,12 +21,15 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
   import Plug.Conn
   require Logger
 
+  @global_audience Application.compile_env!(:auth0_ex, :server)[:audience]
+  @global_dry_run :auth0_ex |> Application.compile_env!(:server) |> Keyword.get(:dry_run, false)
+
   def init(opts), do: opts
 
   def call(%Plug.Conn{} = conn, opts) do
-    audience = opts[:audience]
-    required_permissions = opts[:required_permissions] || []
-    dry_run? = opts[:dry_run] || false
+    audience = Keyword.get(opts, :audience, @global_audience)
+    dry_run? = Keyword.get(opts, :dry_run, @global_dry_run)
+    required_permissions = Keyword.get(opts, :required_permissions, [])
 
     if authorized?(conn, audience, required_permissions), do: conn, else: forbidden(conn, dry_run?)
   end
