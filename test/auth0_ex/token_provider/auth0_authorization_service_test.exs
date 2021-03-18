@@ -13,7 +13,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
     client_secret: "client_secret"
   }
 
-  @ŧest_audience "test"
+  @test_audience "test"
 
   setup do
     bypass = Bypass.open()
