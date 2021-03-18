@@ -24,6 +24,7 @@ defmodule Auth0Ex.TokenProviderTest do
     assert {:ok, "SAMPLE-TOKEN"} == TokenProvider.token_for(pid, "target_audience")
   end
 
+  @tag capture_log: true
   test "if the first retrieval of the token fails, returns error", %{pid: pid} do
     expect(TokenServiceMock, :retrieve_token, fn @sample_credentials, "target_audience" ->
       {:error, :error_description}

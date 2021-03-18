@@ -34,6 +34,7 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
     assert {:error, _} = Jason.decode(persisted_token)
   end
 
+  @tag capture_log: true
   test "returns error when persisted tokens are invalid and could not be decrypted" do
     # this may happen e.g., if the secret key changes
     Redix.command!(Auth0Ex.Redix, ["SET", token_key(@test_audience), "malformed-encrypted-token"])

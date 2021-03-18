@@ -30,6 +30,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
     {:ok, _token} = Auth0AuthorizationService.retrieve_token(credentials, @test_audience)
   end
 
+  @tag capture_log: true
   test "returns error :invalid_auth0_response on unexpected response from Auth0",
        %{bypass: bypass} do
     Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
@@ -41,6 +42,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
     {:error, :invalid_auth0_response} = Auth0AuthorizationService.retrieve_token(credentials, "audience")
   end
 
+  @tag capture_log: true
   test "returns error :request_error if request to Auth0 is not successful", %{bypass: bypass} do
     Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
       Plug.Conn.resp(conn, 500, "any response")

@@ -7,6 +7,8 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
   alias Auth0Ex.TestSupport.JwtUtils
   alias Auth0Ex.TokenProvider.Auth0AuthorizationService
 
+  @moduletag capture_log: true
+
   @test_audience "test"
   @opts VerifyAndValidateToken.init(audience: @test_audience)
 
