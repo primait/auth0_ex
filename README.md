@@ -76,7 +76,14 @@ config :auth0_ex, :server,
   # Issuer used to verify tokens. Can be found at https://your-tenant.eu.auth0.com/.well-known/openid-configuration
   issuer: "https://tenant.eu.auth0.com/",
   # Whether to perform the first retrieval of JWKS synchronously. Defaults to true.
-  first_jwks_fetch_sync: true
+  first_jwks_fetch_sync: true,
+  # When true, logs errors in validation of tokens, but it does not stop the request when the token is not valid.
+  # Defaults to false.
+  dry_run: false,
+  # When false, only the claims of tokens are validated, but their signature is not verified.
+  # This should NEVER be enabled on production-like systems.
+  # Defaults to true.
+  verify_signature: true
 ```
 
 ## Usage
