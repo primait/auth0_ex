@@ -23,15 +23,4 @@ defmodule Auth0Ex.TestSupport.JwtUtils do
       @test_signer
     )
   end
-
-  def expired_jwt(audience \\ "audience") do
-    three_days_ago = Joken.current_time() - 3 * @days
-    two_days_ago = Joken.current_time() - 2 * @days
-
-    Joken.generate_and_sign!(
-      %{},
-      %{"iat" => three_days_ago, "exp" => two_days_ago, "aud" => audience},
-      @test_signer
-    )
-  end
 end
