@@ -7,7 +7,8 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
   alias Auth0Ex.TestSupport.JwtUtils
   alias Auth0Ex.TokenProvider.Auth0AuthorizationService
 
-  @opts VerifyAndValidateToken.init([])
+  @test_audience "test"
+  @opts VerifyAndValidateToken.init(audience: @test_audience)
 
   @tag :external
   test "does nothing when token is valid" do
@@ -18,7 +19,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
       :get
       |> conn("/")
       |> put_req_header("authorization", "Bearer " <> token.jwt)
-      |> VerifyAndValidateToken.call(@opts)
+      |> VerifyAndValidateToken.call(VerifyAndValidateToken.init([]))
 
     refute conn.status == 401
   end
@@ -48,7 +49,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
   end
 
   test "returns 401 when bearer token is not signed by the expected issuer" do
-    locally_forged_token = JwtUtils.jwt_that_expires_in(3600)
+    locally_forged_token = JwtUtils.jwt_that_expires_in(3600, @test_audience)
 
     conn =
       conn(:get, "/")

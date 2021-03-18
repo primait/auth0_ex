@@ -13,6 +13,8 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
     client_secret: "client_secret"
   }
 
+  @ŧest_audience "test"
+
   setup do
     bypass = Bypass.open()
     {:ok, bypass: bypass}
@@ -25,7 +27,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
 
     credentials = %{@sample_credentials | base_url: "http://localhost:#{bypass.port}"}
 
-    {:ok, _token} = Auth0AuthorizationService.retrieve_token(credentials, "audience")
+    {:ok, _token} = Auth0AuthorizationService.retrieve_token(credentials, @test_audience)
   end
 
   test "returns error :invalid_auth0_response on unexpected response from Auth0",
@@ -49,6 +51,6 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
     {:error, :request_error} = Auth0AuthorizationService.retrieve_token(credentials, "audience")
   end
 
-  defp sample_token, do: JwtUtils.jwt_that_expires_in(86_400)
+  defp sample_token, do: JwtUtils.jwt_that_expires_in(86_400, @test_audience)
   defp valid_auth0_response, do: ~s<{"access_token":"#{sample_token()}","expires_in":86400,"token_type":"Bearer"}>
 end
