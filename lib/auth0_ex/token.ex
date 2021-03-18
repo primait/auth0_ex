@@ -15,10 +15,21 @@ defmodule Auth0Ex.Token do
     |> add_claim("permissions", nil, &validate_permissions/3)
   end
 
-  @spec verify_and_validate_token(String.t(), String.t(), list(String.t())) ::
+  @spec verify_and_validate_token(String.t(), String.t(), list(String.t()), boolean()) ::
           {:ok, Joken.claims()} | {:error, atom | Keyword.t()}
-  def verify_and_validate_token(token, audience, required_permissions) do
-    verify_and_validate(token, __default_signer__(), %{audience: audience, required_permissions: required_permissions})
+  def verify_and_validate_token(token, audience, required_permissions, verify_signature) do
+    context = %{audience: audience, required_permissions: required_permissions}
+
+    if verify_signature do
+      verify_and_validate(token, __default_signer__(), context)
+    else
+      validate_token(token, context)
+    end
+  end
+
+  defp validate_token(token, context) do
+    with {:ok, claims} <- Joken.peek_claims(token),
+         do: validate(claims, context)
   end
 
   defp issuer, do: Application.fetch_env!(:auth0_ex, :server)[:issuer]

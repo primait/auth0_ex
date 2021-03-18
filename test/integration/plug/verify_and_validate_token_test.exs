@@ -89,6 +89,19 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
     assert conn.status == 401
   end
 
+  test "supports disabling verification of signatures" do
+    # mostly useful for dev environments, to work with locally forged JWTs
+    forged_token = JwtUtils.jwt_that_expires_in(1_000, @test_audience)
+    opts = VerifyAndValidateToken.init(audience: @test_audience, verify_signature: false)
+
+    conn =
+      conn(:get, "/")
+      |> put_req_header("authorization", "Bearer " <> forged_token)
+      |> VerifyAndValidateToken.call(opts)
+
+    refute conn.status == 401
+  end
+
   test "can be run in dry-run mode (ie. not blocking invalid requests)" do
     opts = VerifyAndValidateToken.init(dry_run: true)
 
