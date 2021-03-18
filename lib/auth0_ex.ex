@@ -16,18 +16,13 @@ defmodule Auth0Ex do
   @doc """
   Verify the integrity of a token, and validate its claims.
 
-  The audience to be validated can be set either from config or explicitly
-  from the `audience` parameter.
-
-  Additionally, it is possible to set a list of permissions to validate.
+  It is possible to set a list of permissions to validate.
   Only tokens that include all the required permissions will pass validation.
   """
-  @spec verify_and_validate(String.t(), String.t() | nil, list(String.t())) ::
+  @spec verify_and_validate(String.t(), String.t()) :: {:ok, Joken.claims()} | {:error, atom | Keyword.t()}
+  @spec verify_and_validate(String.t(), String.t(), list(String.t())) ::
           {:ok, Joken.claims()} | {:error, atom | Keyword.t()}
-  def verify_and_validate(token, audience \\ nil, permissions \\ []) do
-    audience = audience || default_audience()
+  def verify_and_validate(token, audience, permissions \\ []) do
     Token.verify_and_validate_token(token, audience, permissions)
   end
-
-  defp default_audience, do: Application.fetch_env!(:auth0_ex, :server)[:audience]
 end
