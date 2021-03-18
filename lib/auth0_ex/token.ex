@@ -17,7 +17,7 @@ defmodule Auth0Ex.Token do
 
   @spec verify_and_validate_token(String.t(), String.t(), list(String.t())) ::
           {:ok, Joken.claims()} | {:error, atom | Keyword.t()}
-  def verify_and_validate_token(token, audience, required_permissions \\ []) do
+  def verify_and_validate_token(token, audience, required_permissions) do
     verify_and_validate(token, __default_signer__(), %{audience: audience, required_permissions: required_permissions})
   end
 
