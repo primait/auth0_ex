@@ -13,13 +13,13 @@ defmodule Auth0Ex.TestSupport.JwtUtils do
     )
   end
 
-  def jwt_that_expires_in(time_seconds) do
+  def jwt_that_expires_in(time_seconds, audience) do
     expiration = Joken.current_time() + time_seconds
     one_day_before_expiration = expiration - 1 * @days
 
     Joken.generate_and_sign!(
       %{},
-      %{"iat" => one_day_before_expiration, "exp" => expiration},
+      %{"iat" => one_day_before_expiration, "exp" => expiration, "aud" => audience},
       @test_signer
     )
   end
