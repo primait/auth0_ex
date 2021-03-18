@@ -21,7 +21,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
   import Plug.Conn
   require Logger
 
-  def init(options), do: options
+  def init(opts), do: opts
 
   def call(%Plug.Conn{} = conn, opts) do
     audience = opts[:audience]
