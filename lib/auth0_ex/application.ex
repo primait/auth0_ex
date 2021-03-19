@@ -41,11 +41,11 @@ defmodule Auth0Ex.Application do
   defp server_configured?, do: Application.get_env(:auth0_ex, :server) != nil
 
   defp signature_verification_enabled?,
-    do: :auth0_ex |> Application.get_env(:server) |> Keyword.get(:verify_signature, true)
+    do: :auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:verify_signature, true)
 
   defp redis_connection_uri, do: Application.fetch_env!(:auth0_ex, :cache)[:redis_connection_uri]
 
   defp first_jwks_fetch_sync do
-    Keyword.get(Application.get_env(:auth0_ex, :server, []), :first_jwks_fetch_sync, false)
+    :auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:first_jwks_fetch_sync, false)
   end
 end

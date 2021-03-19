@@ -94,6 +94,6 @@ defmodule Auth0Ex.TokenProvider do
   defp set_token(state, audience, token), do: put_in(state.tokens[audience], token)
 
   defp token_check_interval do
-    Keyword.get(Application.get_env(:auth0_ex, :client, []), :token_check_interval, :timer.minutes(1))
+    :auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:token_check_interval, :timer.minutes(1))
   end
 end

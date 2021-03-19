@@ -42,6 +42,6 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
   end
 
   defp current_time, do: Timex.to_unix(Timex.now())
-  defp min_token_duration, do: Keyword.get(Application.get_env(:auth0_ex, :client, []), :min_token_duration, 0.5)
-  defp max_token_duration, do: Keyword.get(Application.get_env(:auth0_ex, :client, []), :max_token_duration, 0.75)
+  defp min_token_duration, do: :auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:min_token_duration, 0.5)
+  defp max_token_duration, do: :auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:max_token_duration, 0.75)
 end
