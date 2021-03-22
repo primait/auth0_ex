@@ -24,9 +24,9 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
   import Plug.Conn
   require Logger
 
-  @global_audience Application.compile_env!(:auth0_ex, :server)[:audience]
-  @global_dry_run :auth0_ex |> Application.compile_env!(:server) |> Keyword.get(:dry_run, false)
-  @global_verify_signature :auth0_ex |> Application.compile_env!(:server) |> Keyword.get(:verify_signature, true)
+  @global_audience :auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:audience)
+  @global_dry_run :auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:dry_run, false)
+  @global_verify_signature :auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:verify_signature, true)
 
   def init(opts), do: opts
 
