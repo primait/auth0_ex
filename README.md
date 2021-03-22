@@ -12,7 +12,7 @@ by adding `auth0_ex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:auth0_ex, "~> 0.1.0"}
+    {:auth0_ex, "~> 0.1.1"}
   ]
 end
 ```
