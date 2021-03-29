@@ -10,6 +10,10 @@ defmodule Auth0Ex.TokenTest do
     assert {:ok, _} = Token.validate(valid_token_claims(), %{audience: @audience})
   end
 
+  test "a valid token can have multiple audiences" do
+    assert {:ok, _} = Token.validate(%{valid_token_claims() | "aud" => [@audience, "other"]}, %{audience: @audience})
+  end
+
   test "when permissions are required, a token is valid if its permissions are a superset of the required ones" do
     claims_with_valid_permissions =
       Map.put(valid_token_claims(), "permissions", ["1st:perm", "2nd:perm", "3rd:perm", "4th:perm"])
@@ -33,8 +37,14 @@ defmodule Auth0Ex.TokenTest do
     assert {:error, _} = Token.validate(not_yet_valid_token_claims, %{audience: @audience})
   end
 
-  test "a token is not valid if its audience is different than the configured one" do
+  test "a token is not valid if it has a single audience and it is different than the configured one" do
     claims_for_wrong_audience = %{valid_token_claims() | "aud" => "something-different-than-" <> @audience}
+
+    assert {:error, _} = Token.validate(claims_for_wrong_audience, %{audience: @audience})
+  end
+
+  test "a token is not valid if it has multiple audiences and no one matches the configured one" do
+    claims_for_wrong_audience = %{valid_token_claims() | "aud" => ["something-different-than-" <> @audience, "other"]}
 
     assert {:error, _} = Token.validate(claims_for_wrong_audience, %{audience: @audience})
   end

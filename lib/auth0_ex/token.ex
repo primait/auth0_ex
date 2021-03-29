@@ -41,8 +41,11 @@ defmodule Auth0Ex.Token do
       raise ArgumentError, "It is required to set an expected audience in order to validate tokens"
     end
 
-    token_audience == expected_audience
+    do_validate_audience(token_audience, expected_audience)
   end
+
+  defp do_validate_audience(found, expected) when is_list(found), do: expected in found
+  defp do_validate_audience(found, expected), do: found == expected
 
   defp validate_permissions(token_permissions, _claims, context) do
     required_permissions = context[:required_permissions]
