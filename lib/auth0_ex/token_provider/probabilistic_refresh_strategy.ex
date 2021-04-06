@@ -9,7 +9,7 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
   This strategy defines a "refresh window", which is a time span in the lifespan of a token when
   the refresh may happen (e.g., "from 50% to 75% of the life of the token").
-  Probability of a refresh is 0 until the refresh window begins, then it keeps increasing as time passes.
+  The refresh time will be a random time in the refresh window.
 
   The "refresh window" can be customized from config as follows
 
@@ -20,28 +20,24 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
   alias Auth0Ex.TokenProvider.RefreshStrategy
 
-  # @behaviour RefreshStrategy
+  @behaviour RefreshStrategy
 
-  # @impl RefreshStrategy
-  def should_refresh?(token) do
+  @impl RefreshStrategy
+  def refresh_time_for(token) do
     token_lifespan = token.expires_at - token.issued_at
-
     refresh_window_start = token.issued_at + trunc(token_lifespan * min_token_duration())
     refresh_window_end = token.issued_at + trunc(token_lifespan * max_token_duration())
 
-    probabilistic_choice(current_time(), refresh_window_start, refresh_window_end)
+    refresh_time = random_time_between(refresh_window_start, refresh_window_end)
+
+    Timex.from_unix(refresh_time)
   end
 
-  defp probabilistic_choice(current_time, refresh_window_start, refresh_window_end) do
-    refresh_window_duration = refresh_window_end - refresh_window_start
-
-    # always false when current_time < refresh_window_start
-    # always true when current_time > refresh_window_end
-    # otherwise, it gets more likely the more we approach refresh_window_end
-    :rand.uniform(refresh_window_duration) < current_time - refresh_window_start
+  defp random_time_between(start, finish) do
+    duration = finish - start
+    start + :rand.uniform(duration)
   end
 
-  defp current_time, do: Timex.to_unix(Timex.now())
   defp min_token_duration, do: :auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:min_token_duration, 0.5)
   defp max_token_duration, do: :auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:max_token_duration, 0.75)
 end

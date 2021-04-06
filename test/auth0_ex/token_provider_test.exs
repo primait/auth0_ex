@@ -43,7 +43,7 @@ defmodule Auth0Ex.TokenProviderTest do
   end
 
   test "does not refresh token unless necessary", %{pid: pid} do
-    after_next_check = Timex.now() |> Timex.add(Timex.Duration.from_hours(1))
+    after_next_check = Timex.add(Timex.now(), Timex.Duration.from_hours(1))
     expect(RefreshStrategyMock, :refresh_time_for, 1, fn _ -> after_next_check end)
 
     initialize_for_audience("target_audience", @sample_token, pid)
@@ -56,7 +56,7 @@ defmodule Auth0Ex.TokenProviderTest do
   end
 
   test "refreshes its tokens when necessary", %{pid: pid} do
-    before_next_check = Timex.now() |> Timex.add(Timex.Duration.from_milliseconds(token_check_interval() - 100))
+    before_next_check = Timex.add(Timex.now(), Timex.Duration.from_milliseconds(token_check_interval() - 100))
     expect(RefreshStrategyMock, :refresh_time_for, 2, fn _ -> before_next_check end)
 
     initialize_for_audience("target_audience", @sample_token, pid)
