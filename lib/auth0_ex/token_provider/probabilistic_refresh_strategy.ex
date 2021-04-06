@@ -20,9 +20,9 @@ defmodule Auth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
   alias Auth0Ex.TokenProvider.RefreshStrategy
 
-  @behaviour RefreshStrategy
+  # @behaviour RefreshStrategy
 
-  @impl RefreshStrategy
+  # @impl RefreshStrategy
   def should_refresh?(token) do
     token_lifespan = token.expires_at - token.issued_at
 

@@ -12,9 +12,13 @@ defmodule Auth0Ex.TokenProvider do
   require Logger
   alias Auth0Ex.TokenProvider.{CachedTokenService, ProbabilisticRefreshStrategy, TokenInfo}
 
-  @type t() :: %__MODULE__{credentials: Auth0Ex.Auth0Credentials, tokens: %{required(String.t()) => TokenInfo.t()}}
+  @type t() :: %__MODULE__{
+          credentials: Auth0Ex.Auth0Credentials,
+          tokens: %{required(String.t()) => TokenInfo.t()},
+          refresh_times: %{required(String.t()) => Timex.Types.valid_datetime()}
+        }
   @enforce_keys [:credentials]
-  defstruct [:credentials, tokens: %{}]
+  defstruct [:credentials, tokens: %{}, refresh_times: %{}]
 
   @refresh_strategy Application.compile_env(:auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
   @token_service Application.compile_env(:auth0_ex, :token_service, CachedTokenService)
@@ -58,21 +62,11 @@ defmodule Auth0Ex.TokenProvider do
   @impl true
   def handle_info({:periodic_check_for, audience}, state) do
     Logger.debug("Running periodic check...", audience: audience)
-    token = state.tokens[audience]
 
-    if @refresh_strategy.should_refresh?(token) do
-      Logger.info("Decided to refresh token.",
-        audience: audience,
-        current_token_issued_at: token.issued_at,
-        current_token_expires_at: token.expires_at
-      )
+    if should_refresh?(audience, state) do
+      Logger.info("Decided to refresh token.", audience: audience)
 
-      parent = self()
-
-      spawn(fn ->
-        {:ok, new_token} = @token_service.refresh_token(state.credentials, audience, token)
-        send(parent, {:set_token_for, audience, new_token})
-      end)
+      try_refresh(audience, state)
     end
 
     {:noreply, state}
@@ -91,9 +85,31 @@ defmodule Auth0Ex.TokenProvider do
          do: {:ok, token}
   end
 
-  defp set_token(state, audience, token), do: put_in(state.tokens[audience], token)
+  defp set_token(state, audience, token) do
+    refresh_time = @refresh_strategy.refresh_time_for(token)
+
+    state
+    |> put_in([Access.key(:tokens), audience], token)
+    |> put_in([Access.key(:refresh_times), audience], refresh_time)
+  end
+
+  defp should_refresh?(audience, state) do
+    refresh_time = state.refresh_times[audience]
+
+    Timex.before?(refresh_time, Timex.now())
+  end
 
   defp token_check_interval do
     :auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:token_check_interval, :timer.minutes(1))
+  end
+
+  defp try_refresh(audience, state) do
+    token = state.tokens[audience]
+    parent = self()
+
+    spawn(fn ->
+      {:ok, new_token} = @token_service.refresh_token(state.credentials, audience, token)
+      send(parent, {:set_token_for, audience, new_token})
+    end)
   end
 end
