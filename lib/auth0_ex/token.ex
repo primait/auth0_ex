@@ -6,6 +6,7 @@ defmodule Auth0Ex.Token do
   use Joken.Config
 
   add_hook JokenJwks, strategy: Auth0Ex.JwksStrategy
+  add_hook Joken.Hooks.RequiredClaims, [:aud, :iat, :exp]
 
   @impl true
   def token_config do
