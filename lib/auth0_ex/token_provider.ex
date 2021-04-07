@@ -94,9 +94,9 @@ defmodule Auth0Ex.TokenProvider do
   end
 
   defp should_refresh?(audience, state) do
-    refresh_time = state.refresh_times[audience]
-
-    Timex.before?(refresh_time, Timex.now())
+    state.refresh_times
+    |> Map.get(audience)
+    |> Timex.before?(Timex.now())
   end
 
   defp token_check_interval do
