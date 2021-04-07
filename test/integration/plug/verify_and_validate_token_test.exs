@@ -94,7 +94,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
   test "supports disabling verification of signatures" do
     # mostly useful for dev environments, to work with locally forged JWTs
     forged_token = JwtUtils.jwt_that_expires_in(1_000, @test_audience)
-    opts = VerifyAndValidateToken.init(audience: @test_audience, verify_signature: false)
+    opts = VerifyAndValidateToken.init(audience: @test_audience, ignore_signature: true)
 
     conn =
       conn(:get, "/")

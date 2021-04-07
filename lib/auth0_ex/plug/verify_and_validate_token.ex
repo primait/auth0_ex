@@ -16,9 +16,9 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
     Default is `[]`, ie. no permissions required, overridable from `config.exs`.
   * `dry_run: false` when true allows clients to access the API even when their token is missing/invalid.
     Mostly useful for testing purposes. Default is `false`, overridable from `config.exs`.
-  * `verify_signature: true` when false, validates claims found in a token without verifying its signature.
+  * `ignore_signature: false` when true, validates claims found in a token without verifying its signature.
     Should only be enabled in dev/test environments, as it allows anyone to forge valid tokens.
-    Default is `false`, overridable from `config.exs`.
+    Default is `true`, overridable from `config.exs`.
   """
 
   import Plug.Conn
@@ -26,23 +26,23 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
 
   @global_audience :auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:audience)
   @global_dry_run :auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:dry_run, false)
-  @global_verify_signature :auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:verify_signature, true)
+  @global_ignore_signature :auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:ignore_signature, false)
 
   def init(opts), do: opts
 
   def call(%Plug.Conn{} = conn, opts) do
     audience = Keyword.get(opts, :audience, @global_audience)
     dry_run? = Keyword.get(opts, :dry_run, @global_dry_run)
-    verify_signature = Keyword.get(opts, :verify_signature, @global_verify_signature)
+    ignore_signature = Keyword.get(opts, :ignore_signature, @global_ignore_signature)
     required_permissions = Keyword.get(opts, :required_permissions, [])
 
-    if authorized?(conn, audience, required_permissions, verify_signature), do: conn, else: forbidden(conn, dry_run?)
+    if authorized?(conn, audience, required_permissions, ignore_signature), do: conn, else: forbidden(conn, dry_run?)
   end
 
-  defp authorized?(conn, audience, required_permissions, verify_signature) do
+  defp authorized?(conn, audience, required_permissions, ignore_signature) do
     case get_req_header(conn, "authorization") do
       ["Bearer " <> token] ->
-        valid_token?(token, audience, required_permissions, verify_signature)
+        valid_token?(token, audience, required_permissions, ignore_signature)
 
       _other ->
         Logger.warn("Authorization header malformed or not found")
@@ -50,8 +50,8 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
     end
   end
 
-  defp valid_token?(token, audience, required_permissions, verify_signature) do
-    case Auth0Ex.verify_and_validate(token, audience, required_permissions, verify_signature) do
+  defp valid_token?(token, audience, required_permissions, ignore_signature) do
+    case Auth0Ex.verify_and_validate(token, audience, required_permissions, ignore_signature) do
       {:ok, _} ->
         true
 

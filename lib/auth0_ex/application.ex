@@ -29,7 +29,7 @@ defmodule Auth0Ex.Application do
   end
 
   defp server_children do
-    if server_configured?() and signature_verification_enabled?() do
+    if server_configured?() and not signature_ignored?() do
       [{JwksStrategy, [first_fetch_sync: first_jwks_fetch_sync()]}]
     else
       []
@@ -40,8 +40,8 @@ defmodule Auth0Ex.Application do
   defp client_configured?, do: Application.get_env(:auth0_ex, :client) != nil
   defp server_configured?, do: Application.get_env(:auth0_ex, :server) != nil
 
-  defp signature_verification_enabled?,
-    do: :auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:verify_signature, true)
+  defp signature_ignored?,
+    do: :auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:ignore_signature, false)
 
   defp redis_connection_uri, do: Application.fetch_env!(:auth0_ex, :cache)[:redis_connection_uri]
 
