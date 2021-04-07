@@ -17,9 +17,7 @@ defmodule Auth0Ex.Token do
 
   @impl Joken.Hooks
   def after_validate(_hook_options, {:ok, claims} = result, {_token_config, _claims, context} = input) do
-    required_permissions = Map.get(context, :required_permissions, [])
-
-    if Enum.empty?(required_permissions) or Map.has_key?(claims, "permissions") do
+    if permissions_claim_present?(claims, context) do
       {:cont, result, input}
     else
       {:halt, {:error, [message: "Invalid token", missing_claims: "permissions"]}}
@@ -64,5 +62,10 @@ defmodule Auth0Ex.Token do
     required_permissions = context[:required_permissions]
 
     Enum.all?(required_permissions, &(&1 in token_permissions))
+  end
+
+  defp permissions_claim_present?(claims, context) do
+    required_permissions = Map.get(context, :required_permissions, [])
+    Enum.empty?(required_permissions) or Map.has_key?(claims, "permissions")
   end
 end
