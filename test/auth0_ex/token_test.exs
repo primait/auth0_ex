@@ -25,6 +25,26 @@ defmodule Auth0Ex.TokenTest do
              )
   end
 
+  test "when permissions are required, a token is not valid if it does not have a permissions claim" do
+    claims_without_permissions = valid_token_claims()
+
+    assert {:error, _} =
+             Token.validate(
+               claims_without_permissions,
+               %{audience: @audience, required_permissions: ["some:permission"]}
+             )
+  end
+
+  test "when permissions are not required, a token is valid if it does not have a permissions claim" do
+    claims_without_permissions = valid_token_claims()
+
+    assert {:ok, _} =
+             Token.validate(
+               claims_without_permissions,
+               %{audience: @audience, required_permissions: []}
+             )
+  end
+
   test "a token is not valid when its expiration date has passed" do
     expired_token_claims = %{valid_token_claims() | "exp" => one_hour_ago()}
 

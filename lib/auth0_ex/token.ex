@@ -5,7 +5,7 @@ defmodule Auth0Ex.Token do
 
   use Joken.Config
 
-  add_hook(JokenJwks, strategy: Auth0Ex.JwksStrategy)
+  add_hook JokenJwks, strategy: Auth0Ex.JwksStrategy
 
   @impl true
   def token_config do
@@ -14,6 +14,19 @@ defmodule Auth0Ex.Token do
     |> add_claim("aud", nil, &validate_audience/3)
     |> add_claim("permissions", nil, &validate_permissions/3)
   end
+
+  @impl Joken.Hooks
+  def after_validate(_hook_options, {:ok, claims} = result, {_token_config, _claims, context} = input) do
+    required_permissions = Map.get(context, :required_permissions, [])
+
+    if Enum.empty?(required_permissions) or Map.has_key?(claims, "permissions") do
+      {:cont, result, input}
+    else
+      {:halt, {:error, [message: "Invalid token", missing_claims: "permissions"]}}
+    end
+  end
+
+  def after_validate(_, result, input), do: {:cont, result, input}
 
   @spec verify_and_validate_token(String.t(), String.t(), list(String.t()), boolean()) ::
           {:ok, Joken.claims()} | {:error, atom | Keyword.t()}
