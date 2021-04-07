@@ -47,6 +47,14 @@ defmodule Auth0Ex.LocalTokenTest do
     assert Timex.before?(Timex.from_unix(expires_at), Timex.now())
   end
 
+  test "time_from_now/1 allows to easily create unix timestamps" do
+    one_hour_ago = LocalToken.time_from_now(hours: -1)
+
+    assert Timex.before?(Timex.from_unix(one_hour_ago), Timex.now())
+    assert one_hour_ago > LocalToken.time_from_now(minutes: -61)
+    assert one_hour_ago < LocalToken.time_from_now(minutes: -59)
+  end
+
   defp claims_of(jwt) do
     {:ok, claims} = Joken.peek_claims(jwt)
     claims
