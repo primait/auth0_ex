@@ -64,7 +64,7 @@ defmodule Auth0Ex.TokenProvider do
     Logger.debug("Running periodic check...", audience: audience)
 
     if should_refresh?(audience, state) do
-      Logger.info("Decided to refresh token.", audience: audience)
+      Logger.info("Decided to refresh token.", audience: audience, refresh_time: state.refresh_times[audience])
 
       try_refresh(audience, state)
     end
