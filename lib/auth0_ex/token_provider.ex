@@ -108,8 +108,10 @@ defmodule Auth0Ex.TokenProvider do
     parent = self()
 
     spawn(fn ->
-      {:ok, new_token} = @token_service.refresh_token(state.credentials, audience, token)
-      send(parent, {:set_token_for, audience, new_token})
+      case @token_service.refresh_token(state.credentials, audience, token) do
+        {:ok, new_token} -> send(parent, {:set_token_for, audience, new_token})
+        {:error, description} -> Logger.warn("Error refreshing token", audience: audience, description: description)
+      end
     end)
   end
 end
