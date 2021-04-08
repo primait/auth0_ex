@@ -47,7 +47,7 @@ defmodule Auth0Ex.LocalToken do
   end
 
   defp default_claims(audience) do
-    %{"aud" => audience, "iat" => time_from_now(hours: -1), "exp" => time_from_now(hours: 1), "iss" => issuer()}
+    %{"aud" => audience, "iat" => time_from_now(seconds: -1), "exp" => time_from_now(hours: 24), "iss" => issuer()}
   end
 
   defp issuer, do: Application.fetch_env!(:auth0_ex, :server)[:issuer]
