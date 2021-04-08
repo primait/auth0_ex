@@ -3,18 +3,16 @@ use Mix.Config
 config :auth0_ex,
   auth0_base_url: "https://dallagi.eu.auth0.com"
 
-config :auth0_ex, :cache,
-  enabled: true,
-  redis_connection_uri: "redis://redis:6379",
-  namespace: "my-service",
-  encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
-
 config :auth0_ex, :client,
   token_check_interval: :timer.minutes(1),
   min_token_duration: 0.5,
   max_token_duration: 0.75,
   client_id: "",
-  client_secret: ""
+  client_secret: "",
+  cache_enabled: true,
+  cache_namespace: "my-service",
+  cache_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
+  redis_connection_uri: "redis://redis:6379"
 
 config :auth0_ex, :server,
   audience: "",

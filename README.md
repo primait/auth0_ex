@@ -47,17 +47,15 @@ config :auth0_ex, :client,
   max_token_duration: 0.75,
   # Credentials on Auth0
   client_id: "",
-  client_secret: ""
-
-config :auth0_ex, :cache,
+  client_secret: "",
   # Enables cache on redis for tokens obtained from Auth0. Defaults to true.
-  enabled: true,
-  redis_connection_uri: "redis://localhost:6379",
+  cache_enabled: true,
   # Namespace for tokens of this service on the shared cache. Should be unique per service (e.g., the service name)
-  namespace: "my-service",
+  cache_namespace: "my-service",
   # AES 256 key used to encrypt tokens on the shared cache.
   # Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
-  encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
+  cache_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
+  redis_connection_uri: "redis://redis:6379"
 ```
 
 #### API Provider
@@ -80,10 +78,10 @@ config :auth0_ex, :server,
   # When true, logs errors in validation of tokens, but it does not stop the request when the token is not valid.
   # Defaults to false.
   dry_run: false,
-  # When false, only the claims of tokens are validated, but their signature is not verified.
+  # When true, only the claims of tokens are validated, but their signature is not verified.
   # This should NEVER be enabled on production-like systems.
-  # Defaults to true.
-  verify_signature: true
+  # Defaults to false.
+  ignore_signature: false
 ```
 
 ## Usage
