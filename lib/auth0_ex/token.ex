@@ -39,6 +39,22 @@ defmodule Auth0Ex.Token do
     end
   end
 
+  @doc """
+  Returns the list of permissions held by a token.
+
+  In case of missing permissions claim or malformed token it defaults to an empty list.
+  Note that this function does not verify the signature of the token.
+  """
+  @spec peek_permissions(String.t()) :: [String.t()]
+  def peek_permissions(token) do
+    with {:ok, claims} <- Joken.peek_claims(token),
+         permissions <- Map.get(claims, "permissions", []) do
+      permissions
+    else
+      _any_error -> []
+    end
+  end
+
   defp validate_token(token, context) do
     with {:ok, claims} <- Joken.peek_claims(token),
          do: validate(claims, context)
