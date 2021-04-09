@@ -79,7 +79,7 @@ config :auth0_ex, :server,
   # Defaults to false.
   dry_run: false,
   # When true, only the claims of tokens are validated, but their signature is not verified.
-  # This should NEVER be enabled on production-like systems.
+  # This is useful for local development but should NEVER be enabled on production-like systems.
   # Defaults to false.
   ignore_signature: false
 ```
@@ -120,6 +120,56 @@ The plug supports the following options:
 * `audience: "my-audience"` to explicitly set the expected audience. When not defined it defaults to the audience configured in `:auth0_ex, :server, :audience`;
 * `required_permissions: ["p1", "p2"]` to forbid access to users who do not have all the required permissions;
 * `dry_run` to allow access to the API when the token is not valid (mostly useful for testing purposes).
+
+#### Validating permissions with Absinthe
+
+In order to validate permissions in your Graphql API on a per-query/per-mutation basis, an option is to define an Absinthe middleware.
+It is important to note that in the following example we will only validate permissions: the other validations and the verification of the signature will still need to be done elsewhere (eg., using the aforementioned plug).
+
+First you'll need to pass the user's permissions to the Absinthe context.
+This can be done with a Plug like this:
+
+``` elixir
+defmodule ExampleWeb.Graphql.Context do
+  def init(opts), do: opts
+
+  def call(conn, _) do
+    permissions =
+      case Plug.Conn.get_req_header(conn, "authorization") do
+        ["Bearer " <> token] -> Auth0Ex.Token.peek_permissions(token)
+        _ -> []
+      end
+
+    Absinthe.Plug.put_options(conn, context: %{permissions: permissions})
+  end
+end
+```
+
+Then you can define an Absinthe Middleware that validates the required permissions, as follows:
+
+``` elixir
+defmodule Example.Graphql.Middleware.RequirePermission do
+  @behaviour Absinthe.Middleware
+
+  def call(resolution, permission) do
+    if permission in resolution.context[:permissions] do
+      resolution
+    else
+      Absinthe.Resolution.put_result(resolution, {:error, "unauthorized"})
+    end
+  end
+end
+```
+
+This middleware can then be used in your schema as follows:
+
+``` elixir
+  field ... do
+    middleware(RequirePermission, "your-required-permission")
+    resolve(&Resolver.resolve_function/3)
+  end
+
+```
 
 ## Development
 
