@@ -1,7 +1,7 @@
 use Mix.Config
 
 config :auth0_ex,
-  auth0_base_url: "https://dallagi.eu.auth0.com"
+  auth0_base_url: "https://tenant.eu.auth0.com"
 
 config :auth0_ex, :client,
   token_check_interval: :timer.minutes(1),
