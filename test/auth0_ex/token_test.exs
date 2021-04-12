@@ -14,6 +14,11 @@ defmodule Auth0Ex.TokenTest do
     assert {:ok, _} = Token.validate(%{valid_token_claims() | "aud" => [@audience, "other"]}, %{audience: @audience})
   end
 
+  test "tokens with no claims are not valid" do
+    # testing this since joken by default skips validation of a claim if the token does not have that claim
+    assert {:error, _} = Token.validate(%{}, %{audience: "somme-audience", required_permissions: []})
+  end
+
   test "when permissions are required, a token is valid if its permissions are a superset of the required ones" do
     claims_with_valid_permissions =
       Map.put(valid_token_claims(), "permissions", ["1st:perm", "2nd:perm", "3rd:perm", "4th:perm"])
@@ -22,6 +27,26 @@ defmodule Auth0Ex.TokenTest do
              Token.validate(
                claims_with_valid_permissions,
                %{audience: @audience, required_permissions: ["2nd:perm", "3rd:perm"]}
+             )
+  end
+
+  test "when permissions are required, a token is not valid if it does not have a permissions claim" do
+    claims_without_permissions = valid_token_claims()
+
+    assert {:error, _} =
+             Token.validate(
+               claims_without_permissions,
+               %{audience: @audience, required_permissions: ["some:permission"]}
+             )
+  end
+
+  test "when permissions are not required, a token is valid if it does not have a permissions claim" do
+    claims_without_permissions = valid_token_claims()
+
+    assert {:ok, _} =
+             Token.validate(
+               claims_without_permissions,
+               %{audience: @audience, required_permissions: []}
              )
   end
 

@@ -5,7 +5,8 @@ defmodule Auth0Ex.Token do
 
   use Joken.Config
 
-  add_hook(JokenJwks, strategy: Auth0Ex.JwksStrategy)
+  add_hook JokenJwks, strategy: Auth0Ex.JwksStrategy
+  add_hook Joken.Hooks.RequiredClaims, [:aud, :iat, :exp]
 
   @impl true
   def token_config do
@@ -14,6 +15,17 @@ defmodule Auth0Ex.Token do
     |> add_claim("aud", nil, &validate_audience/3)
     |> add_claim("permissions", nil, &validate_permissions/3)
   end
+
+  @impl Joken.Hooks
+  def after_validate(_hook_options, {:ok, claims} = result, {_token_config, _claims, context} = input) do
+    if missing_required_permissions_claim?(claims, context) do
+      {:halt, {:error, [message: "Invalid token", missing_claims: "permissions"]}}
+    else
+      {:cont, result, input}
+    end
+  end
+
+  def after_validate(_, result, input), do: {:cont, result, input}
 
   @spec verify_and_validate_token(String.t(), String.t(), list(String.t()), boolean()) ::
           {:ok, Joken.claims()} | {:error, atom | Keyword.t()}
@@ -51,5 +63,15 @@ defmodule Auth0Ex.Token do
     required_permissions = context[:required_permissions]
 
     Enum.all?(required_permissions, &(&1 in token_permissions))
+  end
+
+  defp missing_required_permissions_claim?(claims, context) do
+    permissions_required? =
+      context
+      |> Map.get(:required_permissions, [])
+      |> Enum.count()
+      |> Kernel.>(0)
+
+    permissions_required? and not Map.has_key?(claims, "permissions")
   end
 end
