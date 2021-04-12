@@ -44,7 +44,8 @@ defmodule Auth0Ex.MixProject do
       {:bypass, "~> 2.1.0", only: :test},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "1.0.0", only: [:dev, :test], runtime: false},
-      {:hammox, "~> 0.4", only: :test}
+      {:hammox, "~> 0.4", only: :test},
+      {:stream_data, "~> 0.5", only: :test}
     ]
   end
 
