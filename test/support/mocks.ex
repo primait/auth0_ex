@@ -2,3 +2,4 @@ Hammox.defmock(AuthorizationServiceMock, for: Auth0Ex.TokenProvider.Authorizatio
 Hammox.defmock(RefreshStrategyMock, for: Auth0Ex.TokenProvider.RefreshStrategy)
 Hammox.defmock(TokenCacheMock, for: Auth0Ex.TokenProvider.TokenCache)
 Hammox.defmock(TokenServiceMock, for: Auth0Ex.TokenProvider.TokenService)
+Hammox.defmock(TokenVerifierMock, for: Auth0Ex.TokenProvider.TokenVerifier)

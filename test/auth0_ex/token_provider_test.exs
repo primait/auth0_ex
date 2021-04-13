@@ -17,6 +17,8 @@ defmodule Auth0Ex.TokenProviderTest do
 
     in_one_hour = Timex.shift(Timex.now(), hours: 1)
     stub(RefreshStrategyMock, :refresh_time_for, fn _ -> in_one_hour end)
+    stub(TokenVerifierMock, :fetch_jwks, fn -> :ok end)
+    stub(TokenVerifierMock, :signature_valid?, fn _ -> true end)
 
     {:ok, %{pid: pid}}
   end
@@ -60,6 +62,25 @@ defmodule Auth0Ex.TokenProviderTest do
     expect(RefreshStrategyMock, :refresh_time_for, 2, fn _ -> before_next_check end)
 
     initialize_for_audience("target_audience", @sample_token, pid)
+
+    expect(
+      TokenServiceMock,
+      :refresh_token,
+      fn @sample_credentials, "target_audience", @sample_token -> {:ok, @another_sample_token} end
+    )
+
+    wait_for_first_check_to_complete()
+
+    assert {:ok, "ANOTHER-SAMPLE-TOKEN"} == TokenProvider.token_for(pid, "target_audience")
+  end
+
+  test "refreshes its tokens when their signature is not valid (eg. for keys revoked)", %{pid: pid} do
+    sometime_after_next_check = Timex.shift(Timex.now(), hours: 1)
+    expect(RefreshStrategyMock, :refresh_time_for, 2, fn _ -> sometime_after_next_check end)
+
+    initialize_for_audience("target_audience", @sample_token, pid)
+
+    expect(TokenVerifierMock, :signature_valid?, fn @sample_token -> false end)
 
     expect(
       TokenServiceMock,

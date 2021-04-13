@@ -9,7 +9,7 @@ defmodule Auth0Ex.JwksStrategy do
     Keyword.merge(opts, jwks_url: jwks_url())
   end
 
-  defp jwks_url, do: base_url() <> "/.well-known/jwks.json"
+  def jwks_url, do: base_url() <> "/.well-known/jwks.json"
 
   defp base_url, do: Application.fetch_env!(:auth0_ex, :auth0_base_url)
 end
