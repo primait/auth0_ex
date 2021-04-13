@@ -19,7 +19,7 @@ defmodule Integration.Auth0TokenVerifierTest do
     refute Auth0TokenVerifier.signature_valid?(local_token)
   end
 
-  defp forge_token() do
+  defp forge_token do
     %TokenInfo{jwt: Auth0Ex.LocalToken.forge("some-audience"), issued_at: 0, expires_at: 0}
   end
 end
