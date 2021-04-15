@@ -36,15 +36,6 @@ config :auth0_ex,
   auth0_base_url: "https://tenant.eu.auth0.com"
 
 config :auth0_ex, :client,
-  # Interval (in milliseconds) at which to evaluate whether to refresh locally stored tokens. Defaults to one minute
-  token_check_interval: :timer.minutes(1),
-  # Start and end of refresh window for tokens, relative to their lifespans.
-  # e.g. if a token is issued at timestamp 1000 and expires at timestamp 2000,
-  # and min_token_duration is 0.5 and max_token duration is 0.75,
-  # then the refresh will happen at a random time between timestamps 1500 and 1750.
-  # Default to 0.5 and 0.75 respectively.
-  min_token_duration: 0.5,
-  max_token_duration: 0.75,
   # Credentials on Auth0
   client_id: "",
   client_secret: "",

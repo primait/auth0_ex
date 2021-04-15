@@ -4,9 +4,6 @@ config :auth0_ex,
   auth0_base_url: "https://tenant.eu.auth0.com"
 
 config :auth0_ex, :client,
-  token_check_interval: :timer.minutes(1),
-  min_token_duration: 0.5,
-  max_token_duration: 0.75,
   client_id: "",
   client_secret: "",
   cache_enabled: true,
