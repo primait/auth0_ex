@@ -78,9 +78,9 @@ defmodule Auth0Ex.TokenProvider do
   end
 
   defp refresh_if_necessary(state, audience) do
-    token = state.tokens[audience]
-
     if should_refresh?(audience, state) do
+      token = state.tokens[audience]
+
       Logger.info("Decided to refresh token.",
         audience: audience,
         token_issued_at: token.issued_at,
