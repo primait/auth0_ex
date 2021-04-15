@@ -165,8 +165,8 @@ This middleware can then be used in your schema as follows:
 
 ``` elixir
   field ... do
-    middleware(RequirePermission, "your-required-permission")
-    resolve(&Resolver.resolve_function/3)
+    middleware RequirePermission, "your-required-permission"
+    resolve &Resolver.resolve_function/3
   end
 
 ```
