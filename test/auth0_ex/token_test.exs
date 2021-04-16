@@ -1,7 +1,7 @@
 defmodule Auth0Ex.TokenTest do
   use ExUnit.Case, async: true
 
-  import Auth0Ex.TestSupport.TimeUtils
+  import Auth0Ex.TestSupport.{JwtUtils, TimeUtils}
   alias Auth0Ex.Token
 
   @audience "some-audience"
@@ -100,6 +100,24 @@ defmodule Auth0Ex.TokenTest do
                %{valid_token_claims() | "aud" => a_different_audience},
                %{audience: a_different_audience}
              )
+  end
+
+  test "peek_permissions/1 returns all permissions from a token" do
+    token = jwt_with_claims(%{"permissions" => ["some", "permission"]})
+
+    assert ["some", "permission"] == Token.peek_permissions(token)
+  end
+
+  test "peek_permissions/1 returns empty permissions if token does not have any permission" do
+    token = jwt_with_claims(%{})
+
+    assert [] == Token.peek_permissions(token)
+  end
+
+  test "peek_permissions/1 returns empty permissions if token is malformed" do
+    token = "malformed_token"
+
+    assert [] == Token.peek_permissions(token)
   end
 
   defp valid_token_claims do

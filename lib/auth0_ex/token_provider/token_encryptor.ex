@@ -4,8 +4,8 @@ defmodule Auth0Ex.TokenProvider.TokenEncryptor do
 
   The key used for encryption is set from config:
 
-    config :auth0_ex, :cache,
-      encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
+    config :auth0_ex, :client,
+      cache_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
   """
   @aad "AES256GCM"
 
@@ -31,7 +31,7 @@ defmodule Auth0Ex.TokenProvider.TokenEncryptor do
   end
 
   defp token_encryption_key do
-    encoded_key = Application.fetch_env!(:auth0_ex, :cache)[:encryption_key]
+    encoded_key = Application.fetch_env!(:auth0_ex, :client)[:cache_encryption_key]
     Base.decode64!(encoded_key)
   end
 end

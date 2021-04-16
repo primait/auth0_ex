@@ -29,13 +29,29 @@ defmodule Auth0Ex.Token do
 
   @spec verify_and_validate_token(String.t(), String.t(), list(String.t()), boolean()) ::
           {:ok, Joken.claims()} | {:error, atom | Keyword.t()}
-  def verify_and_validate_token(token, audience, required_permissions, verify_signature) do
+  def verify_and_validate_token(token, audience, required_permissions, ignore_signature) do
     context = %{audience: audience, required_permissions: required_permissions}
 
-    if verify_signature do
-      verify_and_validate(token, __default_signer__(), context)
-    else
+    if ignore_signature do
       validate_token(token, context)
+    else
+      verify_and_validate(token, __default_signer__(), context)
+    end
+  end
+
+  @doc """
+  Returns the list of permissions held by a token.
+
+  In case of missing permissions claim or malformed token it defaults to an empty list.
+  Note that this function does not verify the signature of the token.
+  """
+  @spec peek_permissions(String.t()) :: [String.t()]
+  def peek_permissions(token) do
+    with {:ok, claims} <- Joken.peek_claims(token),
+         permissions <- Map.get(claims, "permissions", []) do
+      permissions
+    else
+      _any_error -> []
     end
   end
 

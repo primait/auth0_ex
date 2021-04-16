@@ -6,4 +6,6 @@ config :auth0_ex,
   token_cache: TokenCacheMock,
   token_service: TokenServiceMock
 
-config :auth0_ex, :client, token_check_interval: :timer.seconds(1)
+config :auth0_ex, :client,
+  cache_enabled: true,
+  token_check_interval: :timer.seconds(1)

@@ -12,7 +12,7 @@ by adding `auth0_ex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:auth0_ex, git: "git@github.com:primait/auth0_ex.git", tag: "0.1.1"}
+    {:auth0_ex, git: "git@github.com:primait/auth0_ex.git", tag: "0.2.0"}
   ]
 end
 ```
@@ -36,28 +36,17 @@ config :auth0_ex,
   auth0_base_url: "https://tenant.eu.auth0.com"
 
 config :auth0_ex, :client,
-  # Interval (in milliseconds) at which to evaluate whether to refresh locally stored tokens. Defaults to one minute
-  token_check_interval: :timer.minutes(1),
-  # Start and end of refresh window for tokens, relative to their lifespans.
-  # e.g. if a token is issued at timestamp 1000 and expires at timestamp 2000,
-  # and min_token_duration is 0.5 and max_token duration is 0.75,
-  # then the refresh will happen at a random time between timestamps 1500 and 1750.
-  # Default to 0.5 and 0.75 respectively.
-  min_token_duration: 0.5,
-  max_token_duration: 0.75,
   # Credentials on Auth0
   client_id: "",
-  client_secret: ""
-
-config :auth0_ex, :cache,
+  client_secret: "",
   # Enables cache on redis for tokens obtained from Auth0. Defaults to true.
-  enabled: true,
-  redis_connection_uri: "redis://localhost:6379",
+  cache_enabled: true,
   # Namespace for tokens of this service on the shared cache. Should be unique per service (e.g., the service name)
-  namespace: "my-service",
+  cache_namespace: "my-service",
   # AES 256 key used to encrypt tokens on the shared cache.
   # Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
-  encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
+  cache_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
+  redis_connection_uri: "redis://redis:6379"
 ```
 
 #### API Provider
@@ -80,10 +69,10 @@ config :auth0_ex, :server,
   # When true, logs errors in validation of tokens, but it does not stop the request when the token is not valid.
   # Defaults to false.
   dry_run: false,
-  # When false, only the claims of tokens are validated, but their signature is not verified.
-  # This should NEVER be enabled on production-like systems.
-  # Defaults to true.
-  verify_signature: true
+  # When true, only the claims of tokens are validated, but their signature is not verified.
+  # This is useful for local development but should NEVER be enabled on production-like systems.
+  # Defaults to false.
+  ignore_signature: false
 ```
 
 ## Usage
@@ -122,6 +111,56 @@ The plug supports the following options:
 * `audience: "my-audience"` to explicitly set the expected audience. When not defined it defaults to the audience configured in `:auth0_ex, :server, :audience`;
 * `required_permissions: ["p1", "p2"]` to forbid access to users who do not have all the required permissions;
 * `dry_run` to allow access to the API when the token is not valid (mostly useful for testing purposes).
+
+#### Validating permissions with Absinthe
+
+In order to validate permissions in your Graphql API on a per-query/per-mutation basis, an option is to define an Absinthe middleware.
+It is important to note that in the following example we will only validate permissions: the other validations and the verification of the signature will still need to be done elsewhere (eg., using the aforementioned plug).
+
+First you'll need to pass the user's permissions to the Absinthe context.
+This can be done with a Plug like this:
+
+``` elixir
+defmodule ExampleWeb.Graphql.Context do
+  def init(opts), do: opts
+
+  def call(conn, _) do
+    permissions =
+      case Plug.Conn.get_req_header(conn, "authorization") do
+        ["Bearer " <> token] -> Auth0Ex.Token.peek_permissions(token)
+        _ -> []
+      end
+
+    Absinthe.Plug.put_options(conn, context: %{permissions: permissions})
+  end
+end
+```
+
+Then you can define an Absinthe Middleware that validates the required permissions, as follows:
+
+``` elixir
+defmodule Example.Graphql.Middleware.RequirePermission do
+  @behaviour Absinthe.Middleware
+
+  def call(resolution, permission) do
+    if permission in resolution.context[:permissions] do
+      resolution
+    else
+      Absinthe.Resolution.put_result(resolution, {:error, "unauthorized"})
+    end
+  end
+end
+```
+
+This middleware can then be used in your schema as follows:
+
+``` elixir
+  field ... do
+    middleware RequirePermission, "your-required-permission"
+    resolve &Resolver.resolve_function/3
+  end
+
+```
 
 ## Development
 

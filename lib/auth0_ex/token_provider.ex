@@ -38,6 +38,8 @@ defmodule Auth0Ex.TokenProvider do
 
   @impl true
   def init(auth0_credentials) do
+    {:ok, _} = :timer.send_interval(token_check_interval(), :periodic_check)
+
     {:ok, %__MODULE__{credentials: auth0_credentials}}
   end
 
@@ -60,13 +62,11 @@ defmodule Auth0Ex.TokenProvider do
   end
 
   @impl true
-  def handle_info({:periodic_check_for, audience}, state) do
-    Logger.debug("Running periodic check...", audience: audience)
+  def handle_info(:periodic_check, state) do
+    Logger.debug("Running periodic check...")
 
-    if should_refresh?(audience, state) do
-      Logger.info("Decided to refresh token.", audience: audience, refresh_time: state.refresh_times[audience])
-
-      try_refresh(audience, state)
+    for {audience, _token} <- state.tokens do
+      refresh_if_necessary(state, audience)
     end
 
     {:noreply, state}
@@ -77,11 +77,24 @@ defmodule Auth0Ex.TokenProvider do
     {:noreply, set_token(state, audience, token)}
   end
 
+  defp refresh_if_necessary(state, audience) do
+    if should_refresh?(audience, state) do
+      token = state.tokens[audience]
+
+      Logger.info("Decided to refresh token.",
+        audience: audience,
+        token_issued_at: token.issued_at,
+        token_expires_at: token.expires_at
+      )
+
+      try_refresh(audience, state)
+    end
+  end
+
   defp initialize_token_for(audience, state) do
     Logger.info("Initializing token", audience: audience)
 
     with {:ok, token} <- @token_service.retrieve_token(state.credentials, audience),
-         {:ok, _} <- :timer.send_interval(token_check_interval(), {:periodic_check_for, audience}),
          do: {:ok, token}
   end
 
@@ -104,8 +117,8 @@ defmodule Auth0Ex.TokenProvider do
   end
 
   defp try_refresh(audience, state) do
-    token = state.tokens[audience]
     parent = self()
+    token = state.tokens[audience]
 
     spawn(fn ->
       case @token_service.refresh_token(state.credentials, audience, token) do
