@@ -40,7 +40,7 @@ defmodule Auth0Ex.TokenProvider do
   @impl true
   def init(auth0_credentials) do
     with {:ok, _} <- :timer.send_interval(token_check_interval(), :periodic_check),
-         {:ok, _} <- start_periodic_signature_check_if_necessary() do
+         :ok <- start_periodic_signature_check() do
       {:ok, %__MODULE__{credentials: auth0_credentials}}
     else
       error -> {:stop, error}
@@ -162,8 +162,15 @@ defmodule Auth0Ex.TokenProvider do
     end
   end
 
-  defp start_periodic_signature_check_if_necessary do
-    unless client_signature_ignored?(), do: :timer.send_interval(signature_check_interval(), :periodic_signature_check)
+  defp start_periodic_signature_check do
+    if client_signature_ignored?(), do: :ok, else: do_start_periodic_signature_check()
+  end
+
+  defp do_start_periodic_signature_check do
+    case :timer.send_interval(signature_check_interval(), :periodic_signature_check) do
+      {:ok, _} -> :ok
+      error -> {:error, error}
+    end
   end
 
   defp client_signature_ignored?,
