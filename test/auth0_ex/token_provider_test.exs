@@ -6,8 +6,8 @@ defmodule Auth0Ex.TokenProviderTest do
   alias Auth0Ex.TokenProvider.TokenInfo
 
   @sample_credentials %Auth0Credentials{base_url: "base_url", client_id: "client_id", client_secret: "client_secret"}
-  @sample_token %TokenInfo{jwt: "SAMPLE-TOKEN", issued_at: 123, expires_at: 234}
-  @another_sample_token %TokenInfo{jwt: "ANOTHER-SAMPLE-TOKEN", issued_at: 123, expires_at: 234}
+  @sample_token %TokenInfo{jwt: "SAMPLE-TOKEN", issued_at: 123, expires_at: 234, kid: "valid-kid"}
+  @another_sample_token %TokenInfo{jwt: "ANOTHER-SAMPLE-TOKEN", issued_at: 123, expires_at: 234, kid: "valid-kid"}
 
   setup :set_mox_global
   setup :verify_on_exit!
@@ -17,8 +17,7 @@ defmodule Auth0Ex.TokenProviderTest do
 
     in_one_hour = Timex.shift(Timex.now(), hours: 1)
     stub(RefreshStrategyMock, :refresh_time_for, fn _ -> in_one_hour end)
-    stub(TokenVerifierMock, :fetch_jwks, fn -> :ok end)
-    stub(TokenVerifierMock, :signature_valid?, fn _ -> true end)
+    stub(JwksKidsFetcherMock, :fetch_kids, fn _ -> {:ok, ["valid-kid"]} end)
 
     {:ok, %{pid: pid}}
   end
@@ -80,7 +79,7 @@ defmodule Auth0Ex.TokenProviderTest do
 
     initialize_for_audience("target_audience", @sample_token, pid)
 
-    expect(TokenVerifierMock, :signature_valid?, fn @sample_token -> false end)
+    expect(JwksKidsFetcherMock, :fetch_kids, fn _credentials -> {:ok, ["different-kids"]} end)
 
     expect(
       TokenServiceMock,
@@ -88,7 +87,7 @@ defmodule Auth0Ex.TokenProviderTest do
       fn @sample_credentials, "target_audience", @sample_token -> {:ok, @another_sample_token} end
     )
 
-    wait_for_first_check_to_complete()
+    wait_for_first_signature_check_to_complete()
 
     assert {:ok, "ANOTHER-SAMPLE-TOKEN"} == TokenProvider.token_for(pid, "target_audience")
   end
@@ -100,6 +99,8 @@ defmodule Auth0Ex.TokenProviderTest do
   end
 
   defp wait_for_first_check_to_complete, do: :timer.sleep(token_check_interval() + 500)
-
   defp token_check_interval, do: Application.fetch_env!(:auth0_ex, :client)[:token_check_interval]
+
+  defp wait_for_first_signature_check_to_complete, do: :timer.sleep(signature_check_interval() + 500)
+  defp signature_check_interval, do: Application.fetch_env!(:auth0_ex, :client)[:signature_check_interval]
 end

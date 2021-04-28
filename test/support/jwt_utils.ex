@@ -14,6 +14,16 @@ defmodule Auth0Ex.TestSupport.JwtUtils do
     )
   end
 
+  def generate_fake_jwt(claims, extra_headers \\ %{}) do
+    signer = Joken.Signer.create("HS256", "secret", extra_headers)
+
+    Joken.generate_and_sign!(
+      %{},
+      claims,
+      signer
+    )
+  end
+
   @spec jwt_that_expires_in(integer(), String.t()) :: String.t()
   def jwt_that_expires_in(time_seconds, audience) do
     expiration = Joken.current_time() + time_seconds

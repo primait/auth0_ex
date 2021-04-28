@@ -10,7 +10,13 @@ defmodule Auth0Ex.TokenProvider do
   use GenServer
 
   require Logger
-  alias Auth0Ex.TokenProvider.{Auth0TokenVerifier, CachedTokenService, ProbabilisticRefreshStrategy, TokenInfo}
+
+  alias Auth0Ex.TokenProvider.{
+    Auth0JwksKidsFetcher,
+    CachedTokenService,
+    ProbabilisticRefreshStrategy,
+    TokenInfo
+  }
 
   @type t() :: %__MODULE__{
           credentials: Auth0Ex.Auth0Credentials,
@@ -20,9 +26,9 @@ defmodule Auth0Ex.TokenProvider do
   @enforce_keys [:credentials]
   defstruct [:credentials, tokens: %{}, refresh_times: %{}]
 
+  @jwks_kids_fetcher Application.compile_env(:auth0_ex, :jwks_kids_fetcher, Auth0JwksKidsFetcher)
   @refresh_strategy Application.compile_env(:auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
   @token_service Application.compile_env(:auth0_ex, :token_service, CachedTokenService)
-  @token_verifier Application.compile_env(:auth0_ex, :token_verifier, Auth0TokenVerifier)
 
   # Client
 
@@ -115,10 +121,11 @@ defmodule Auth0Ex.TokenProvider do
   defp check_signatures(state, _parent) when state.tokens == %{}, do: nil
 
   defp check_signatures(state, parent) do
-    @token_verifier.fetch_jwks()
+    # TODO handle error
+    {:ok, valid_kids} = @jwks_kids_fetcher.fetch_kids(state.credentials)
 
     for {audience, token} <- state.tokens do
-      unless @token_verifier.signature_valid?(token) do
+      unless token.kid in valid_kids do
         Logger.info("Refreshing token due to invalid signature.")
 
         try_refresh(audience, token, state.credentials, parent)

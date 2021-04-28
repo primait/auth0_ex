@@ -1,4 +1,4 @@
-defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCacheTest do
+defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   use ExUnit.Case, async: true
 
   import Auth0Ex.TestSupport.TimeUtils
