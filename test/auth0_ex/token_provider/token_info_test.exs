@@ -7,7 +7,7 @@ defmodule Auth0Ex.TokenProvider.TokenInfoTest do
   test "extracts metadata from token" do
     issued_at = Timex.now() |> Timex.shift(hours: -12) |> Timex.to_unix()
     expires_at = Timex.now() |> Timex.shift(hours: 12) |> Timex.to_unix()
-    token = JwtUtils.generate_fake_jwt(%{iat: issued_at, exp: expires_at}, %{kid: "my-kid"})
+    token = JwtUtils.generate_fake_jwt("some-audience", %{iat: issued_at, exp: expires_at}, %{kid: "my-kid"})
 
     assert %TokenInfo{
              jwt: token,

@@ -103,13 +103,13 @@ defmodule Auth0Ex.TokenTest do
   end
 
   test "peek_permissions/1 returns all permissions from a token" do
-    token = jwt_with_claims(%{"permissions" => ["some", "permission"]})
+    token = generate_fake_jwt("some-audience", %{"permissions" => ["some", "permission"]})
 
     assert ["some", "permission"] == Token.peek_permissions(token)
   end
 
   test "peek_permissions/1 returns empty permissions if token does not have any permission" do
-    token = jwt_with_claims(%{})
+    token = generate_fake_jwt("some-audience", %{})
 
     assert [] == Token.peek_permissions(token)
   end

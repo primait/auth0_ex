@@ -54,13 +54,7 @@ defmodule Auth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
   end
 
   defp sample_token do
-    # TODO: clean up generation of sample token
-    expiration = Joken.current_time() + 86_400
-
-    JwtUtils.generate_fake_jwt(
-      %{"iat" => 0, "exp" => expiration, "aud" => @test_audience},
-      %{"kid" => "my-kid"}
-    )
+    JwtUtils.generate_fake_jwt(@test_audience, %{}, %{"kid" => "my-kid"})
   end
 
   defp valid_auth0_response, do: ~s<{"access_token":"#{sample_token()}","expires_in":86400,"token_type":"Bearer"}>
