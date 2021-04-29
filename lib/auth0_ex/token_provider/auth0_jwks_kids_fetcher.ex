@@ -18,8 +18,6 @@ defmodule Auth0Ex.TokenProvider.Auth0JwksKidsFetcher do
     |> Telepoison.get()
     |> parse_body()
     |> extract_kids()
-
-    # TODO: handle error on parse_body
   end
 
   defp parse_body({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
@@ -37,6 +35,8 @@ defmodule Auth0Ex.TokenProvider.Auth0JwksKidsFetcher do
     Logger.warning("Error retrieving JWKS", response: inspect(error_response))
     {:error, error_response}
   end
+
+  defp extract_kids({:error, reason}), do: {:error, reason}
 
   defp extract_kids(jwks) do
     case get_in(jwks, ["keys", Access.all(), "kid"]) do
