@@ -1,0 +1,24 @@
+version: 2
+updates:
+- package-ecosystem: mix
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: hammox
+    versions:
+    - 0.5.0
+  - dependency-name: dialyxir
+    versions:
+    - 1.1.0
+  - dependency-name: timex
+    versions:
+    - 3.7.3
+    - 3.7.5
+  - dependency-name: joken_jwks
+    versions:
+    - 1.4.1
+  - dependency-name: plug
+    versions:
+    - 1.11.1
