@@ -2,12 +2,13 @@ use Mix.Config
 
 config :auth0_ex,
   authorization_service: AuthorizationServiceMock,
+  jwks_kids_fetcher: JwksKidsFetcherMock,
   refresh_strategy: RefreshStrategyMock,
   token_cache: TokenCacheMock,
-  token_service: TokenServiceMock,
-  token_verifier: TokenVerifierMock
+  token_service: TokenServiceMock
 
 config :auth0_ex, :client,
   cache_enabled: true,
+  ignore_signature: false,
   token_check_interval: :timer.seconds(1),
   signature_check_interval: :timer.seconds(1)
