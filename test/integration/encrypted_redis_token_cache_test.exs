@@ -27,7 +27,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
     token_without_kid = %{jwt: "my-token", issued_at: issued_at, expires_at: expires_at}
     :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token_without_kid)
 
-    assert {:ok, %{jwt: "my-token", issued_at: ^issued_at, expires_at: ^expires_at}} =
+    assert {:ok, %TokenInfo{jwt: "my-token", issued_at: ^issued_at, expires_at: ^expires_at, kid: nil}} =
              EncryptedRedisTokenCache.get_token_for(@test_audience)
   end
 

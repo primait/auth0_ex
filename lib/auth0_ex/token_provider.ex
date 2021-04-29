@@ -121,15 +121,18 @@ defmodule Auth0Ex.TokenProvider do
   defp check_signatures(state, _parent) when state.tokens == %{}, do: nil
 
   defp check_signatures(state, parent) do
-    # TODO handle error
-    {:ok, valid_kids} = @jwks_kids_fetcher.fetch_kids(state.credentials)
-
-    for {audience, token} <- state.tokens do
-      unless token.kid in valid_kids do
-        Logger.info("Refreshing token due to invalid signature.")
-
-        try_refresh(audience, token, state.credentials, parent)
+    with {:ok, valid_kids} <- @jwks_kids_fetcher.fetch_kids(state.credentials) do
+      for {audience, token} <- state.tokens do
+        check_signature_for(token, audience, valid_kids, state, parent)
       end
+    end
+  end
+
+  defp check_signature_for(token, audience, valid_kids, state, parent) do
+    unless token.kid in valid_kids do
+      Logger.info("Refreshing token due to invalid signature.")
+
+      try_refresh(audience, token, state.credentials, parent)
     end
   end
 
