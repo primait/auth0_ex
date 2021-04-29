@@ -49,7 +49,9 @@ defmodule Auth0Ex.TokenProvider do
          :ok <- start_periodic_signature_check() do
       {:ok, %__MODULE__{credentials: auth0_credentials}}
     else
-      error -> {:stop, error}
+      error ->
+        Logger.error("Failed to start TokenProvider.", error: error)
+        {:stop, error}
     end
   end
 
@@ -130,7 +132,11 @@ defmodule Auth0Ex.TokenProvider do
 
   defp check_signature_for(token, audience, valid_kids, state, parent) do
     unless token.kid in valid_kids do
-      Logger.info("Refreshing token due to invalid signature.")
+      Logger.info("Refreshing token due to invalid signature.",
+        audience: audience,
+        token_kid: token.kid,
+        valid_kids: inspect(valid_kids)
+      )
 
       try_refresh(audience, token, state.credentials, parent)
     end

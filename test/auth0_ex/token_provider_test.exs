@@ -49,7 +49,7 @@ defmodule Auth0Ex.TokenProviderTest do
 
     initialize_for_audience("target_audience", @sample_token, pid)
 
-    expect(TokenServiceMock, :refresh_token, 0, fn _, _, _ -> :should_never_be_called end)
+    stub(TokenServiceMock, :refresh_token, fn _, _, _ -> {:ok, @another_sample_token} end)
 
     wait_for_first_check_to_complete()
 
