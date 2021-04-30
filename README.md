@@ -12,7 +12,7 @@ by adding `auth0_ex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:auth0_ex, git: "git@github.com:primait/auth0_ex.git", tag: "0.2.0"}
+    {:auth0_ex, git: "git@github.com:primait/auth0_ex.git", tag: "0.2.1"}
   ]
 end
 ```
