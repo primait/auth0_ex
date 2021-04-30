@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added periodic check on the client to ensure that the signing keys of the tokens are still valid - according to the JWKS server
 
+### Fixed
+
+- Fixed config issue that prevented the redis cache from being enabled in version 0.2.0
+
 ## [0.2.0] - 2021-04-15
 
 ### Added 

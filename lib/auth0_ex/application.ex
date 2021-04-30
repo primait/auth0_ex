@@ -36,7 +36,7 @@ defmodule Auth0Ex.Application do
     end
   end
 
-  defp cache_enabled?, do: Application.get_env(:auth0_ex, :client, cache_enabled: false)[:enabled]
+  defp cache_enabled?, do: Application.get_env(:auth0_ex, :client, cache_enabled: false)[:cache_enabled]
   defp client_configured?, do: Application.get_env(:auth0_ex, :client) != nil
   defp server_configured?, do: Application.get_env(:auth0_ex, :server) != nil
 
