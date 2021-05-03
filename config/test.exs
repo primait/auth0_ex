@@ -12,3 +12,5 @@ config :auth0_ex, :client,
   ignore_signature: false,
   token_check_interval: :timer.seconds(1),
   signature_check_interval: :timer.seconds(1)
+
+config :logger, level: :warn
