@@ -9,7 +9,6 @@ config :auth0_ex,
 
 config :auth0_ex, :client,
   cache_enabled: true,
-  ignore_signature: false,
   token_check_interval: :timer.seconds(1),
   signature_check_interval: :timer.seconds(1)
 
