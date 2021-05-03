@@ -72,9 +72,8 @@ defmodule Auth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp to_json(token), do: Jason.encode(token)
 
-  defp build_token(%{} = token) do
-    {:ok,
-     %TokenInfo{jwt: token["jwt"], issued_at: token["issued_at"], expires_at: token["expires_at"], kid: token["kid"]}}
+  defp build_token(%{"jwt" => jwt, "issued_at" => issued_at, "expires_at" => expires_at} = token) do
+    {:ok, %TokenInfo{jwt: jwt, issued_at: issued_at, expires_at: expires_at, kid: token["kid"]}}
   end
 
   defp build_token(_), do: {:error, :malformed_cached_data}
