@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2021-04-30
+
+### Added
+
+- Added periodic check on the client to ensure that the signing keys of the tokens are still valid - according to the JWKS server
+
+### Fixed
+
+- Fixed config issue that prevented the redis cache from being enabled in version 0.2.0
+
 ## [0.2.0] - 2021-04-15
 
 ### Added 

@@ -12,6 +12,7 @@ config :auth0_ex, :client,
   redis_connection_uri: "redis://redis:6379"
 
 config :auth0_ex, :server,
+  ignore_signature: false,
   audience: "some-audience",
   issuer: "https://tenant.eu.auth0.com/",
   first_jwks_fetch_sync: true

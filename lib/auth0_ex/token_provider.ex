@@ -10,7 +10,13 @@ defmodule Auth0Ex.TokenProvider do
   use GenServer
 
   require Logger
-  alias Auth0Ex.TokenProvider.{CachedTokenService, ProbabilisticRefreshStrategy, TokenInfo}
+
+  alias Auth0Ex.TokenProvider.{
+    Auth0JwksKidsFetcher,
+    CachedTokenService,
+    ProbabilisticRefreshStrategy,
+    TokenInfo
+  }
 
   @type t() :: %__MODULE__{
           credentials: Auth0Ex.Auth0Credentials,
@@ -20,6 +26,7 @@ defmodule Auth0Ex.TokenProvider do
   @enforce_keys [:credentials]
   defstruct [:credentials, tokens: %{}, refresh_times: %{}]
 
+  @jwks_kids_fetcher Application.compile_env(:auth0_ex, :jwks_kids_fetcher, Auth0JwksKidsFetcher)
   @refresh_strategy Application.compile_env(:auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
   @token_service Application.compile_env(:auth0_ex, :token_service, CachedTokenService)
 
@@ -38,9 +45,14 @@ defmodule Auth0Ex.TokenProvider do
 
   @impl true
   def init(auth0_credentials) do
-    {:ok, _} = :timer.send_interval(token_check_interval(), :periodic_check)
-
-    {:ok, %__MODULE__{credentials: auth0_credentials}}
+    with {:ok, _} <- :timer.send_interval(token_check_interval(), :periodic_check),
+         {:ok, _} <- :timer.send_interval(signature_check_interval(), :periodic_signature_check) do
+      {:ok, %__MODULE__{credentials: auth0_credentials}}
+    else
+      error ->
+        Logger.error("Failed to start TokenProvider.", error: error)
+        {:stop, error}
+    end
   end
 
   @impl true
@@ -65,9 +77,24 @@ defmodule Auth0Ex.TokenProvider do
   def handle_info(:periodic_check, state) do
     Logger.debug("Running periodic check...")
 
-    for {audience, _token} <- state.tokens do
-      refresh_if_necessary(state, audience)
-    end
+    parent = self()
+
+    spawn(fn ->
+      check_expiration_dates(state, parent)
+    end)
+
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info(:periodic_signature_check, state) do
+    Logger.debug("Checking signatures...")
+
+    parent = self()
+
+    spawn(fn ->
+      check_signatures(state, parent)
+    end)
 
     {:noreply, state}
   end
@@ -77,17 +104,41 @@ defmodule Auth0Ex.TokenProvider do
     {:noreply, set_token(state, audience, token)}
   end
 
-  defp refresh_if_necessary(state, audience) do
-    if should_refresh?(audience, state) do
+  defp check_expiration_dates(state, parent) do
+    for {audience, _token} <- state.tokens do
       token = state.tokens[audience]
 
-      Logger.info("Decided to refresh token.",
+      if should_refresh?(audience, state) do
+        Logger.info("Decided to refresh token.",
+          audience: audience,
+          token_issued_at: token.issued_at,
+          token_expires_at: token.expires_at
+        )
+
+        try_refresh(audience, token, state.credentials, parent)
+      end
+    end
+  end
+
+  defp check_signatures(state, _parent) when state.tokens == %{}, do: nil
+
+  defp check_signatures(state, parent) do
+    with {:ok, valid_kids} <- @jwks_kids_fetcher.fetch_kids(state.credentials) do
+      for {audience, token} <- state.tokens do
+        check_signature_for(token, audience, valid_kids, state, parent)
+      end
+    end
+  end
+
+  defp check_signature_for(token, audience, valid_kids, state, parent) do
+    unless token.kid in valid_kids do
+      Logger.info("Refreshing token due to invalid signature.",
         audience: audience,
-        token_issued_at: token.issued_at,
-        token_expires_at: token.expires_at
+        token_kid: token.kid,
+        valid_kids: inspect(valid_kids)
       )
 
-      try_refresh(audience, state)
+      try_refresh(audience, token, state.credentials, parent)
     end
   end
 
@@ -116,15 +167,14 @@ defmodule Auth0Ex.TokenProvider do
     :auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:token_check_interval, :timer.minutes(1))
   end
 
-  defp try_refresh(audience, state) do
-    parent = self()
-    token = state.tokens[audience]
+  defp signature_check_interval do
+    :auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:signature_check_interval, :timer.minutes(5))
+  end
 
-    spawn(fn ->
-      case @token_service.refresh_token(state.credentials, audience, token) do
-        {:ok, new_token} -> send(parent, {:set_token_for, audience, new_token})
-        {:error, description} -> Logger.warn("Error refreshing token", audience: audience, description: description)
-      end
-    end)
+  defp try_refresh(audience, token, credentials, parent) do
+    case @token_service.refresh_token(credentials, audience, token) do
+      {:ok, new_token} -> send(parent, {:set_token_for, audience, new_token})
+      {:error, description} -> Logger.warn("Error refreshing token", audience: audience, description: description)
+    end
   end
 end
