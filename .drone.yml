@@ -149,12 +149,6 @@ steps:
   - elixir-dialyzer
   - elixir-dep-check
 
-services:
-- name: redis
-  image: public.ecr.aws/bitnami/redis:5.0
-  environment:
-    ALLOW_EMPTY_PASSWORD: true
-  
 volumes:
 - name: docker
   host:
@@ -198,14 +192,15 @@ trigger:
   - failure
   target:
     exclude:
-    - qa
     - qa-stack
+    - qa-it
+    - qa
 
 depends_on:
 - default
 
 ---
 kind: signature
-hmac: 1bdbc27eb0d4201cd30de80ab5a26a0afbd7e13796885411acb5d4fba6f62870
+hmac: 6ee8bee52fe613ec006d1ff666c3b421c706cc709d012fc54f75bf6f64abfd2e
 
 ...
