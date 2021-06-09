@@ -18,7 +18,7 @@ defmodule Auth0Ex.Plug.VerifyAndValidateToken do
     Mostly useful for testing purposes. Default is `false`, overridable from `config.exs`.
   * `ignore_signature: false` when true, validates claims found in a token without verifying its signature.
     Should only be enabled in dev/test environments, as it allows anyone to forge valid tokens.
-    Default is `true`, overridable from `config.exs`.
+    Default is `false`, overridable from `config.exs`.
   """
 
   import Plug.Conn
