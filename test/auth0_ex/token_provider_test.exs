@@ -49,7 +49,7 @@ defmodule Auth0Ex.TokenProviderTest do
 
     initialize_for_audience("target_audience", @sample_token, pid)
 
-    stub(TokenServiceMock, :refresh_token, fn _, _, _ -> {:ok, @another_sample_token} end)
+    stub(TokenServiceMock, :refresh_token, fn _, _, _, _ -> {:ok, @another_sample_token} end)
 
     wait_for_first_check_to_complete()
 
@@ -65,7 +65,7 @@ defmodule Auth0Ex.TokenProviderTest do
     expect(
       TokenServiceMock,
       :refresh_token,
-      fn @sample_credentials, "target_audience", @sample_token -> {:ok, @another_sample_token} end
+      fn @sample_credentials, "target_audience", @sample_token, false -> {:ok, @another_sample_token} end
     )
 
     wait_for_first_check_to_complete()
@@ -84,12 +84,25 @@ defmodule Auth0Ex.TokenProviderTest do
     expect(
       TokenServiceMock,
       :refresh_token,
-      fn @sample_credentials, "target_audience", @sample_token -> {:ok, @another_sample_token} end
+      fn @sample_credentials, "target_audience", @sample_token, false -> {:ok, @another_sample_token} end
     )
 
     wait_for_first_signature_check_to_complete()
 
     assert {:ok, "ANOTHER-SAMPLE-TOKEN"} == TokenProvider.token_for(pid, "target_audience")
+  end
+
+  test "can force refresh of token", %{pid: pid} do
+    initialize_for_audience("target_audience", @sample_token, pid)
+
+    expect(
+      TokenServiceMock,
+      :refresh_token,
+      fn @sample_credentials, "target_audience", _, true -> {:ok, @another_sample_token} end
+    )
+
+    assert {:ok, "ANOTHER-SAMPLE-TOKEN"} = TokenProvider.refresh_token_for(pid, "target_audience")
+    assert {:ok, "ANOTHER-SAMPLE-TOKEN"} = TokenProvider.token_for(pid, "target_audience")
   end
 
   defp initialize_for_audience(audience, token, pid) do

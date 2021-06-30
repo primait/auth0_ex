@@ -14,6 +14,14 @@ defmodule Auth0Ex do
   end
 
   @doc """
+  Force the refresh of the token for a given audience, invalidating both the local and the shared cache.
+  """
+  @spec refresh_token_for(String.t()) :: {:ok, String.t()} | {:error, any()}
+  def refresh_token_for(audience) do
+    TokenProvider.refresh_token_for(TokenProvider, audience)
+  end
+
+  @doc """
   Verify the integrity of a token, and validate its claims.
 
   It is possible to set a list of permissions to validate.
