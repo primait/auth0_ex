@@ -12,7 +12,7 @@ by adding `auth0_ex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:auth0_ex, git: "git@github.com:primait/auth0_ex.git", tag: "0.2.1"}
+    {:auth0_ex, git: "git@github.com:primait/auth0_ex.git", tag: "0.2.2"}
   ]
 end
 ```
@@ -108,9 +108,10 @@ plug Auth0Ex.Plug.VerifyAndValidateToken
 This will return `401 Forbidden` to requests without a valid bearer token.
 
 The plug supports the following options:
-* `audience: "my-audience"` to explicitly set the expected audience. When not defined it defaults to the audience configured in `:auth0_ex, :server, :audience`;
-* `required_permissions: ["p1", "p2"]` to forbid access to users who do not have all the required permissions;
-* `dry_run` to allow access to the API when the token is not valid (mostly useful for testing purposes).
+
+- `audience: "my-audience"` to explicitly set the expected audience. When not defined it defaults to the audience configured in `:auth0_ex, :server, :audience`;
+- `required_permissions: ["p1", "p2"]` to forbid access to users who do not have all the required permissions;
+- `dry_run` to allow access to the API when the token is not valid (mostly useful for testing purposes).
 
 #### Validating permissions with Absinthe
 
@@ -120,7 +121,7 @@ It is important to note that in the following example we will only validate perm
 First you'll need to pass the user's permissions to the Absinthe context.
 This can be done with a Plug like this:
 
-``` elixir
+```elixir
 defmodule ExampleWeb.Graphql.Context do
   def init(opts), do: opts
 
@@ -138,7 +139,7 @@ end
 
 Then you can define an Absinthe Middleware that validates the required permissions, as follows:
 
-``` elixir
+```elixir
 defmodule Example.Graphql.Middleware.RequirePermission do
   @behaviour Absinthe.Middleware
 
@@ -154,7 +155,7 @@ end
 
 This middleware can then be used in your schema as follows:
 
-``` elixir
+```elixir
   field ... do
     middleware RequirePermission, "your-required-permission"
     resolve &Resolver.resolve_function/3
