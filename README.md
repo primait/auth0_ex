@@ -49,6 +49,8 @@ config :auth0_ex, :client,
   redis_connection_uri: "redis://redis:6379"
 ```
 
+**If the client will access APIs that perform validation of permissions, make sure that the API on Auth0 is configured to have both "Enable RBAC" and "Add Permissions in the Access Token" enabled.**
+
 #### API Provider
 
 To configure the library for use from a server (ie. a service that exposes an API),
