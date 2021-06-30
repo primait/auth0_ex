@@ -172,7 +172,7 @@ defmodule Auth0Ex.TokenProvider do
   end
 
   defp try_refresh(audience, token, credentials, parent) do
-    case @token_service.refresh_token(credentials, audience, token) do
+    case @token_service.refresh_token(credentials, audience, token, false) do
       {:ok, new_token} -> send(parent, {:set_token_for, audience, new_token})
       {:error, description} -> Logger.warn("Error refreshing token", audience: audience, description: description)
     end
