@@ -91,7 +91,7 @@ Tokens are automatically refreshed when they expire and when the signing keys ar
 It is also possible to force the refresh of the token, both on the local instance and on the shared cache, as follows:
 
 ```elixir
-{:ok, new_token} = Auth0Ex.refresh_token_for("target_audience")
+{:ok, new_token} = Auth0Ex.refresh_token_for("target-audience")
 ```
 
 A use-case for forcing the refresh of the token may be e.g., if new permissions are added to an application on Auth0, and we want to propagate this change without waiting for the natural expiration of tokens.
