@@ -41,6 +41,11 @@ defmodule Auth0Ex.TokenProvider do
     GenServer.call(pid, {:token_for, target_audience})
   end
 
+  @spec refresh_token_for(GenServer.server(), String.t()) :: {:ok, String.t()} | {:error, any()}
+  def refresh_token_for(pid, target_audience) do
+    GenServer.call(pid, {:refresh_token_for, target_audience})
+  end
+
   # Callbacks
 
   @impl true
@@ -70,6 +75,14 @@ defmodule Auth0Ex.TokenProvider do
 
       %TokenInfo{jwt: jwt} ->
         {:reply, {:ok, jwt}, state}
+    end
+  end
+
+  @impl true
+  def handle_call({:refresh_token_for, audience}, _from, state) do
+    case @token_service.refresh_token(state.credentials, audience, nil, true) do
+      {:ok, %TokenInfo{jwt: jwt} = token} -> {:reply, {:ok, jwt}, set_token(state, audience, token)}
+      {:error, error} -> {:reply, {:error, error}, state}
     end
   end
 
@@ -172,7 +185,7 @@ defmodule Auth0Ex.TokenProvider do
   end
 
   defp try_refresh(audience, token, credentials, parent) do
-    case @token_service.refresh_token(credentials, audience, token) do
+    case @token_service.refresh_token(credentials, audience, token, false) do
       {:ok, new_token} -> send(parent, {:set_token_for, audience, new_token})
       {:error, description} -> Logger.warn("Error refreshing token", audience: audience, description: description)
     end

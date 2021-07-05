@@ -23,10 +23,14 @@ defmodule Auth0Ex.TokenProvider.CachedTokenService do
   end
 
   @impl TokenService
-  def refresh_token(credentials, audience, current_token) do
+  def refresh_token(credentials, audience, current_token, false = _force_cache_bust) do
     audience
     |> @token_cache.get_token_for()
     |> refresh_token_unless_it_changed(current_token, credentials, audience)
+  end
+
+  def refresh_token(credentials, audience, _current_token, true = _force_cache_bust) do
+    do_refresh_token(credentials, audience)
   end
 
   defp refresh_token_on_cache_miss({:error, _}, credentials, audience), do: do_refresh_token(credentials, audience)

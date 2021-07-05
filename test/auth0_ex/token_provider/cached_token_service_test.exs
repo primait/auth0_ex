@@ -54,7 +54,7 @@ defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
       expect(TokenCacheMock, :get_token_for, fn "target-audience" -> {:ok, new_cached_token} end)
 
       assert {:ok, new_cached_token} ==
-               CachedTokenService.refresh_token(@credentials, "target-audience", current_token)
+               CachedTokenService.refresh_token(@credentials, "target-audience", current_token, false)
     end
 
     test "when cached token has not changed, update it with a fresh token" do
@@ -65,7 +65,7 @@ defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
       expect(TokenCacheMock, :set_token_for, fn "target-audience", ^fresh_token -> :ok end)
 
       assert {:ok, fresh_token} ==
-               CachedTokenService.refresh_token(@credentials, "target-audience", current_token)
+               CachedTokenService.refresh_token(@credentials, "target-audience", current_token, false)
     end
 
     test "when cache does not contain any token for the given audience, update it with a fresh one" do
@@ -78,7 +78,7 @@ defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
       expect(TokenCacheMock, :set_token_for, fn "target-audience", ^fresh_token -> :ok end)
 
       assert {:ok, fresh_token} ==
-               CachedTokenService.refresh_token(@credentials, "target-audience", current_token)
+               CachedTokenService.refresh_token(@credentials, "target-audience", current_token, false)
     end
 
     test "when cache lookup fails, retrieve and return a fresh token" do
@@ -89,7 +89,7 @@ defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
       expect(TokenCacheMock, :set_token_for, fn "target-audience", ^fresh_token -> {:error, :error_description} end)
 
       assert {:ok, fresh_token} ==
-               CachedTokenService.refresh_token(@credentials, "target-audience", current_token)
+               CachedTokenService.refresh_token(@credentials, "target-audience", current_token, false)
     end
 
     test "when retrieval from auth0 fails, returns {:error, description}" do
@@ -100,7 +100,18 @@ defmodule Auth0Ex.TokenProvider.CachedTokenServiceTest do
         {:error, :error_description}
       end)
 
-      assert {:error, _} = CachedTokenService.refresh_token(@credentials, "target-audience", current_token)
+      assert {:error, _} = CachedTokenService.refresh_token(@credentials, "target-audience", current_token, false)
+    end
+
+    test "when force_cache_bust is true, refreshes the token in the shared cache regardless of its content" do
+      current_token = %TokenInfo{jwt: "CURRENT-TOKEN", issued_at: two_hours_ago(), expires_at: now()}
+      fresh_token = %TokenInfo{jwt: "NEW-TOKEN", issued_at: now(), expires_at: in_two_hours()}
+
+      expect(TokenCacheMock, :set_token_for, fn "target-audience", ^fresh_token -> :ok end)
+      expect(AuthorizationServiceMock, :retrieve_token, fn @credentials, "target-audience" -> {:ok, fresh_token} end)
+
+      assert {:ok, fresh_token} ==
+               CachedTokenService.refresh_token(@credentials, "target-audience", current_token, true)
     end
   end
 end
