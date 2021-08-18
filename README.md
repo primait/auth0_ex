@@ -188,7 +188,5 @@ mix test --include external
 Always run formatter, linter and dialyzer before pushing changes:
 
 ```bash
-mix format
-mix credo
-mix dialyzer
+mix check
 ```
