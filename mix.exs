@@ -4,11 +4,12 @@ defmodule Auth0Ex.MixProject do
   def project do
     [
       app: :auth0_ex,
-      version: "0.2.2",
+      version: "0.2.3",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
+      aliases: aliases(),
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit],
         plt_add_deps: :transitive,
@@ -46,6 +47,16 @@ defmodule Auth0Ex.MixProject do
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
       {:hammox, "~> 0.5", only: :test},
       {:stream_data, "~> 0.5", only: :test}
+    ]
+  end
+
+  defp aliases do
+    [
+      check: [
+        "format --check-formatted",
+        "credo -a --strict",
+        "dialyzer"
+      ]
     ]
   end
 

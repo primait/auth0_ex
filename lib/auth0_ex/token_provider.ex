@@ -80,6 +80,8 @@ defmodule Auth0Ex.TokenProvider do
 
   @impl true
   def handle_call({:refresh_token_for, audience}, _from, state) do
+    Logger.info("Refreshing token...", audience: audience)
+
     case @token_service.refresh_token(state.credentials, audience, nil, true) do
       {:ok, %TokenInfo{jwt: jwt} = token} -> {:reply, {:ok, jwt}, set_token(state, audience, token)}
       {:error, error} -> {:reply, {:error, error}, state}
