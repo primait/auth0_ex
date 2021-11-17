@@ -11,7 +11,7 @@ The package can be installed by adding `auth0_ex` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:auth0_ex, git: "git@github.com:primait/auth0_ex.git", tag: "0.2.4"}
+    {:auth0_ex, git: "git@github.com:primait/auth0_ex.git", tag: "0.2.5"}
   ]
 end
 ```
