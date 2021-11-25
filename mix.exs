@@ -66,7 +66,7 @@ defmodule Auth0Ex.MixProject do
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
-  
+
   defp docs do
     [
       extras: [
@@ -77,6 +77,16 @@ defmodule Auth0Ex.MixProject do
       source_url: @source_url,
       source_ref: "v#{@version}",
       formatters: ["html"]
+    ]
+  end
+
+  def package do
+    [
+      description: "An easy to use library to authenticate machine-to-machine communications through Auth0.",
+      name: "prima_auth0_ex",
+      maintainers: ["Prima"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => @source_url}
     ]
   end
 end
