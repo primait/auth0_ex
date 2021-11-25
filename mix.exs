@@ -2,7 +2,7 @@ defmodule Auth0Ex.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/primait/auth0_ex"
-  @version "0.2.5"
+  @version "0.3.0-rc.1"
 
   def project do
     [
