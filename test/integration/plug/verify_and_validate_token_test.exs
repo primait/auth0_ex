@@ -81,10 +81,7 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
     credentials = Auth0Credentials.from_env()
     {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
-    opts =
-      VerifyAndValidateToken.init(
-        required_permissions: ["permission-that-user-on-auth0-should-not-have"]
-      )
+    opts = VerifyAndValidateToken.init(required_permissions: ["permission-that-user-on-auth0-should-not-have"])
 
     conn =
       conn(:get, "/")

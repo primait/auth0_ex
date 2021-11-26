@@ -26,7 +26,9 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateToken do
 
   @global_audience :prima_auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:audience)
   @global_dry_run :prima_auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:dry_run, false)
-  @global_ignore_signature :prima_auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:ignore_signature, false)
+  @global_ignore_signature :prima_auth0_ex
+                           |> Application.compile_env(:server, [])
+                           |> Keyword.get(:ignore_signature, false)
 
   def init(opts), do: opts
 
