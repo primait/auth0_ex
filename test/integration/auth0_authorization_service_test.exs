@@ -1,12 +1,12 @@
 defmodule Integration.Auth0AuthorizationServiceTest do
   use ExUnit.Case, async: true
 
-  alias Auth0Ex.TokenProvider.{Auth0AuthorizationService, TokenInfo}
+  alias PrimaAuth0Ex.TokenProvider.{Auth0AuthorizationService, TokenInfo}
 
   @tag :external
   test "obtains a JWT from Auth0" do
-    credentials = Auth0Ex.Auth0Credentials.from_env()
-    audience = Application.fetch_env!(:auth0_ex, :server)[:audience]
+    credentials = PrimaAuth0Ex.Auth0Credentials.from_env()
+    audience = Application.fetch_env!(:prima_auth0_ex, :server)[:audience]
 
     {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience)
 

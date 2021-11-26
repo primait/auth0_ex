@@ -1,4 +1,4 @@
-defmodule Auth0Ex.MixProject do
+defmodule PrimaAuth0Ex.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/primait/auth0_ex"
@@ -6,7 +6,7 @@ defmodule Auth0Ex.MixProject do
 
   def project do
     [
-      app: :auth0_ex,
+      app: :prima_auth0_ex,
       version: @version,
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
@@ -26,7 +26,7 @@ defmodule Auth0Ex.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {Auth0Ex.Application, []},
+      mod: {PrimaAuth0Ex.Application, []},
       extra_applications: [:crypto, :logger]
     ]
   end

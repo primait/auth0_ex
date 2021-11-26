@@ -1,4 +1,4 @@
-defmodule Auth0Ex.TestSupport.JwtUtils do
+defmodule PrimaAuth0Ex.TestSupport.JwtUtils do
   @moduledoc false
 
   @days 60 * 60 * 24

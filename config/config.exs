@@ -1,9 +1,9 @@
 use Mix.Config
 
-config :auth0_ex,
+config :prima_auth0_ex,
   auth0_base_url: "https://tenant.eu.auth0.com"
 
-config :auth0_ex, :client,
+config :prima_auth0_ex, :client,
   client_id: "",
   client_secret: "",
   cache_enabled: true,
@@ -11,7 +11,7 @@ config :auth0_ex, :client,
   cache_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
   redis_connection_uri: "redis://redis:6379"
 
-config :auth0_ex, :server,
+config :prima_auth0_ex, :server,
   ignore_signature: false,
   audience: "some-audience",
   issuer: "https://tenant.eu.auth0.com/",

@@ -1,11 +1,11 @@
-defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
+defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
   use ExUnit.Case, async: true
   use Plug.Test
 
-  alias Auth0Ex.Auth0Credentials
-  alias Auth0Ex.Plug.VerifyAndValidateToken
-  alias Auth0Ex.TestSupport.JwtUtils
-  alias Auth0Ex.TokenProvider.Auth0AuthorizationService
+  alias PrimaAuth0Ex.Auth0Credentials
+  alias PrimaAuth0Ex.Plug.VerifyAndValidateToken
+  alias PrimaAuth0Ex.TestSupport.JwtUtils
+  alias PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService
 
   @moduletag capture_log: true
 
@@ -81,7 +81,10 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
     credentials = Auth0Credentials.from_env()
     {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
-    opts = VerifyAndValidateToken.init(required_permissions: ["permission-that-user-on-auth0-should-not-have"])
+    opts =
+      VerifyAndValidateToken.init(
+        required_permissions: ["permission-that-user-on-auth0-should-not-have"]
+      )
 
     conn =
       conn(:get, "/")
@@ -115,5 +118,5 @@ defmodule Auth0Ex.Plug.VerifyAndValidateTokenTest do
     refute conn.status == 401
   end
 
-  defp audience, do: Application.fetch_env!(:auth0_ex, :server)[:audience]
+  defp audience, do: Application.fetch_env!(:prima_auth0_ex, :server)[:audience]
 end
