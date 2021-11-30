@@ -19,7 +19,8 @@ defmodule PrimaAuth0Ex.MixProject do
         ignore_warnings: ".dialyzerignore",
         list_unused_filters: true
       ],
-      docs: docs()
+      docs: docs(),
+      package: package()
     ]
   end
 
@@ -80,7 +81,7 @@ defmodule PrimaAuth0Ex.MixProject do
     ]
   end
 
-  def package do
+  defp package do
     [
       description: "An easy to use library to authenticate machine-to-machine communications through Auth0.",
       name: "prima_auth0_ex",
