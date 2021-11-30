@@ -2,7 +2,7 @@ defmodule PrimaAuth0Ex.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/primait/auth0_ex"
-  @version "0.3.0-rc.1.1"
+  @version "0.3.0-rc.1.2"
 
   def project do
     [
@@ -51,7 +51,8 @@ defmodule PrimaAuth0Ex.MixProject do
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
       {:hammox, "~> 0.5", only: :test},
-      {:stream_data, "~> 0.5", only: :test}
+      {:stream_data, "~> 0.5", only: :test},
+      {:ex_doc, ">= 0.25.3", only: :dev, runtime: false}
     ]
   end
 
