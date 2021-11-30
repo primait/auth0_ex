@@ -1,4 +1,4 @@
-# Auth0Ex
+# prima_auth0_ex
 
 An easy to use library to authenticate machine-to-machine communications through Auth0.
 
@@ -6,19 +6,19 @@ Supports both retrieval of JWTs and their verification and validation.
 
 ## Installation
 
-The package can be installed by adding `auth0_ex` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `prima_auth0_ex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:auth0_ex, git: "git@github.com:primait/auth0_ex.git", tag: "0.2.5"}
+    {:prima_auth0_ex, "~> 0.3.0-rc.1"}
   ]
 end
 ```
 
 ### Configuration
 
-`auth0_ex` can be configured to be used for an API consumer, an API provider or both.
+`prima_auth0_ex` can be configured to be used for an API consumer, an API provider or both.
 
 #### API Consumer
 
@@ -26,11 +26,11 @@ To configure the library for use from a client (ie. a service that needs to obta
 the following configuration is supported:
 
 ```elixir
-config :auth0_ex,
+config :prima_auth0_ex,
   # Base url for Auth0 API
   auth0_base_url: "https://tenant.eu.auth0.com"
 
-config :auth0_ex, :client,
+config :prima_auth0_ex, :client,
   # Credentials on Auth0
   client_id: "",
   client_secret: "",
@@ -53,11 +53,11 @@ To configure the library for use from a server (ie. a service that exposes an AP
 the following configuration is supported:
 
 ```elixir
-config :auth0_ex,
+config :prima_auth0_ex,
   # Base url for Auth0 API
   auth0_base_url: "https://tenant.eu.auth0.com"
 
-config :auth0_ex, :server,
+config :prima_auth0_ex, :server,
   # Default audience used to verify tokens. Not necessary when audience is set explicitly on usage.
   audience: "audience",
   # Issuer used to verify tokens. Can be found at https://your-tenant.eu.auth0.com/.well-known/openid-configuration
@@ -80,14 +80,14 @@ config :auth0_ex, :server,
 Tokens for a given audience can be obtained as follows:
 
 ```elixir
-{:ok, token} = Auth0Ex.token_for("target-audience")
+{:ok, token} = PrimaAuth0Ex.token_for("target-audience")
 ```
 
 Tokens are automatically refreshed when they expire and when the signing keys are revoked.
 It is also possible to force the refresh of the token, both on the local instance and on the shared cache, as follows:
 
 ```elixir
-{:ok, new_token} = Auth0Ex.refresh_token_for("target-audience")
+{:ok, new_token} = PrimaAuth0Ex.refresh_token_for("target-audience")
 ```
 
 A use-case for forcing the refresh of the token may be e.g., if new permissions are added to an application on Auth0, and we want to propagate this change without waiting for the natural expiration of tokens.
@@ -97,26 +97,26 @@ A use-case for forcing the refresh of the token may be e.g., if new permissions 
 Tokens can be verified and validated as follows:
 
 ```elixir
-{:ok, claims} = Auth0Ex.verify_and_validate("my-token")
+{:ok, claims} = PrimaAuth0Ex.verify_and_validate("my-token")
 ```
 
 The audience and the required permissions can be explicitly specified:
 
 ```elixir
-{:ok, claims} = Auth0Ex.verify_and_validate("my-token", "my-audience", ["required-permission1"])
+{:ok, claims} = PrimaAuth0Ex.verify_and_validate("my-token", "my-audience", ["required-permission1"])
 ```
 
 For `Plug`-based applications, a plug to automate this process is available:
 
 ```elixir
-plug Auth0Ex.Plug.VerifyAndValidateToken
+plug PrimaAuth0Ex.Plug.VerifyAndValidateToken
 ```
 
 This will return `401 Forbidden` to requests without a valid bearer token.
 
 The plug supports the following options:
 
-- `audience: "my-audience"` to explicitly set the expected audience. When not defined it defaults to the audience configured in `:auth0_ex, :server, :audience`;
+- `audience: "my-audience"` to explicitly set the expected audience. When not defined it defaults to the audience configured in `:prima_auth0_ex, :server, :audience`;
 - `required_permissions: ["p1", "p2"]` to forbid access to users who do not have all the required permissions;
 - `dry_run` to allow access to the API when the token is not valid (mostly useful for testing purposes).
 
@@ -135,7 +135,7 @@ defmodule ExampleWeb.Graphql.Context do
   def call(conn, _) do
     permissions =
       case Plug.Conn.get_req_header(conn, "authorization") do
-        ["Bearer " <> token] -> Auth0Ex.Token.peek_permissions(token)
+        ["Bearer " <> token] -> PrimaAuth0Ex.Token.peek_permissions(token)
         _ -> []
       end
 

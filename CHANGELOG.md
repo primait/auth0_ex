@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0-rc.1] - 2021-11-26
+
+### Changed
+
+- Published project to [Hex.pm](https://hex.pm).
+- Renamed project to `prima_auth0_ex`. This is a breaking change, and it impacts both configuration and usage of the library.
+
 ## [0.2.5] - 2021-11-17
 
 - Bumped version of joken, joken_jwks and telepoison

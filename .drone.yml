@@ -163,6 +163,78 @@ trigger:
 
 ---
 kind: pipeline
+name: build-production
+
+platform:
+  os: linux
+  arch: amd64
+
+clone:
+  disable: true
+
+steps:
+- name: git-clone
+  image: public.ecr.aws/prima/drone-git:1.3-3
+  environment:
+    PLUGIN_DEPTH: 5
+
+- name: cache-restore
+  image: public.ecr.aws/prima/drone-tools:1.21.2
+  commands:
+  - . /etc/profile.d/ecs-credentials-endpoint
+  - cache-restore
+  environment:
+    BUCKET_NAME: prima-ci-cache
+  volumes:
+  - name: ecs
+    path: /etc/profile.d/ecs-credentials-endpoint
+  - name: docker
+    path: /var/run/docker.sock
+  depends_on:
+  - git-clone
+
+- name: build-image
+  image: public.ecr.aws/prima/drone-tools:1.21.2
+  commands:
+  - sed -i 's/USER app/USER root/g' ./Dockerfile
+  - docker build -t prima/auth0_ex-ci:${DRONE_COMMIT} ./
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
+  depends_on:
+  - cache-restore
+
+- name: build-production
+  image: prima/auth0_ex-ci:${DRONE_COMMIT}
+  commands:
+  - . /etc/profile.d/ecs-credentials-endpoint
+  - ./deploy/build production
+  environment:
+    HEX_AUTH_KEY:
+      from_secret: hex_auth_key
+    MIX_ENV: dev
+  volumes:
+  - name: ecs
+    path: /etc/profile.d/ecs-credentials-endpoint
+  depends_on:
+  - build-image
+
+volumes:
+- name: docker
+  host:
+    path: /var/run/docker.sock
+- name: ecs
+  host:
+    path: /etc/profile.d/ecs-credentials-endpoint
+
+trigger:
+  event:
+  - tag
+  ref:
+  - refs/tags/*.*.*
+
+---
+kind: pipeline
 name: email-failure
 
 platform:
@@ -195,9 +267,10 @@ trigger:
 
 depends_on:
 - default
+- build-production
 
 ---
 kind: signature
-hmac: e165d46d087432a9d34fa44461c2d47b203114e29427bf107d13df78692adf66
+hmac: b9b88a52b0e4df1350b3491ce0077154de70cba5b16b14af0f72ed70ddde187b
 
 ...

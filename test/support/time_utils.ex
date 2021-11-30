@@ -1,4 +1,4 @@
-defmodule Auth0Ex.TestSupport.TimeUtils do
+defmodule PrimaAuth0Ex.TestSupport.TimeUtils do
   @moduledoc false
 
   def one_hour_ago, do: shifted_by_hours(-1)

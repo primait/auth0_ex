@@ -1,13 +1,13 @@
 defmodule Integration.TokenTest do
   use ExUnit.Case, async: true
 
-  alias Auth0Ex.TestSupport.JwtUtils
-  alias Auth0Ex.Token
-  alias Auth0Ex.TokenProvider.Auth0AuthorizationService
+  alias PrimaAuth0Ex.TestSupport.JwtUtils
+  alias PrimaAuth0Ex.Token
+  alias PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService
 
   @tag :external
   test "verifies token obtained from auth0" do
-    credentials = Auth0Ex.Auth0Credentials.from_env()
+    credentials = PrimaAuth0Ex.Auth0Credentials.from_env()
     {:ok, auth0_token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     assert {:ok, _} = Token.verify_and_validate_token(auth0_token.jwt, audience(), [], false)
@@ -27,5 +27,5 @@ defmodule Integration.TokenTest do
     assert {:ok, _} = Token.verify_and_validate_token(locally_forged_token, audience, [], true)
   end
 
-  defp audience, do: Application.fetch_env!(:auth0_ex, :server)[:audience]
+  defp audience, do: Application.fetch_env!(:prima_auth0_ex, :server)[:audience]
 end
