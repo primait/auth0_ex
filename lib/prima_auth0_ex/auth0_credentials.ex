@@ -1,7 +1,7 @@
 defmodule PrimaAuth0Ex.Auth0Credentials do
-  @moduledoc false
+  @moduledoc "Credentials to access Auth0"
 
-  @type t() :: %__MODULE__{base_url: String.t(), client_id: String.t(), client_secret: String.t()}
+  @type t :: %__MODULE__{base_url: String.t(), client_id: String.t(), client_secret: String.t()}
   @enforce_keys [:base_url, :client_id, :client_secret]
   defstruct [:base_url, :client_id, :client_secret]
 
