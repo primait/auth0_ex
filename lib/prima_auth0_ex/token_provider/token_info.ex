@@ -1,14 +1,11 @@
 defmodule PrimaAuth0Ex.TokenProvider.TokenInfo do
-  @moduledoc false
+  @moduledoc "Information related to a JWT, including the JWT itself and additional metadata"
 
   @enforce_keys [:jwt, :issued_at, :expires_at]
   @derive Jason.Encoder
   defstruct [:jwt, :kid, :issued_at, :expires_at]
 
-  @typedoc """
-  A JWT along with some useful metadata.
-  """
-  @type t() :: %__MODULE__{
+  @type t :: %__MODULE__{
           jwt: String.t(),
           issued_at: non_neg_integer(),
           expires_at: non_neg_integer(),
