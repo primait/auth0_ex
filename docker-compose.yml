@@ -4,8 +4,7 @@ services:
   redis:
     image: public.ecr.aws/bitnami/redis:5.0
     ports:
-      - 6379:6379
+      - "6379:6379"
     hostname: 'redis'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-
