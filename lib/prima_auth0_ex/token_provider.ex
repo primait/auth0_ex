@@ -160,8 +160,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
   defp initialize_token_for(audience, state) do
     Logger.info("Initializing token", audience: audience)
 
-    with {:ok, token} <- @token_service.retrieve_token(state.credentials, audience),
-         do: {:ok, token}
+    @token_service.retrieve_token(state.credentials, audience)
   end
 
   defp set_token(state, audience, token) do
