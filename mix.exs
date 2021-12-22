@@ -36,7 +36,7 @@ defmodule PrimaAuth0Ex.MixProject do
   defp deps do
     [
       {:jason, "~> 1.0"},
-      {:joken, "~> 2.4.0"},
+      {:joken, "~> 2.4"},
       {:joken_jwks, "~> 1.4"},
       {:plug, "~> 1.10"},
       {:redix, "~> 0.9 or ~> 1.0"},
