@@ -35,7 +35,7 @@ defmodule PrimaAuth0Ex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jason, "~> 1.2.2"},
+      {:jason, "~> 1.3.0"},
       {:joken, "~> 2.4.0"},
       {:joken_jwks, "~> 1.4"},
       {:plug, "~> 1.10"},
