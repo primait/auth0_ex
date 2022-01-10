@@ -2,13 +2,13 @@ defmodule PrimaAuth0Ex.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/primait/auth0_ex"
-  @version "0.3.0-rc.1.2"
+  @version "0.3.0-rc.1.3"
 
   def project do
     [
       app: :prima_auth0_ex,
       version: @version,
-      elixir: "~> 1.11",
+      elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
@@ -35,8 +35,8 @@ defmodule PrimaAuth0Ex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jason, "~> 1.2.2"},
-      {:joken, "~> 2.4.0"},
+      {:jason, "~> 1.0"},
+      {:joken, "~> 2.4"},
       {:joken_jwks, "~> 1.4"},
       {:plug, "~> 1.10"},
       {:redix, "~> 0.9 or ~> 1.0"},
@@ -48,11 +48,11 @@ defmodule PrimaAuth0Ex.MixProject do
   defp dev_deps do
     [
       {:bypass, "~> 2.1.0", only: :test},
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
+      {:ex_doc, ">= 0.25.3", only: :dev, runtime: false},
       {:hammox, "~> 0.5", only: :test},
-      {:stream_data, "~> 0.5", only: :test},
-      {:ex_doc, ">= 0.25.3", only: :dev, runtime: false}
+      {:stream_data, "~> 0.5", only: :test}
     ]
   end
 
