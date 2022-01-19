@@ -3,11 +3,14 @@ defmodule PrimaAuth0Ex.Application do
 
   use Application
 
+  require Logger
+
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
-    children = client_children() ++ cache_children() ++ server_children()
+    log_configuration_errors()
 
+    children = client_children() ++ cache_children() ++ server_children()
     opts = [strategy: :one_for_one, name: PrimaAuth0Ex.Supervisor]
     Supervisor.start_link(children, opts)
   end
@@ -47,5 +50,15 @@ defmodule PrimaAuth0Ex.Application do
 
   defp first_jwks_fetch_sync do
     :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:first_jwks_fetch_sync, false)
+  end
+
+  defp log_configuration_errors do
+    unless Application.get_env(:prima_auth0_ex, :auth0_base_url) do
+      Logger.warning("Missing required configuration 'auth0_base_url'")
+    end
+
+    unless client_configured?() or server_configured?() do
+      Logger.warning("No configuration found neither for client nor for server")
+    end
   end
 end
