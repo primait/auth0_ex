@@ -22,20 +22,17 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateToken do
   """
 
   import Plug.Conn
-  require Logger
 
-  @global_audience :prima_auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:audience)
-  @global_dry_run :prima_auth0_ex |> Application.compile_env(:server, []) |> Keyword.get(:dry_run, false)
-  @global_ignore_signature :prima_auth0_ex
-                           |> Application.compile_env(:server, [])
-                           |> Keyword.get(:ignore_signature, false)
+  alias PrimaAuth0Ex.ConfigHelper
+
+  require Logger
 
   def init(opts), do: opts
 
   def call(%Plug.Conn{} = conn, opts) do
-    audience = Keyword.get(opts, :audience, @global_audience)
-    dry_run? = Keyword.get(opts, :dry_run, @global_dry_run)
-    ignore_signature = Keyword.get(opts, :ignore_signature, @global_ignore_signature)
+    audience = Keyword.get(opts, :audience, global_audience())
+    dry_run? = Keyword.get(opts, :dry_run, global_dry_run())
+    ignore_signature = Keyword.get(opts, :ignore_signature, global_ignore_signature())
     required_permissions = Keyword.get(opts, :required_permissions, [])
 
     if authorized?(conn, audience, required_permissions, ignore_signature), do: conn, else: forbidden(conn, dry_run?)
@@ -75,4 +72,16 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateToken do
     |> send_resp(:unauthorized, "Forbidden.")
     |> halt()
   end
+
+  defp global_audience,
+    do: :prima_auth0_ex |> ConfigHelper.fetch_env_with_default(:server, []) |> Keyword.get(:audience)
+
+  defp global_dry_run,
+    do: :prima_auth0_ex |> ConfigHelper.fetch_env_with_default(:server, []) |> Keyword.get(:dry_run, false)
+
+  defp global_ignore_signature,
+    do:
+      :prima_auth0_ex
+      |> ConfigHelper.fetch_env_with_default(:server, [])
+      |> Keyword.get(:ignore_signature, false)
 end
