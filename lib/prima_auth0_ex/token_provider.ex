@@ -11,8 +11,6 @@ defmodule PrimaAuth0Ex.TokenProvider do
 
   require Logger
 
-  alias PrimaAuth0Ex.ConfigHelper
-
   alias PrimaAuth0Ex.TokenProvider.{
     Auth0JwksKidsFetcher,
     CachedTokenService,
@@ -191,10 +189,10 @@ defmodule PrimaAuth0Ex.TokenProvider do
   end
 
   defp jwks_kids_fetcher,
-    do: ConfigHelper.fetch_env_with_default(:prima_auth0_ex, :jwks_kids_fetcher, Auth0JwksKidsFetcher)
+    do: Application.get_env(:prima_auth0_ex, :jwks_kids_fetcher, Auth0JwksKidsFetcher)
 
   defp refresh_strategy,
-    do: ConfigHelper.fetch_env_with_default(:prima_auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
+    do: Application.get_env(:prima_auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
 
-  defp token_service, do: ConfigHelper.fetch_env_with_default(:prima_auth0_ex, :token_service, CachedTokenService)
+  defp token_service, do: Application.get_env(:prima_auth0_ex, :token_service, CachedTokenService)
 end

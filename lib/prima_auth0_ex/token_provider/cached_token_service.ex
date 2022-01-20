@@ -8,7 +8,6 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
   instances will retrieve the new token from the new cache and will not have to generate a new
   one from the authorization provider.
   """
-  alias PrimaAuth0Ex.ConfigHelper
   alias PrimaAuth0Ex.TokenProvider.{Auth0AuthorizationService, EncryptedRedisTokenCache, TokenService}
 
   @behaviour TokenService
@@ -63,7 +62,7 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
   end
 
   defp authorization_service,
-    do: ConfigHelper.fetch_env_with_default(:prima_auth0_ex, :authorization_service, Auth0AuthorizationService)
+    do: Application.get_env(:prima_auth0_ex, :authorization_service, Auth0AuthorizationService)
 
-  defp token_cache, do: ConfigHelper.fetch_env_with_default(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
+  defp token_cache, do: Application.get_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
 end

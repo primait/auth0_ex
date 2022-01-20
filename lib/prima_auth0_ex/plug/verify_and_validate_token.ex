@@ -23,8 +23,6 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateToken do
 
   import Plug.Conn
 
-  alias PrimaAuth0Ex.ConfigHelper
-
   require Logger
 
   def init(opts), do: opts
@@ -74,14 +72,14 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateToken do
   end
 
   defp global_audience,
-    do: :prima_auth0_ex |> ConfigHelper.fetch_env_with_default(:server, []) |> Keyword.get(:audience)
+    do: :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:audience)
 
   defp global_dry_run,
-    do: :prima_auth0_ex |> ConfigHelper.fetch_env_with_default(:server, []) |> Keyword.get(:dry_run, false)
+    do: :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:dry_run, false)
 
   defp global_ignore_signature,
     do:
       :prima_auth0_ex
-      |> ConfigHelper.fetch_env_with_default(:server, [])
+      |> Application.get_env(:server, [])
       |> Keyword.get(:ignore_signature, false)
 end
