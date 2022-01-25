@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :prima_auth0_ex,
   authorization_service: AuthorizationServiceMock,
