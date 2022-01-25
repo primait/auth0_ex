@@ -11,7 +11,7 @@ The package can be installed by adding `prima_auth0_ex` to your list of dependen
 ```elixir
 def deps do
   [
-    {:prima_auth0_ex, "~> 0.3.0-rc.1.3"}
+    {:prima_auth0_ex, "~> 0.3.0"}
   ]
 end
 ```

@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :prima_auth0_ex,
   auth0_base_url: "https://tenant.eu.auth0.com"
@@ -21,4 +21,4 @@ config :logger, :console, metadata: :all
 
 config :logger, level: :info
 
-import_config "#{Mix.env()}.exs"
+import_config "#{config_env()}.exs"
