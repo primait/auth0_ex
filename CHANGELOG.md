@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2022-01-25
 
+### Added
+
+- Added a warning log to alert of missing configurations at startup.
+
 ### Changed
 
+- Token validation configurations are now read at runtime instead of compile time so the library doesn't have to be forcibly recompiled when configurations change.
 - Bumped `telepoison` to 1.0
 
 ## [0.3.0-rc.1.3] - 2022-01-03
