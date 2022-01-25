@@ -12,20 +12,17 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
 
   @behaviour TokenService
 
-  @authorization_service Application.compile_env(:prima_auth0_ex, :authorization_service, Auth0AuthorizationService)
-  @token_cache Application.compile_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
-
   @impl TokenService
   def retrieve_token(credentials, audience) do
     audience
-    |> @token_cache.get_token_for()
+    |> token_cache().get_token_for()
     |> refresh_token_on_cache_miss(credentials, audience)
   end
 
   @impl TokenService
   def refresh_token(credentials, audience, current_token, false = _force_cache_bust) do
     audience
-    |> @token_cache.get_token_for()
+    |> token_cache().get_token_for()
     |> refresh_token_unless_it_changed(current_token, credentials, audience)
   end
 
@@ -54,13 +51,18 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
   end
 
   defp do_refresh_token(credentials, audience) do
-    case @authorization_service.retrieve_token(credentials, audience) do
+    case authorization_service().retrieve_token(credentials, audience) do
       {:ok, token} ->
-        @token_cache.set_token_for(audience, token)
+        token_cache().set_token_for(audience, token)
         {:ok, token}
 
       {:error, description} ->
         {:error, description}
     end
   end
+
+  defp authorization_service,
+    do: Application.get_env(:prima_auth0_ex, :authorization_service, Auth0AuthorizationService)
+
+  defp token_cache, do: Application.get_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
 end

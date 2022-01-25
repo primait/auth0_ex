@@ -26,10 +26,6 @@ defmodule PrimaAuth0Ex.TokenProvider do
   @enforce_keys [:credentials]
   defstruct [:credentials, tokens: %{}, refresh_times: %{}]
 
-  @jwks_kids_fetcher Application.compile_env(:prima_auth0_ex, :jwks_kids_fetcher, Auth0JwksKidsFetcher)
-  @refresh_strategy Application.compile_env(:prima_auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
-  @token_service Application.compile_env(:prima_auth0_ex, :token_service, CachedTokenService)
-
   # Client
 
   def start_link(opts) do
@@ -82,7 +78,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
   def handle_call({:refresh_token_for, audience}, _from, state) do
     Logger.info("Refreshing token...", audience: audience)
 
-    case @token_service.refresh_token(state.credentials, audience, nil, true) do
+    case token_service().refresh_token(state.credentials, audience, nil, true) do
       {:ok, %TokenInfo{jwt: jwt} = token} -> {:reply, {:ok, jwt}, set_token(state, audience, token)}
       {:error, error} -> {:reply, {:error, error}, state}
     end
@@ -138,7 +134,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
   defp check_signatures(state, _parent) when state.tokens == %{}, do: nil
 
   defp check_signatures(state, parent) do
-    with {:ok, valid_kids} <- @jwks_kids_fetcher.fetch_kids(state.credentials) do
+    with {:ok, valid_kids} <- jwks_kids_fetcher().fetch_kids(state.credentials) do
       for {audience, token} <- state.tokens do
         check_signature_for(token, audience, valid_kids, state, parent)
       end
@@ -160,11 +156,11 @@ defmodule PrimaAuth0Ex.TokenProvider do
   defp initialize_token_for(audience, state) do
     Logger.info("Initializing token", audience: audience)
 
-    @token_service.retrieve_token(state.credentials, audience)
+    token_service().retrieve_token(state.credentials, audience)
   end
 
   defp set_token(state, audience, token) do
-    refresh_time = @refresh_strategy.refresh_time_for(token)
+    refresh_time = refresh_strategy().refresh_time_for(token)
 
     state
     |> put_in([Access.key(:tokens), audience], token)
@@ -186,9 +182,17 @@ defmodule PrimaAuth0Ex.TokenProvider do
   end
 
   defp try_refresh(audience, token, credentials, parent) do
-    case @token_service.refresh_token(credentials, audience, token, false) do
+    case token_service().refresh_token(credentials, audience, token, false) do
       {:ok, new_token} -> send(parent, {:set_token_for, audience, new_token})
       {:error, description} -> Logger.warn("Error refreshing token", audience: audience, description: description)
     end
   end
+
+  defp jwks_kids_fetcher,
+    do: Application.get_env(:prima_auth0_ex, :jwks_kids_fetcher, Auth0JwksKidsFetcher)
+
+  defp refresh_strategy,
+    do: Application.get_env(:prima_auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
+
+  defp token_service, do: Application.get_env(:prima_auth0_ex, :token_service, CachedTokenService)
 end
