@@ -40,7 +40,7 @@ defmodule PrimaAuth0Ex.MixProject do
       {:joken_jwks, "~> 1.4"},
       {:plug, "~> 1.10"},
       {:redix, "~> 0.9 or ~> 1.0"},
-      {:telepoison, "~> 1.0.0-rc.4"},
+      {:telepoison, "~> 1.0"},
       {:timex, "~> 3.6"}
     ] ++ dev_deps()
   end
