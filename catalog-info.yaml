@@ -1,0 +1,20 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+spec:
+  type: library
+  lifecycle: production
+  owner: team-shared-services
+  system: prima.it
+metadata:
+  name: prima_auth0_ex
+  description: an easy to use library to authenticate machine-to-machine communications through Auth0
+  tags:
+  - elixir
+  links:
+  - url: https://hex.pm/packages/prima_auth0_ex
+    icon: link
+    title: Hex.pm
+
+  - url: https://hexdocs.pm/prima_auth0_ex
+    icon: link
+    title: official documentation
