@@ -5,6 +5,7 @@
 [![Total Download](https://img.shields.io/hexpm/dt/prima_auth0_ex.svg)](https://hex.pm/packages/prima_auth0_ex)
 [![License](https://img.shields.io/hexpm/l/prima_auth0_ex.svg)](https://github.com/primait/auth0_ex/blob/master/LICENSE.md)
 [![Last Updated](https://img.shields.io/github/last-commit/primait/auth0_ex.svg)](https://github.com/primait/auth0_ex/commits/master)
+
 An easy to use library to authenticate machine-to-machine communications through Auth0.
 
 Supports both retrieval of JWTs and their verification and validation.
