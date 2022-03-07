@@ -10,7 +10,7 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
   @moduletag capture_log: true
 
   @test_audience "test"
-  @opts VerifyAndValidateToken.init(audience: @test_audience)
+  @opts VerifyAndValidateToken.init(audience: @test_audience, required_permissions: [])
 
   @tag :external
   test "does nothing when token is valid" do
@@ -61,12 +61,16 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
     assert conn.status == 401
   end
 
+  test "raise a runtime error when required_permissions is not set" do
+    assert_raise(RuntimeError, fn -> VerifyAndValidateToken.init(audience: audience()) end)
+  end
+
   @tag :external
   test "supports setting a custom audience for validation" do
     credentials = Auth0Credentials.from_env()
     {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
-    opts = VerifyAndValidateToken.init(audience: "something-different-than-" <> audience())
+    opts = VerifyAndValidateToken.init(audience: "something-different-than-" <> audience(), required_permissions: [])
 
     conn =
       conn(:get, "/")
@@ -94,7 +98,7 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
   test "supports disabling verification of signatures" do
     # mostly useful for dev environments, to work with locally forged JWTs
     forged_token = JwtUtils.jwt_that_expires_in(1_000, @test_audience)
-    opts = VerifyAndValidateToken.init(audience: @test_audience, ignore_signature: true)
+    opts = VerifyAndValidateToken.init(audience: @test_audience, ignore_signature: true, required_permissions: [])
 
     conn =
       conn(:get, "/")
@@ -105,7 +109,7 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
   end
 
   test "can be run in dry-run mode (ie. not blocking invalid requests)" do
-    opts = VerifyAndValidateToken.init(dry_run: true)
+    opts = VerifyAndValidateToken.init(dry_run: true, required_permissions: [])
 
     conn =
       conn(:get, "/")

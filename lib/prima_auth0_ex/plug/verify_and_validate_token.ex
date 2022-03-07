@@ -25,13 +25,19 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateToken do
 
   require Logger
 
-  def init(opts), do: opts
+  def init(opts) do
+    if !Keyword.has_key?(opts, :required_permissions) do
+      raise "required_permissions configuration must be set"
+    end
+
+    opts
+  end
 
   def call(%Plug.Conn{} = conn, opts) do
     audience = Keyword.get(opts, :audience, global_audience())
     dry_run? = Keyword.get(opts, :dry_run, global_dry_run())
     ignore_signature = Keyword.get(opts, :ignore_signature, global_ignore_signature())
-    required_permissions = Keyword.get(opts, :required_permissions, [])
+    required_permissions = Keyword.get(opts, :required_permissions)
 
     if authorized?(conn, audience, required_permissions, ignore_signature), do: conn, else: forbidden(conn, dry_run?)
   end
