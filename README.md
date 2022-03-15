@@ -78,7 +78,7 @@ config :prima_auth0_ex, :server,
   # When true, only the claims of tokens are validated, but their signature is not verified.
   # This is useful for local development but should NEVER be enabled on production-like systems.
   # Defaults to false.
-  ignore_signature: false
+  ignore_signature: false,
   # Level used to log requests where the authorization header is missing. 
   missing_auth_header_log_level: :warn
 ```
