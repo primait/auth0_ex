@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+## [0.3.1] - 2022-03-15
+
 ### Changed
 
 - [Breaking] When Plug configuration miss the required_permission field a runtime error will be thrown
   
+### Added
+
+- Added `missing_auth_header_log_level` configuration option to control log level when the autorization header is missing.
+
 ## [0.3.0] - 2022-01-25
 
 ### Added
