@@ -39,16 +39,25 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateToken do
     ignore_signature = Keyword.get(opts, :ignore_signature, global_ignore_signature())
     required_permissions = Keyword.get(opts, :required_permissions)
 
-    if authorized?(conn, audience, required_permissions, ignore_signature), do: conn, else: forbidden(conn, dry_run?)
+    missing_auth_header_log_level =
+      Keyword.get(opts, :missing_auth_header_log_level, global_missing_auth_header_log_level())
+
+    if authorized?(conn, audience, required_permissions, ignore_signature, missing_auth_header_log_level),
+      do: conn,
+      else: forbidden(conn, dry_run?)
   end
 
-  defp authorized?(conn, audience, required_permissions, ignore_signature) do
+  defp authorized?(conn, audience, required_permissions, ignore_signature, missing_auth_header_log_level) do
     case get_req_header(conn, "authorization") do
+      [] ->
+        Logger.log(missing_auth_header_log_level, "Authorization header not found")
+        false
+
       ["Bearer " <> token] ->
         valid_token?(token, audience, required_permissions, ignore_signature)
 
       _other ->
-        Logger.warn("Authorization header malformed or not found")
+        Logger.warn("Authorization header malformed")
         false
     end
   end
@@ -88,4 +97,10 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateToken do
       :prima_auth0_ex
       |> Application.get_env(:server, [])
       |> Keyword.get(:ignore_signature, false)
+
+  defp global_missing_auth_header_log_level,
+    do:
+      :prima_auth0_ex
+      |> Application.get_env(:server, [])
+      |> Keyword.get(:missing_auth_header_log_level, :warn)
 end
