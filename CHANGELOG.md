@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- [Breaking] When Plug configuration miss the required_permission field a runtime error will be thrown
+- [Breaking] When Plug configuration miss the required_permissions field a runtime error will be thrown
   
 ### Added
 
