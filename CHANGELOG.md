@@ -103,3 +103,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
+
+[Next]: https://github.com/primait/auth0_ex/compare/0.3.1...HEAD
+[0.3.1]: https://github.com/primait/auth0_ex/compare/0.3.0...0.3.1
+[0.3.0]: https://github.com/primait/auth0_ex/compare/0.3.0-rc.1.3...0.3.0
+[0.3.0-rc.1.3]: https://github.com/primait/auth0_ex/compare/0.3.0-rc.1.2...0.3.0-rc.1.3
+[0.3.0-rc.1.2]: https://github.com/primait/auth0_ex/compare/0.3.0-rc.1.1...0.3.0-rc.1.2
+[0.3.0-rc.1.1]: https://github.com/primait/auth0_ex/compare/0.3.0-rc.1...0.3.0-rc.1.1
+[0.3.0-rc.1]: https://github.com/primait/auth0_ex/compare/0.2.5...0.3.0-rc.1
+[0.2.5]: https://github.com/primait/auth0_ex/compare/0.2.4...0.2.5
+[0.2.4]: https://github.com/primait/auth0_ex/compare/0.2.3...0.2.4
+[0.2.3]: https://github.com/primait/auth0_ex/compare/0.2.2...0.2.3
+[0.2.2]: https://github.com/primait/auth0_ex/compare/0.2.1...0.2.2
+[0.2.1]: https://github.com/primait/auth0_ex/compare/0.2.0...0.2.1
+[0.2.0]: https://github.com/primait/auth0_ex/compare/0.1.1...0.2.0
+[0.1.1]: https://github.com/primait/auth0_ex/compare/0.1.0...0.1.1
+[0.1.0]: https://github.com/primait/auth0_ex/releases/tag/0.1.0
