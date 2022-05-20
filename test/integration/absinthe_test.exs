@@ -4,33 +4,48 @@ defmodule PrimaAuth0Ex.Plug.AbsintheTest do
   use Plug.Test
 
   alias Absinthe.Resolution
-  alias PrimaAuth0Ex.Middleware.RequirePermission
+  alias PrimaAuth0Ex.Middleware.RequirePermissions
   alias PrimaAuth0Ex.Plug.CreateSecurityContext
 
-  test "authorize request with right permission" do
+  test "authorize request with right permissions" do
     opts = CreateSecurityContext.init([])
 
     %{private: %{absinthe: %{context: context}}} =
       :post
       |> conn("/graphql")
-      |> put_req_header("authorization", "Bearer " <> generate_token_with_permissions(["read"]))
+      |> put_req_header("authorization", "Bearer " <> generate_token_with_permissions(["read", "write", "delete"]))
       |> CreateSecurityContext.call(opts)
 
     resolution = %Resolution{context: context}
-    assert resolution == RequirePermission.call(resolution, "read")
+    assert resolution == RequirePermissions.call(resolution, ["read", "write"])
   end
 
-  test "do not authorize request without right permission" do
-    opts = CreateSecurityContext.init([])
+  describe "do not authorize request without right permissions" do
+    test "single permission must be in list" do
+      opts = CreateSecurityContext.init([])
 
-    %{private: %{absinthe: %{context: context}}} =
-      :post
-      |> conn("/graphql")
-      |> put_req_header("authorization", "Bearer " <> generate_token_with_permissions(["read"]))
-      |> CreateSecurityContext.call(opts)
+      %{private: %{absinthe: %{context: context}}} =
+        :post
+        |> conn("/graphql")
+        |> put_req_header("authorization", "Bearer " <> generate_token_with_permissions(["read"]))
+        |> CreateSecurityContext.call(opts)
 
-    resolution = %Resolution{context: context}
-    assert %Resolution{errors: ["unauthorized"]} = RequirePermission.call(resolution, "write")
+      resolution = %Resolution{context: context}
+      assert %Resolution{errors: ["unauthorized"]} = RequirePermissions.call(resolution, ["write"])
+    end
+
+    test "multiple permissions must ALL be included" do
+      opts = CreateSecurityContext.init([])
+
+      %{private: %{absinthe: %{context: context}}} =
+        :post
+        |> conn("/graphql")
+        |> put_req_header("authorization", "Bearer " <> generate_token_with_permissions(["read", "write"]))
+        |> CreateSecurityContext.call(opts)
+
+      resolution = %Resolution{context: context}
+      assert %Resolution{errors: ["unauthorized"]} = RequirePermissions.call(resolution, ["write", "delete"])
+    end
   end
 
   test "do not authorize request without token" do
@@ -42,7 +57,7 @@ defmodule PrimaAuth0Ex.Plug.AbsintheTest do
       |> CreateSecurityContext.call(opts)
 
     resolution = %Resolution{context: context}
-    assert %Resolution{errors: ["unauthorized"]} = RequirePermission.call(resolution, "write")
+    assert %Resolution{errors: ["unauthorized"]} = RequirePermissions.call(resolution, ["write"])
   end
 
   test "authorize request without token when dry-run is enabled" do
@@ -54,7 +69,7 @@ defmodule PrimaAuth0Ex.Plug.AbsintheTest do
       |> CreateSecurityContext.call(opts)
 
     resolution = %Resolution{context: context}
-    assert resolution == RequirePermission.call(resolution, "write")
+    assert resolution == RequirePermissions.call(resolution, ["write"])
   end
 
   test "authorize request with bad token when dry-run is enabled" do
@@ -67,7 +82,7 @@ defmodule PrimaAuth0Ex.Plug.AbsintheTest do
       |> CreateSecurityContext.call(opts)
 
     resolution = %Resolution{context: context}
-    assert resolution == RequirePermission.call(resolution, "write")
+    assert resolution == RequirePermissions.call(resolution, ["write"])
   end
 
   defp generate_token_with_permissions(permissions) do

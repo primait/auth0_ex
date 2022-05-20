@@ -132,7 +132,7 @@ The plug supports the following options:
 
 #### Validating permissions with Absinthe
 
-In order to validate permissions in your Graphql API on a per-query/per-mutation basis, an option is to define an Absinthe middleware. To this end you can use the [PrimaAuth0Ex.Middlware.RequirePermission](lib/prima_auth0_ex/middleware/require_permission.ex) included with the library or build your own.
+In order to validate permissions in your Graphql API on a per-query/per-mutation basis, an option is to define an Absinthe middleware. To this end you can use the [PrimaAuth0Ex.Middlware.RequirePermissions](lib/prima_auth0_ex/middleware/require_permission.ex) included with the library or build your own.
 
 This middleware has a companion plug: [PrimaAuth0Ex.Plug.CreateSecurityContext](lib/prima_auth0_ex/plug/create_security_context.ex), which can be used to pass the user's permissions to the Absinthe context.
 
@@ -142,7 +142,7 @@ The middleware can be used in your schema as follows:
 
 ```elixir
 field ... do
-  middleware RequirePermission, "your-required-permission"
+  middleware RequirePermissions, ["your-required-permission"]
   resolve &Resolver.resolve_function/3
 ```
 
