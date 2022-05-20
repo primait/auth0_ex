@@ -59,7 +59,7 @@ defmodule PrimaAuth0Ex.Plug.Absinthe do
 
     @impl true
     def call(
-          resolution = %{context: %Context{dry_run: dry_run, permissions: permissions}},
+          %{context: %Context{dry_run: dry_run, permissions: permissions}} = resolution,
           required_permission
         ) do
       cond do
