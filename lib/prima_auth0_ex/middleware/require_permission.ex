@@ -5,6 +5,7 @@ defmodule PrimaAuth0Ex.Middleware.RequirePermission do
 
   require Logger
 
+  alias Absinthe.Resolution
   alias PrimaAuth0Ex.Plug.CreateSecurityContext.Context
 
   @behaviour Absinthe.Middleware
@@ -14,19 +15,28 @@ defmodule PrimaAuth0Ex.Middleware.RequirePermission do
         %{context: %Context{dry_run: dry_run, permissions: permissions}} = resolution,
         required_permission
       ) do
-    cond do
-      permissions != nil and required_permission in permissions ->
-        resolution
+    permissions
+    |> has_required_permission?(required_permission)
+    |> then(fn has_required_permissions? ->
+      # On dry-run, log a warning if token doesn't have required permission
+      # but permissions was not nil (i.e. it was supposed to work)
+      if not has_required_permissions? and permissions != nil and dry_run do
+        Logger.warn("Received invalid token", required_permissions: required_permission)
+      end
 
-      dry_run and permissions == nil ->
-        resolution
-
-      dry_run and permissions != nil ->
-        Logger.warn("Received invalid token", required_permissions: [required_permission])
-        resolution
-
-      not dry_run ->
-        Absinthe.Resolution.put_result(resolution, {:error, "unauthorized"})
-    end
+      has_required_permissions?
+    end)
+    |> resolve(dry_run, resolution)
   end
+
+  @spec has_required_permission?(permissions :: [any()] | nil, required_permission :: any()) :: boolean()
+  defp has_required_permission?(nil, _), do: false
+  defp has_required_permission?(_, nil), do: false
+  defp has_required_permission?(permissions, required_permission), do: required_permission in permissions
+
+  @spec resolve(has_required_permission? :: boolean(), dry_run :: boolean(), resolution :: Resolution.t()) ::
+          Resolution.t()
+  defp resolve(true, _, resolution), do: resolution
+  defp resolve(false, true, resolution), do: resolution
+  defp resolve(false, false, resolution), do: Absinthe.Resolution.put_result(resolution, {:error, "unauthorized"})
 end
