@@ -47,7 +47,7 @@ defmodule PrimaAuth0Ex.MixProject do
 
   defp dev_deps do
     [
-      {:absinthe, "~> 1.7", optional: true},
+      {:absinthe, "~> 1.6", optional: true},
       {:absinthe_plug, "~> 1.5", optional: true},
       {:bypass, "~> 2.1.0", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
