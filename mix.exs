@@ -35,10 +35,12 @@ defmodule PrimaAuth0Ex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:absinthe, "~> 1.6", optional: true},
+      {:absinthe_plug, "~> 1.5", optional: true},
       {:jason, "~> 1.0"},
       {:joken, "~> 2.4"},
       {:joken_jwks, "~> 1.4"},
-      {:plug, "~> 1.10"},
+      {:plug, "~> 1.10", optional: true},
       {:redix, "~> 0.9 or ~> 1.0"},
       {:telepoison, "~> 1.0"},
       {:timex, "~> 3.6"}
@@ -47,8 +49,6 @@ defmodule PrimaAuth0Ex.MixProject do
 
   defp dev_deps do
     [
-      {:absinthe, "~> 1.6", optional: true},
-      {:absinthe_plug, "~> 1.5", optional: true},
       {:bypass, "~> 2.1.0", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
