@@ -21,7 +21,7 @@ defmodule PrimaAuth0Ex.Middleware.RequirePermission do
       # On dry-run, log a warning if token doesn't have required permission
       # but permissions was not nil (i.e. it was supposed to work)
       if not has_required_permissions? and permissions != nil and dry_run do
-        Logger.warn("Received invalid token", required_permissions: required_permission)
+        Logger.warn("Received invalid token", required_permission: required_permission)
       end
 
       has_required_permissions?
