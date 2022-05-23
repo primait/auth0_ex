@@ -4,8 +4,8 @@ defmodule PrimaAuth0Ex.Plug.AbsintheTest do
   use Plug.Test
 
   alias Absinthe.Resolution
-  alias PrimaAuth0Ex.Middleware.RequirePermissions
-  alias PrimaAuth0Ex.Plug.CreateSecurityContext
+  alias PrimaAuth0Ex.Absinthe.RequirePermissions
+  alias PrimaAuth0Ex.Absinthe.CreateSecurityContext
 
   test "authorize request with right permissions" do
     opts = CreateSecurityContext.init([])

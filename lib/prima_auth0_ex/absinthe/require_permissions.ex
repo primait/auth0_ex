@@ -1,11 +1,11 @@
-defmodule PrimaAuth0Ex.Middleware.RequirePermissions do
+defmodule PrimaAuth0Ex.Absinthe.RequirePermissions do
   @moduledoc """
   Absinthe middleware that ensure the permission is included in the current security context.
   """
 
   require Logger
 
-  alias PrimaAuth0Ex.Plug.CreateSecurityContext.Context
+  alias PrimaAuth0Ex.Absinthe.CreateSecurityContext.Context
 
   @behaviour Absinthe.Middleware
 

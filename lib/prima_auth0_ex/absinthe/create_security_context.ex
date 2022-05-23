@@ -1,4 +1,4 @@
-defmodule PrimaAuth0Ex.Plug.CreateSecurityContext do
+defmodule PrimaAuth0Ex.Absinthe.CreateSecurityContext do
   @moduledoc """
   Plug that reads the permissions from the received token and creates the security context.
   It does not validate the token!
