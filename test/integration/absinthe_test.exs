@@ -1,5 +1,4 @@
 defmodule PrimaAuth0Ex.Plug.AbsintheTest do
-  # , async: true
   use ExUnit.Case
   use Plug.Test
 
