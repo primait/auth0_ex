@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+### Added
+
+- New Absinthe plug & middleware to bootstrap authentication
+
 ## [0.3.1] - 2022-03-15
 
 ### Changed
