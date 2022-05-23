@@ -24,7 +24,7 @@ defmodule PrimaAuth0Ex.Absinthe.RequirePermissions do
   defp has_required_permissions?(nil = _permissions, _required_permissions), do: false
 
   defp has_required_permissions?(permissions, required_permissions),
-    do: Enum.all?(required_permissions, fn required_permission -> required_permission in permissions end)
+    do: Enum.all?(required_permissions, &Enum.member?(permissions, &1))
 
   defp resolve(%{context: %Context{dry_run: true, permissions: permissions}} = resolution, required_permissions) do
     if permissions != nil do
