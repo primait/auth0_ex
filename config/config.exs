@@ -17,6 +17,12 @@ config :prima_auth0_ex, :server,
   issuer: "https://tenant.eu.auth0.com/",
   first_jwks_fetch_sync: true
 
+config :statix, PrimaAuth0Ex.Statix,
+  enabled: false,
+  host: "statsd",
+  prefix: "prima_auth0_ex",
+  tags: ["env:#{config_env()}"]
+
 config :logger, :console, metadata: :all
 
 config :logger, level: :info

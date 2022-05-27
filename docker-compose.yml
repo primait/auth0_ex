@@ -8,3 +8,7 @@ services:
     hostname: 'redis'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
+  statsd:
+    image: mendhak/udp-listener:latest
+    environment:
+      UDPPORT: 8125

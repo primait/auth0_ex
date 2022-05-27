@@ -6,6 +6,7 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
   @behaviour PrimaAuth0Ex.TokenProvider.AuthorizationService
 
   require Logger
+  alias PrimaAuth0Ex.Statix
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @auth0_token_api_path "/oauth/token"
@@ -15,6 +16,7 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
     request_body = body(credentials, audience)
     url = credentials.base_url <> @auth0_token_api_path
 
+    Statix.increment("new_token", 1, tags: ["audience:#{audience}"])
     Logger.info("Requesting token to Auth0", audience: audience, url: url)
 
     url
