@@ -14,6 +14,7 @@ Supports both retrieval of JWTs and their verification and validation.
 
 - [Installation](#installation)
 - [Configuration](#configuration)
+  - [I am a DevOps, what do I have to do?](#i-am-a-devops-what-do-i-have-to-do)
 - [Usage](#usage)
 - [Development](#development)
 
@@ -98,7 +99,7 @@ As a DevOps someone is probably going to ask you to generate a `cache_encryption
 :crypto.strong_rand_bytes(32) |> Base.encode64()
 ```
 
-> :warning: **The token needs to be 32 bytes long AND base64 encoded**, failing to do so will result in token not getting cached on Redis. :warning:
+> :warning: **The token needs to be 32 bytes long AND base64 encoded**, failing to do so will result in tokens not getting cached on Redis. :warning:
 
 ## Usage
 
