@@ -65,6 +65,9 @@ defmodule PrimaAuth0Ex.MixProject do
         "format --check-formatted",
         "credo -a --strict",
         "dialyzer"
+      ],
+      keygen: [
+        "run --no-start -e ':crypto.strong_rand_bytes(32) |> Base.encode64() |> IO.puts()'"
       ]
     ]
   end
