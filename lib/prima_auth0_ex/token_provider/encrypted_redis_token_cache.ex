@@ -39,8 +39,13 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp do_set_token_for(audience, token) do
     with {:ok, json_token} <- to_json(token),
-         {:ok, encrypted} <- TokenEncryptor.encrypt(json_token),
-         do: save(encrypted, key_for(audience), token.expires_at)
+         {:ok, encrypted} <- TokenEncryptor.encrypt(json_token) do
+      save(encrypted, key_for(audience), token.expires_at)
+    else
+      {:error, reason} ->
+        Logger.warn("Error encrypting token.", audience: audience, reason: inspect(reason))
+        {:error, reason}
+    end
   end
 
   defp key_for(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
