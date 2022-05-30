@@ -15,9 +15,6 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
     request_body = body(credentials, audience)
     url = credentials.base_url <> @auth0_token_api_path
 
-    # Statix.increment("new_token", 1, tags: ["audience:#{audience}"])
-    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :success], %{count: 1}, %{audience: audience})
-
     Logger.info("Requesting token to Auth0", audience: audience, url: url)
 
     url

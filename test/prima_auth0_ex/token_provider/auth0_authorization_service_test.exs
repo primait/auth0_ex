@@ -2,6 +2,7 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
   use ExUnit.Case, async: true
 
   alias PrimaAuth0Ex.Auth0Credentials
+  alias PrimaAuth0Ex.TestSupport.Counter
   alias PrimaAuth0Ex.TestSupport.JwtUtils
   alias PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService
 
@@ -51,6 +52,60 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
     credentials = %{@sample_credentials | base_url: "http://localhost:#{bypass.port}"}
 
     {:error, :request_error} = Auth0AuthorizationService.retrieve_token(credentials, "audience")
+  end
+
+  test "emits success event on obtaining a JWT from Auth0", %{bypass: bypass} do
+    Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
+      Plug.Conn.resp(conn, 200, valid_auth0_response())
+    end)
+
+    credentials = %{@sample_credentials | base_url: "http://localhost:#{bypass.port}"}
+
+    {:ok, counter} = Counter.start_link([])
+
+    success_telemetry_handler_id = "success-telemetry-handler"
+
+    :ok =
+      :telemetry.attach(
+        success_telemetry_handler_id,
+        [:prima_auth0_ex, :retrieve_token, :success],
+        fn
+          [:prima_auth0_ex, :retrieve_token, :success], %{count: 1}, %{audience: @test_audience}, _config ->
+            Counter.increment(counter)
+        end,
+        nil
+      )
+
+    {:ok, _token} = Auth0AuthorizationService.retrieve_token(credentials, @test_audience)
+
+    :ok = :telemetry.detach(success_telemetry_handler_id)
+  end
+
+  test "emits failure event when failing to obtain a JWT from Auth0", %{bypass: bypass} do
+    Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
+      Plug.Conn.resp(conn, 200, @invalid_auth0_response)
+    end)
+
+    credentials = %{@sample_credentials | base_url: "http://localhost:#{bypass.port}"}
+
+    {:ok, counter} = Counter.start_link([])
+
+    failure_telemetry_handler_id = "failure-telemetry-handler"
+
+    :ok =
+      :telemetry.attach(
+        failure_telemetry_handler_id,
+        [:prima_auth0_ex, :retrieve_token, :failure],
+        fn
+          [:prima_auth0_ex, :retrieve_token, :failure], %{count: 1}, %{audience: @test_audience}, _config ->
+            Counter.increment(counter)
+        end,
+        nil
+      )
+
+    {:error, _error} = Auth0AuthorizationService.retrieve_token(credentials, @test_audience)
+
+    :ok = :telemetry.detach(failure_telemetry_handler_id)
   end
 
   defp sample_token do
