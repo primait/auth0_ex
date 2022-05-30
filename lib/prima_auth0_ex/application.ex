@@ -8,8 +8,6 @@ defmodule PrimaAuth0Ex.Application do
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
-    :ok = PrimaAuth0Ex.Statix.connect()
-
     log_configuration_errors()
 
     children = client_children() ++ cache_children() ++ server_children()

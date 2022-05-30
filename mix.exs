@@ -44,7 +44,7 @@ defmodule PrimaAuth0Ex.MixProject do
       {:redix, "~> 0.9 or ~> 1.0"},
       {:telepoison, "~> 1.0"},
       {:timex, "~> 3.6"},
-      {:statix, github: "primait/statix", branch: "feature/switch_from_config"}
+      {:telemetry, "~> 1.0"}
     ] ++ dev_deps()
   end
 

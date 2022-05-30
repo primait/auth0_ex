@@ -6,7 +6,6 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
   @behaviour PrimaAuth0Ex.TokenProvider.AuthorizationService
 
   require Logger
-  alias PrimaAuth0Ex.Statix
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @auth0_token_api_path "/oauth/token"
@@ -16,12 +15,15 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
     request_body = body(credentials, audience)
     url = credentials.base_url <> @auth0_token_api_path
 
-    Statix.increment("new_token", 1, tags: ["audience:#{audience}"])
+    # Statix.increment("new_token", 1, tags: ["audience:#{audience}"])
+    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :success], %{count: 1}, %{audience: audience})
+
     Logger.info("Requesting token to Auth0", audience: audience, url: url)
 
     url
     |> Telepoison.post(request_body, "content-type": "application/json")
     |> parse_response()
+    |> emit_event(audience)
   end
 
   defp parse_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
@@ -52,5 +54,15 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
       client_secret: credentials.client_secret,
       audience: audience
     })
+  end
+
+  defp emit_event({:error, _} = result, audience) do
+    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :failure], %{count: 1}, %{audience: audience})
+    result
+  end
+
+  defp emit_event({:ok, _} = result, audience) do
+    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :success], %{count: 1}, %{audience: audience})
+    result
   end
 end
