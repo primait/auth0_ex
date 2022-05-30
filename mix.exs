@@ -43,8 +43,8 @@ defmodule PrimaAuth0Ex.MixProject do
       {:plug, "~> 1.10", optional: true},
       {:redix, "~> 0.9 or ~> 1.0"},
       {:telepoison, "~> 1.0"},
-      {:timex, "~> 3.6"},
-      {:telemetry, "~> 1.0"}
+      {:telemetry, "~> 1.0"},
+      {:timex, "~> 3.6"}
     ] ++ dev_deps()
   end
 
