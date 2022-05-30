@@ -24,7 +24,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
 
       assert String.match?(log, ~r/reason=/)
       assert String.match?(log, ~r/audience=redis-integration-test-audience/)
-      assert String.match?(log, ~r/Error encrypting token./)
+      assert String.match?(log, ~r/Error setting token on redis./)
     end
 
     test "wrong cache_encryption_key" do
@@ -38,7 +38,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
 
       assert String.match?(log, ~r/reason=/)
       assert String.match?(log, ~r/audience=redis-integration-test-audience/)
-      assert String.match?(log, ~r/Error encrypting token./)
+      assert String.match?(log, ~r/Error setting token on redis./)
 
       Application.put_env(:prima_auth0_ex, :client, env_to_restore)
     end
