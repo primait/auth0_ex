@@ -41,9 +41,11 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
     with {:ok, json_token} <- to_json(token),
          {:ok, encrypted} <- TokenEncryptor.encrypt(json_token) do
       save(encrypted, key_for(audience), token.expires_at)
+      Logger.info("Updated token on redis.", audience: audience)
+      :ok
     else
       {:error, reason} ->
-        Logger.warn("Error encrypting token.", audience: audience, reason: inspect(reason))
+        Logger.error("Error setting token on redis.", audience: audience, reason: inspect(reason))
         {:error, reason}
     end
   end
@@ -53,15 +55,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp save(token, audience, expires_at) do
     expires_in = expires_at - current_time()
 
-    case Redix.command(PrimaAuth0Ex.Redix, ["SET", audience, token, "EX", expires_in]) do
-      {:ok, _} ->
-        Logger.info("Updated token on redis.", audience: audience)
-        :ok
-
-      {:error, reason} ->
-        Logger.warn("Error updating token on redis.", reason: inspect(reason))
-        {:error, reason}
-    end
+    Redix.command(PrimaAuth0Ex.Redix, ["SET", audience, token, "EX", expires_in])
   end
 
   defp decrypt_and_parse(cached_value) do
