@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+## [0.4.0]
+
 ### Added
 
 - New Absinthe plug & middleware to bootstrap authentication
+- New telemetry events on token retrieval
+- New telemetry pre-defined handler
+
+### Fixed
+
+- All errors are logged when caching token on Redis fails
 
 ## [0.3.1] - 2022-03-15
 
@@ -108,7 +116,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
 
-[Next]: https://github.com/primait/auth0_ex/compare/0.3.1...HEAD
+[Next]: https://github.com/primait/auth0_ex/compare/0.4.0...HEAD
+[0.4.0]: https://github.com/primait/auth0_ex/compare/0.3.1...0.4.0
 [0.3.1]: https://github.com/primait/auth0_ex/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/primait/auth0_ex/compare/0.3.0-rc.1.3...0.3.0
 [0.3.0-rc.1.3]: https://github.com/primait/auth0_ex/compare/0.3.0-rc.1.2...0.3.0-rc.1.3
