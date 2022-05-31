@@ -6,7 +6,7 @@ defmodule PrimaAuth0Ex.Application do
   require Logger
 
   alias PrimaAuth0Ex.Telemetry
-  alias PrimaAuth0Ex.{TokenProvider, JwksStrategy}
+  alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
     log_configuration_errors()
