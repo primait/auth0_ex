@@ -63,7 +63,7 @@ defmodule PrimaAuth0Ex.Application do
     )
   end
 
-  defp redis_ssl_enabled?() do
+  defp redis_ssl_enabled? do
     client = Application.get_env(:prima_auth0_ex, :client, [])
     client[:redis_ssl_enabled] || false
   end
