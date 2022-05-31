@@ -35,16 +35,22 @@ defmodule PrimaAuth0Ex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:absinthe, "~> 1.6", optional: true},
-      {:absinthe_plug, "~> 1.5", optional: true},
       {:jason, "~> 1.0"},
       {:joken, "~> 2.4"},
       {:joken_jwks, "~> 1.4"},
-      {:plug, "~> 1.10", optional: true},
       {:redix, "~> 0.9 or ~> 1.0"},
       {:telepoison, "~> 1.0"},
+      {:telemetry, "~> 1.0"},
       {:timex, "~> 3.6"}
-    ] ++ dev_deps()
+    ] ++ optional_deps() ++ dev_deps()
+  end
+
+  defp optional_deps do
+    [
+      {:absinthe, "~> 1.6", optional: true},
+      {:absinthe_plug, "~> 1.5", optional: true},
+      {:plug, "~> 1.10", optional: true}
+    ]
   end
 
   defp dev_deps do
@@ -64,6 +70,9 @@ defmodule PrimaAuth0Ex.MixProject do
         "format --check-formatted",
         "credo -a --strict",
         "dialyzer"
+      ],
+      keygen: [
+        "run --no-start -e ':crypto.strong_rand_bytes(32) |> Base.encode64() |> IO.puts()'"
       ]
     ]
   end

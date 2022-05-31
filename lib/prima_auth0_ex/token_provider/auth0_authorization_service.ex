@@ -20,6 +20,7 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
     url
     |> Telepoison.post(request_body, "content-type": "application/json")
     |> parse_response()
+    |> emit_event(audience)
   end
 
   defp parse_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
@@ -50,5 +51,15 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
       client_secret: credentials.client_secret,
       audience: audience
     })
+  end
+
+  defp emit_event({:error, _} = result, audience) do
+    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :failure], %{count: 1}, %{audience: audience})
+    result
+  end
+
+  defp emit_event({:ok, _} = result, audience) do
+    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :success], %{count: 1}, %{audience: audience})
+    result
   end
 end
