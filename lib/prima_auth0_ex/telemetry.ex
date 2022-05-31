@@ -1,42 +1,46 @@
-if Code.ensure_loaded?(Statix) do
-  defmodule PrimaAuth0Ex.Telemetry.Statix do
-    @moduledoc """
-    A pre-defined Statix module
-    """
+defmodule PrimaAuth0Ex.Telemetry do
+  @moduledoc """
+  A pre-defined module which sets up telemetry with a given reporter
+  """
 
-    alias PrimaAuth0Ex.Telemetry.Handler
+  alias PrimaAuth0Ex.Telemetry.Handler
 
-    use Statix, runtime_config: true
+  @auth0_handler_id "auth0-handler"
 
-    def setup do
+  def setup do
+    reporter = telemetry_reporter()
+
+    if reporter != nil do
       :ok =
         :telemetry.attach_many(
-          "auth0-handler",
+          @auth0_handler_id,
           [
             [:prima_auth0_ex, :retrieve_token, :failure],
             [:prima_auth0_ex, :retrieve_token, :success]
           ],
           &Handler.handle_event/4,
-          nil
+          %{reporter: reporter}
         )
-
-      :ok = __MODULE__.connect()
     end
   end
 
-  defmodule PrimaAuth0Ex.Telemetry.Handler do
-    @moduledoc """
-    A pre-defined Statix telemetry handler
-    """
+  defp telemetry_reporter, do: Application.get_env(:prima_auth0_ex, :telemetry_reporter)
+end
 
-    alias PrimaAuth0Ex.Telemetry.Statix
+defmodule PrimaAuth0Ex.Telemetry.Handler do
+  @moduledoc """
+  A pre-defined telemetry handler
+  """
 
-    def handle_event([:prima_auth0_ex, :retrieve_token, :failure], %{count: count}, %{audience: audience}, _config) do
-      Statix.increment("retrieve_token:failure", count, tags: ["audience:#{audience}"])
-    end
+  def handle_event([:prima_auth0_ex, :retrieve_token, :failure], %{count: count}, %{audience: audience}, %{
+        reporter: reporter
+      }) do
+    reporter.increment("retrieve_token:failure", count, tags: ["audience:#{audience}"])
+  end
 
-    def handle_event([:prima_auth0_ex, :retrieve_token, :success], %{count: count}, %{audience: audience}, _config) do
-      Statix.increment("retrieve_token:success", count, tags: ["audience:#{audience}"])
-    end
+  def handle_event([:prima_auth0_ex, :retrieve_token, :success], %{count: count}, %{audience: audience}, %{
+        reporter: reporter
+      }) do
+    reporter.increment("retrieve_token:success", count, tags: ["audience:#{audience}"])
   end
 end
