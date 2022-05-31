@@ -53,6 +53,7 @@ defmodule PrimaAuth0Ex.Application do
   def redis_ssl_opts do
     []
     |> append_if(redis_ssl_enabled?(), ssl: true)
+    # Read here for an explanation: https://hexdocs.pm/redix/Redix.html#module-ssl
     |> append_if(
       redis_ssl_allow_wildcard_certificates?(),
       socket_opts: [
