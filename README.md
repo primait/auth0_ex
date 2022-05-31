@@ -164,6 +164,30 @@ field ... do
   resolve &Resolver.resolve_function/3
 ```
 
+### Metrics
+
+`prima_auth0_ex` uses `:telemetry` to [emit two events](/lib/prima_auth0_ex/token_provider/auth0_authorization_service.ex#L56)
+
+- `[:prima_auth0_ex, :retrieve_token, :success]`
+- `[:prima_auth0_ex, :retrieve_token, :failure]`
+
+which represent a successful or failed attempt to fetch a new JWT from Auth0.
+
+If you want to leverage them you can
+
+- register a custom handler (see [here](https://hexdocs.pm/telemetry/readme.html)) or
+- configure the [pre-defined handler](/lib/prima_auth0_ex/telemetry.ex)
+
+The pre-defined handler tries to be as agnostic as possible from the underlying reporter and it can be configured by setting the following
+
+```elixir
+config :prima_auth0_ex, telemetry_reporter: TelemetryReporter
+```
+
+At startup the library will check if a reporter has been configured and then it will attach it as an handler.
+
+In order to work, the reporter needs to have an `increment` method like in Statix or Instruments, and it will then increment one of two counters: `retrieve_token:success` or `retrieve_token:failure`. Each counter will be tagged by `audience`.
+
 ## Development
 
 The test suite can be executed as follows:
