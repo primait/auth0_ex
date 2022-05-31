@@ -27,7 +27,7 @@ defmodule PrimaAuth0Ex.Application do
 
   defp cache_children do
     if cache_enabled?() do
-      [{Redix, {redis_connection_uri(), [name: PrimaAuth0Ex.Redix]}}]
+      [{Redix, {redis_connection_uri(), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts()}}]
     else
       []
     end
@@ -49,6 +49,26 @@ defmodule PrimaAuth0Ex.Application do
     do: :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:ignore_signature, false)
 
   defp redis_connection_uri, do: Application.fetch_env!(:prima_auth0_ex, :client)[:redis_connection_uri]
+
+  defp redis_ssl_opts do
+    if redis_ssl_allow_wildcard_certificates?() do
+      [
+        socket_opts: [
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ]
+        ]
+      ]
+    else
+      []
+    end
+  end
+
+  defp redis_ssl_allow_wildcard_certificates?,
+    do:
+      Application.get_env(:prima_auth0_ex, :client, redis_ssl_allow_wildcard_certificates: false)[
+        :redis_ssl_allow_wildcard_certificates
+      ]
 
   defp first_jwks_fetch_sync do
     :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:first_jwks_fetch_sync, false)
