@@ -50,25 +50,28 @@ defmodule PrimaAuth0Ex.Application do
 
   defp redis_connection_uri, do: Application.fetch_env!(:prima_auth0_ex, :client)[:redis_connection_uri]
 
-  defp redis_ssl_opts do
-    if redis_ssl_allow_wildcard_certificates?() do
-      [
-        socket_opts: [
-          customize_hostname_check: [
-            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-          ]
+  def redis_ssl_opts do
+    []
+    |> append_if(redis_ssl_enabled?(), ssl: true)
+    |> append_if(
+      redis_ssl_allow_wildcard_certificates?(),
+      socket_opts: [
+        customize_hostname_check: [
+          match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
         ]
       ]
-    else
-      []
-    end
+    )
   end
 
-  defp redis_ssl_allow_wildcard_certificates?,
-    do:
-      Application.get_env(:prima_auth0_ex, :client, redis_ssl_allow_wildcard_certificates: false)[
-        :redis_ssl_allow_wildcard_certificates
-      ]
+  defp redis_ssl_enabled?() do
+    client = Application.get_env(:prima_auth0_ex, :client, [])
+    client[:redis_ssl_enabled] || false
+  end
+
+  defp redis_ssl_allow_wildcard_certificates? do
+    client = Application.get_env(:prima_auth0_ex, :client, [])
+    client[:redis_ssl_allow_wildcard_certificates] || false
+  end
 
   defp first_jwks_fetch_sync do
     :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:first_jwks_fetch_sync, false)
@@ -83,4 +86,7 @@ defmodule PrimaAuth0Ex.Application do
       Logger.warning("No configuration found neither for client nor for server")
     end
   end
+
+  defp append_if(list, false, _value), do: list
+  defp append_if(list, true, value), do: list ++ value
 end

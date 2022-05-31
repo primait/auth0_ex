@@ -10,7 +10,8 @@ config :prima_auth0_ex, :client,
   cache_namespace: "my-service",
   cache_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
   redis_connection_uri: "redis://redis:6379",
-  redis_ssl_allow_wildcard_certificates: false
+  redis_ssl_enabled: true,
+  redis_ssl_allow_wildcard_certificates: true
 
 config :prima_auth0_ex, :server,
   ignore_signature: false,
