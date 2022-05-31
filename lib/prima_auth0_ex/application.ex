@@ -5,10 +5,12 @@ defmodule PrimaAuth0Ex.Application do
 
   require Logger
 
-  alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
+  alias PrimaAuth0Ex.Telemetry
+  alias PrimaAuth0Ex.{TokenProvider, JwksStrategy}
 
   def start(_type, _args) do
     log_configuration_errors()
+    Telemetry.setup()
 
     children = client_children() ++ cache_children() ++ server_children()
     opts = [strategy: :one_for_one, name: PrimaAuth0Ex.Supervisor]
