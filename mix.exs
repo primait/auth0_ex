@@ -49,8 +49,7 @@ defmodule PrimaAuth0Ex.MixProject do
     [
       {:absinthe, "~> 1.6", optional: true},
       {:absinthe_plug, "~> 1.5", optional: true},
-      {:plug, "~> 1.10", optional: true},
-      {:statix, github: "primait/statix", branch: "feature/switch_from_config", optional: true}
+      {:plug, "~> 1.10", optional: true}
     ]
   end
 
