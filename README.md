@@ -55,7 +55,10 @@ config :prima_auth0_ex, :client,
   # AES 256 key used to encrypt tokens on the shared cache.
   # Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
   cache_encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
-  redis_connection_uri: "redis://redis:6379"
+  redis_connection_uri: "redis://redis:6379",
+  redis_ssl_enabled: false,
+  # Read here for more infos: https://hexdocs.pm/redix/Redix.html#module-ssl
+  redis_ssl_allow_wildcard_certificates: false
 ```
 
 **If the client will access APIs that perform validation of permissions, make sure that the API on Auth0 is configured to have both "Enable RBAC" and "Add Permissions in the Access Token" enabled.**

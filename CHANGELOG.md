@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+### Added
+
+- New `:redis_ssl_enabled` and `:redis_ssl_allow_wildcard_certificates` options
+
 ## [0.4.0]
 
 ### Added
