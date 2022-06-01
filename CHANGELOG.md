@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+## [0.4.1] - 2022-06-01
+
 ### Added
 
 - New `:redis_ssl_enabled` and `:redis_ssl_allow_wildcard_certificates` options
 
-## [0.4.0]
+## [0.4.0] - 2022-05-31
 
 ### Added
 
@@ -121,7 +123,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
 
-[Next]: https://github.com/primait/auth0_ex/compare/0.4.0...HEAD
+[Next]: https://github.com/primait/auth0_ex/compare/0.4.1...HEAD
+[0.4.1]: https://github.com/primait/auth0_ex/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/primait/auth0_ex/compare/0.3.1...0.4.0
 [0.3.1]: https://github.com/primait/auth0_ex/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/primait/auth0_ex/compare/0.3.0-rc.1.3...0.3.0
