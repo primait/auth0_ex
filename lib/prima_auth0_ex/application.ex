@@ -62,16 +62,20 @@ defmodule PrimaAuth0Ex.Application do
         ]
       ]
     )
+    |> append_if(redis_ssl_disable_certificate_verification?(),
+      verify: :verify_none
+    )
   end
 
-  defp redis_ssl_enabled? do
-    client = Application.get_env(:prima_auth0_ex, :client, [])
-    client[:redis_ssl_enabled] || false
-  end
+  defp redis_ssl_enabled?, do: get_redis_option(:redis_ssl_enabled)
 
-  defp redis_ssl_allow_wildcard_certificates? do
+  defp redis_ssl_allow_wildcard_certificates?, do: get_redis_option(:redis_ssl_allow_wildcard_certificates)
+
+  defp redis_ssl_disable_certificate_verification?, do: get_redis_option(:redis_ssl_disable_certificate_verification)
+
+  defp get_redis_option(option) do
     client = Application.get_env(:prima_auth0_ex, :client, [])
-    client[:redis_ssl_allow_wildcard_certificates] || false
+    client[option] || false
   end
 
   defp first_jwks_fetch_sync do
