@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New Absinthe plug & middleware to bootstrap authentication
 - New telemetry events on token retrieval
 - New telemetry pre-defined handler
+- New `mix keygen` command to easily generate `cache_encryption_key`
 
 ### Fixed
 
