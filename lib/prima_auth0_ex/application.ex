@@ -60,9 +60,7 @@ defmodule PrimaAuth0Ex.Application do
         customize_hostname_check: [
           match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
         ]
-      ]
-    )
-    |> append_if(redis_ssl_disable_certificate_verification?(),
+      ],
       verify: :verify_none
     )
   end
@@ -70,8 +68,6 @@ defmodule PrimaAuth0Ex.Application do
   defp redis_ssl_enabled?, do: get_redis_option(:redis_ssl_enabled)
 
   defp redis_ssl_allow_wildcard_certificates?, do: get_redis_option(:redis_ssl_allow_wildcard_certificates)
-
-  defp redis_ssl_disable_certificate_verification?, do: get_redis_option(:redis_ssl_disable_certificate_verification)
 
   defp get_redis_option(option) do
     client = Application.get_env(:prima_auth0_ex, :client, [])
