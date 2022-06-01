@@ -1,4 +1,4 @@
-if Code.ensure_loaded?(Absinthe) do
+if Code.ensure_loaded?(Absinthe) and Code.ensure_loaded?(Absinthe.Plug) do
   defmodule PrimaAuth0Ex.Absinthe.RequirePermissions do
     @moduledoc """
     Absinthe middleware that ensure the permission is included in the current security context.
