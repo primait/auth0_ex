@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+## [0.4.2] - 2022-06-01
+
+### Fixed
+
+- Fix compilation error when only `:absinthe` dependency is present without `:absinthe_plug`
+
 ## [0.4.1] - 2022-06-01
 
 ### Added
@@ -123,7 +129,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
 
-[Next]: https://github.com/primait/auth0_ex/compare/0.4.1...HEAD
+[Next]: https://github.com/primait/auth0_ex/compare/0.4.2...HEAD
+[0.4.2]: https://github.com/primait/auth0_ex/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/primait/auth0_ex/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/primait/auth0_ex/compare/0.3.1...0.4.0
 [0.3.1]: https://github.com/primait/auth0_ex/compare/0.3.0...0.3.1
