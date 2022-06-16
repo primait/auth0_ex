@@ -5,6 +5,17 @@ if Code.ensure_loaded?(Absinthe.Plug) do
     It does not validate the token!
     """
 
+    defmodule Auth0 do
+      @moduledoc false
+
+      @type t :: %__MODULE__{
+              dry_run: boolean(),
+              permissions: [String.t()] | nil
+            }
+      defstruct dry_run: false,
+                permissions: nil
+    end
+
     @behaviour Plug
 
     @impl true
@@ -21,7 +32,7 @@ if Code.ensure_loaded?(Absinthe.Plug) do
         end
 
       Absinthe.Plug.assign_context(conn,
-        auth0: %{
+        auth0: %Auth0{
           permissions: permissions,
           dry_run: dry_run
         }
