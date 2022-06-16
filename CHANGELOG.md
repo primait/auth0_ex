@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+### Changed
+
+- Absinthe plugs do not use a custom context structor but instead use a map
+
 ## [0.4.2] - 2022-06-01
 
 ### Fixed
