@@ -20,7 +20,7 @@ if Code.ensure_loaded?(Absinthe.Plug) do
           [] -> nil
         end
 
-      put_context(conn,
+      Absinthe.Plug.assign_context(conn,
         auth0: %{
           permissions: permissions,
           dry_run: dry_run
@@ -32,27 +32,6 @@ if Code.ensure_loaded?(Absinthe.Plug) do
       :prima_auth0_ex
       |> Application.get_env(:server, [])
       |> Keyword.get(:dry_run, false)
-    end
-
-    # Absinthe.Plug doesn't offer a way to access it's context
-    @spec put_context(Plug.Conn.t(), Keyword.t()) :: Plug.Conn.t()
-    def put_context(%Plug.Conn{private: %{absinthe: absinthe}} = conn, opts) do
-      opts =
-        absinthe
-        |> Map.get(:context, %{})
-        |> Map.merge(Enum.into(opts, %{}))
-        |> then(&Map.merge(absinthe, %{context: &1}))
-        |> map_to_keyword_list()
-
-      Absinthe.Plug.put_options(conn, opts)
-    end
-
-    def put_context(conn, opts) do
-      Absinthe.Plug.put_options(conn, context: Enum.into(opts, %{}))
-    end
-
-    defp map_to_keyword_list(map) do
-      Enum.map(map, fn {key, value} -> {String.to_existing_atom(key), value} end)
     end
   end
 end
