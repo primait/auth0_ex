@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Absinthe plugs uses a map instead of custom struct as context
+- Absinthe plugs use a map instead of custom struct as context
 
 ## [0.4.2] - 2022-06-01
 
