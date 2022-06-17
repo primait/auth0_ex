@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+## [0.4.3] - 2022-06-16
+
 ### Changed
 
 - Absinthe plugs use a map instead of custom struct as context
@@ -133,7 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
 
-[Next]: https://github.com/primait/auth0_ex/compare/0.4.2...HEAD
+[Next]: https://github.com/primait/auth0_ex/compare/0.4.3...HEAD
+[0.4.3]: https://github.com/primait/auth0_ex/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/primait/auth0_ex/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/primait/auth0_ex/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/primait/auth0_ex/compare/0.3.1...0.4.0
