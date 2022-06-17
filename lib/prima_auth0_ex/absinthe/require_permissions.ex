@@ -6,13 +6,13 @@ if Code.ensure_loaded?(Absinthe) and Code.ensure_loaded?(Absinthe.Plug) do
 
     require Logger
 
-    alias PrimaAuth0Ex.Absinthe.CreateSecurityContext.Context
+    alias PrimaAuth0Ex.Absinthe.CreateSecurityContext.Auth0
 
     @behaviour Absinthe.Middleware
 
     @impl true
     def call(
-          %{context: %Context{permissions: permissions}} = resolution,
+          %{context: %{auth0: %Auth0{permissions: permissions}}} = resolution,
           required_permissions
         ) do
       if has_required_permissions?(permissions, required_permissions) do
@@ -27,7 +27,10 @@ if Code.ensure_loaded?(Absinthe) and Code.ensure_loaded?(Absinthe.Plug) do
     defp has_required_permissions?(permissions, required_permissions),
       do: Enum.all?(required_permissions, &Enum.member?(permissions, &1))
 
-    defp resolve(%{context: %Context{dry_run: true, permissions: permissions}} = resolution, required_permissions) do
+    defp resolve(
+           %{context: %{auth0: %Auth0{dry_run: true, permissions: permissions}}} = resolution,
+           required_permissions
+         ) do
       if permissions != nil do
         Logger.warn("Received invalid token", required_permissions: required_permissions)
       end
@@ -35,7 +38,7 @@ if Code.ensure_loaded?(Absinthe) and Code.ensure_loaded?(Absinthe.Plug) do
       resolution
     end
 
-    defp resolve(%{context: %Context{dry_run: false}} = resolution, _required_permissions),
+    defp resolve(%{context: %{auth0: %Auth0{dry_run: false}}} = resolution, _required_permissions),
       do: Absinthe.Resolution.put_result(resolution, {:error, "unauthorized"})
   end
 end
