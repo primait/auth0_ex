@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/hexpm/l/prima_auth0_ex.svg)](https://github.com/primait/auth0_ex/blob/master/LICENSE.md)
 [![Last Updated](https://img.shields.io/github/last-commit/primait/auth0_ex.svg)](https://github.com/primait/auth0_ex/commits/master)
 
-An easy to use library to authenticate machine-to-machine communications through Auth0.
+An easy-to-use library to authenticate machine-to-machine communications through Auth0.
 
 Supports both retrieval of JWTs and their verification and validation.
 
@@ -14,7 +14,6 @@ Supports both retrieval of JWTs and their verification and validation.
 
 - [Installation](#installation)
 - [Configuration](#configuration)
-  - [I am a DevOps, what do I have to do?](#i-am-a-devops-what-do-i-have-to-do)
 - [Usage](#usage)
 - [Development](#development)
 
@@ -94,9 +93,9 @@ config :prima_auth0_ex, :server,
   missing_auth_header_log_level: :warn
 ```
 
-### I am a DevOps, what do I have to do?
+### Operational requirements
 
-As a DevOps someone is probably going to ask you to generate a `cache_encryption_key`, which can be generated either running `mix keygen` or using the following snippet:
+To cache tokens on Redis you'll need to generate a `cache_encryption_key`. This can be done either by running `mix keygen` or by using the following snippet:
 
 ```elixir
 :crypto.strong_rand_bytes(32) |> Base.encode64()
@@ -121,7 +120,7 @@ It is also possible to force the refresh of the token, both on the local instanc
 {:ok, new_token} = PrimaAuth0Ex.refresh_token_for("target-audience")
 ```
 
-A use-case for forcing the refresh of the token may be e.g., if new permissions are added to an application on Auth0, and we want to propagate this change without waiting for the natural expiration of tokens.
+A use-case for forcing the refresh of the token may be e.g. if new permissions are added to an application on Auth0, and we want to propagate this change without waiting for the natural expiration of tokens.
 
 ### Verifying tokens
 
@@ -153,7 +152,7 @@ The plug supports the following options:
 
 #### Validating permissions with Absinthe
 
-In order to validate permissions in your Graphql API on a per-query/per-mutation basis, an option is to define an Absinthe middleware. To this end you can use the [PrimaAuth0Ex.Absinthe.RequirePermissions](lib/prima_auth0_ex/absinthe/require_permissions.ex) included with the library or build your own.
+To validate permissions in your Graphql API on a per-query/per-mutation basis, an option is to define an Absinthe middleware. To this end, you can use the [PrimaAuth0Ex.Absinthe.RequirePermissions](lib/prima_auth0_ex/absinthe/require_permissions.ex) included with the library or build your own.
 
 This middleware has a companion plug: [PrimaAuth0Ex.Absinthe.CreateSecurityContext](lib/prima_auth0_ex/absinthe/create_security_context.ex), which can be used to pass the user's permissions to the Absinthe context.
 
@@ -187,9 +186,9 @@ The pre-defined handler tries to be as agnostic as possible from the underlying 
 config :prima_auth0_ex, telemetry_reporter: TelemetryReporter
 ```
 
-At startup the library will check if a reporter has been configured and then it will attach it as an handler.
+At startup, the library will check if a reporter has been configured and then it will attach it as a handler.
 
-In order to work, the reporter needs to have an `increment` method like in Statix or Instruments, and it will then increment one of two counters: `retrieve_token:success` or `retrieve_token:failure`. Each counter will be tagged by `audience`.
+To work, the reporter needs to have an `increment` method like in Statix or Instruments, and it will then increment one of two counters: `retrieve_token:success` or `retrieve_token:failure`. Each counter will be tagged by `audience`.
 
 ## Development
 
