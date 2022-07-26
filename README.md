@@ -14,6 +14,7 @@ Supports both retrieval of JWTs and their verification and validation.
 
 - [Installation](#installation)
 - [Configuration](#configuration)
+  - [Operational requirements](#operational-requirements)
 - [Usage](#usage)
 - [Development](#development)
 
