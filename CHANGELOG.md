@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+### Fixed
+
+- Rename the metric defined by the default telemetry handler from `retrieve_token:*` (invalid) to `auth0.token`
+
 ## [0.4.3] - 2022-06-16
 
 ### Changed

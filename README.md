@@ -189,7 +189,7 @@ config :prima_auth0_ex, telemetry_reporter: TelemetryReporter
 
 At startup, the library will check if a reporter has been configured and then it will attach it as a handler.
 
-To work, the reporter needs to have an `increment` method like in Statix or Instruments, and it will then increment one of two counters: `retrieve_token:success` or `retrieve_token:failure`. Each counter will be tagged by `audience`.
+To work, the reporter needs to have an `increment` method like in Statix or Instruments, and it will then increment one of two counters: `auth0.token`. Each counter will be tagged by `audience` and `status` (`success` or `failure`).
 
 ## Development
 
