@@ -32,15 +32,12 @@ defmodule PrimaAuth0Ex.Telemetry.Handler do
   A pre-defined telemetry handler
   """
 
-  def handle_event([:prima_auth0_ex, :retrieve_token, :failure], %{count: count}, %{audience: audience}, %{
-        reporter: reporter
-      }) do
-    reporter.increment("retrieve_token:failure", count, tags: ["audience:#{audience}"])
-  end
-
-  def handle_event([:prima_auth0_ex, :retrieve_token, :success], %{count: count}, %{audience: audience}, %{
-        reporter: reporter
-      }) do
-    reporter.increment("retrieve_token:success", count, tags: ["audience:#{audience}"])
+  def handle_event(
+        [:prima_auth0_ex, :retrieve_token, status],
+        %{count: count},
+        %{audience: audience},
+        %{reporter: reporter}
+      ) do
+    reporter.increment("auth0.token", count, tags: ["audience:#{audience}", "status:#{status}"])
   end
 end
