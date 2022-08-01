@@ -39,8 +39,8 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp do_set_token_for(audience, token) do
     with {:ok, json_token} <- to_json(token),
-         {:ok, encrypted} <- TokenEncryptor.encrypt(json_token) do
-      save(encrypted, key_for(audience), token.expires_at)
+         {:ok, encrypted} <- TokenEncryptor.encrypt(json_token),
+         {:ok, _} <- save(encrypted, key_for(audience), token.expires_at) do
       Logger.info("Updated token on redis.", audience: audience)
       :ok
     else
