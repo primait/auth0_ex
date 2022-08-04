@@ -24,7 +24,7 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptorTest do
 
     {:ok, enc} = TokenEncryptor.encrypt("test")
 
-    new_key = keygen()
+    new_key = generate_key()
 
     TestHelper.set_client_env(:cache_encryption_key, new_key, reset?: false)
 
@@ -47,5 +47,5 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptorTest do
     assert {:error, _} = TokenEncryptor.decrypt(enc)
   end
 
-  defp keygen, do: Base.encode64(:crypto.strong_rand_bytes(32))
+  defp generate_key, do: Base.encode64(:crypto.strong_rand_bytes(32))
 end
