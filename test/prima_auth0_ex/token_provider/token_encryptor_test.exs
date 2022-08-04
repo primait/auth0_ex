@@ -1,4 +1,6 @@
 defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptorTest do
+  @moduledoc false
+
   use ExUnit.Case, async: false
 
   alias PrimaAuth0Ex.TestHelper
@@ -51,5 +53,5 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptorTest do
     assert {:error, _} = TokenEncryptor.decrypt(enc)
   end
 
-  defp keygen(), do: :crypto.strong_rand_bytes(32) |> Base.encode64()
+  defp keygen, do: Base.encode64(:crypto.strong_rand_bytes(32))
 end
