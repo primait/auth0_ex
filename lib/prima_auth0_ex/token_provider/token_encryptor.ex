@@ -25,7 +25,7 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptor do
     <<iv::binary-16, tag::binary-16, ciphertext::binary>> = Base.decode64!(encrypted)
 
     case :crypto.crypto_one_time_aead(:aes_256_gcm, token_encryption_key(), iv, ciphertext, @aad, tag, false) do
-      :error -> {:error, "something"}
+      :error -> {:error, "Failed to decrypt token"}
       decrypted -> {:ok, decrypted}
     end
   rescue

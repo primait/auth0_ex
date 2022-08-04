@@ -17,7 +17,7 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptorTest do
     assert plaintext == dec
   end
 
-  test "decrypting fails with :error if key changes" do
+  test "decrypting returns with :error if key changes" do
     TestHelper.set_client_env(:cache_encryption_key, @token_encryption_key, true)
 
     plaintext = "test"
@@ -27,6 +27,26 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptorTest do
     new_key = keygen()
 
     TestHelper.set_client_env(:cache_encryption_key, new_key, false)
+
+    assert {:error, _} = TokenEncryptor.decrypt(enc)
+  end
+
+  test "encrypting returns with :error if key is not binary" do
+    TestHelper.set_client_env(:cache_encryption_key, 1234, true)
+
+    plaintext = "test"
+
+    assert {:error, _} = TokenEncryptor.encrypt(plaintext)
+  end
+
+  test "decrypting returns with :error if key is not binary" do
+    TestHelper.set_client_env(:cache_encryption_key, @token_encryption_key, true)
+
+    plaintext = "test"
+
+    {:ok, enc} = TokenEncryptor.encrypt(plaintext)
+
+    TestHelper.set_client_env(:cache_encryption_key, 1234, false)
 
     assert {:error, _} = TokenEncryptor.decrypt(enc)
   end
