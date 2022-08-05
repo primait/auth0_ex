@@ -1,0 +1,3 @@
+files:
+  - path: mix.exs
+    pattern: '@version \"{version}\"'
