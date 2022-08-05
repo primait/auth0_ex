@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+## [0.4.5] - 2022-08-05
+
+### Fixed
+
+- `PrimaAuth0Ex.TokenProvider.TokenEncryptor.decrypt` will now return a proper error on decrypt error
+
 ## [0.4.4] - 2022-07-28
 
 ### Fixed
