@@ -51,18 +51,18 @@ defmodule PrimaAuth0Ex.Application do
   defp redis_connection_uri, do: Application.fetch_env!(:prima_auth0_ex, :client)[:redis_connection_uri]
 
   def redis_ssl_opts do
-    []
-    |> append_if(redis_ssl_enabled?(), ssl: true)
-    # Read here for an explanation: https://hexdocs.pm/redix/Redix.html#module-ssl
-    |> append_if(
-      redis_ssl_allow_wildcard_certificates?(),
-      socket_opts: [
-        customize_hostname_check: [
-          match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-        ],
-        verify: :verify_none
-      ]
-    )
+    if redis_ssl_enabled?() do
+      append_if([ssl: true], redis_ssl_allow_wildcard_certificates?(),
+        socket_opts: [
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ],
+          verify: :verify_none
+        ]
+      )
+    else
+      []
+    end
   end
 
   defp redis_ssl_enabled?, do: get_redis_option(:redis_ssl_enabled)
