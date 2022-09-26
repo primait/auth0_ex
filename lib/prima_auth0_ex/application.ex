@@ -51,9 +51,7 @@ defmodule PrimaAuth0Ex.Application do
   defp redis_connection_uri, do: Application.fetch_env!(:prima_auth0_ex, :client)[:redis_connection_uri]
 
   def redis_ssl_opts do
-    if !redis_ssl_enabled?() do
-      []
-    else
+    if redis_ssl_enabled?() do
       append_if([ssl: true], redis_ssl_allow_wildcard_certificates?(),
         socket_opts: [
           customize_hostname_check: [
@@ -62,6 +60,8 @@ defmodule PrimaAuth0Ex.Application do
           verify: :verify_none
         ]
       )
+    else
+      []
     end
   end
 
