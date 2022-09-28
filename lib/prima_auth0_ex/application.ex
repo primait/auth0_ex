@@ -56,8 +56,7 @@ defmodule PrimaAuth0Ex.Application do
         socket_opts: [
           customize_hostname_check: [
             match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-          ],
-          verify: :verify_none
+          ]
         ]
       )
     else

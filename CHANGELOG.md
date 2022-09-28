@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- [Breaking] Do not disable certificate verification connecting to Redis when the `redis_ssl_allow_wildcard_certificates` option is enabled.
+
 ---
 
 ## [0.4.6] - 2022-09-27
