@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.5.0] - 2022-09-28
+
 ### Fixed
 
 - [Breaking] Do not disable certificate verification connecting to Redis when the `redis_ssl_allow_wildcard_certificates` option is enabled.
@@ -197,7 +201,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
 
-[Unreleased]: https://github.com/primait/auth0_ex/compare/0.4.6...HEAD
+
+[Unreleased]: https://github.com/primait/auth0_ex/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/primait/auth0_ex/compare/0.4.6...0.5.0
 [0.4.6]: https://github.com/primait/auth0_ex/compare/0.4.5...0.4.6
 [0.4.5]: https://github.com/primait/auth0_ex/compare/0.4.4...0.4.5
 [0.4.4]: https://github.com/primait/auth0_ex/compare/0.4.3...0.4.4
