@@ -32,7 +32,10 @@ if Code.ensure_loaded?(Absinthe) and Code.ensure_loaded?(Absinthe.Plug) do
            required_permissions
          ) do
       if permissions != nil do
-        Logger.warn("Received invalid token", required_permissions: required_permissions)
+        Logger.warn("Received token with incorrect permissions",
+          token_permissions: permissions,
+          required_permissions: required_permissions
+        )
       end
 
       resolution
