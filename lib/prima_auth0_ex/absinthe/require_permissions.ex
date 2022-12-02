@@ -2,7 +2,9 @@ if Code.ensure_loaded?(Absinthe) and Code.ensure_loaded?(Absinthe.Plug) do
   defmodule PrimaAuth0Ex.Absinthe.RequirePermissions do
     @moduledoc """
     Absinthe middleware that ensures that the given token permissions are included in the current security context.
-    If this is not the case and prima_auth0_ex is not running in "dry run" mode, it returns an `unauthorized` error.
+    If this is not the case, it returns an `unauthorized` error.
+
+    If prima_auth0_ex is configured to run in "dry run" mode, this middleware simply logs a warning when the context doesn't include the given permissions.
 
     This is meant to be used in conjunction with the `PrimaAuth0Ex.Absinthe.CreateSecurityContext` plug.
     """
