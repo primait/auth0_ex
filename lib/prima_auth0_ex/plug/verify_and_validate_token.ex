@@ -5,19 +5,21 @@ if Code.ensure_loaded?(Plug) do
 
     Usage:
 
-      plug PrimaAuth0Ex.Plug.VerifyAndValidateToken, required_permissions: ["some:permission"]
+    ```
+    plug PrimaAuth0Ex.Plug.VerifyAndValidateToken, required_permissions: ["some:permission"]
+    ```
 
     ## Options
 
     The following options can be set to customize the behavior of this plug:
 
-    * `audience: "my-audience"` sets the expected audience. Defaults to the audience set in `config.exs`.
-    * `required_permissions: ["p1", "p2"]` sets the set of permissions that clients are required to have.
+    * `required_permissions: ["p1", "p2"]` **(mandatory)**: sets the permissions that clients are required to have.
       Clients who do not have **all** the required permissions are forbidden from accessing the API.
-      Default is `[]`, ie. no permissions required, overridable from `config.exs`.
-    * `dry_run: false` when true allows clients to access the API even when their token is missing/invalid.
+      If you don't want to require any permissions, you can pass an empty list (`[]`) to this option.
+    * `audience: "my-audience"`: sets the expected audience. Defaults to the audience set in `config.exs`.
+    * `dry_run: false`: when true allows clients to access the API even when their token is missing/invalid.
       Mostly useful for testing purposes. Default is `false`, overridable from `config.exs`.
-    * `ignore_signature: false` when true, validates claims found in a token without verifying its signature.
+    * `ignore_signature: false`: when true, validates claims found in a token without verifying its signature.
       Should only be enabled in dev/test environments, as it allows anyone to forge valid tokens.
       Default is `false`, overridable from `config.exs`.
     """

@@ -1,7 +1,13 @@
 if Code.ensure_loaded?(Absinthe) and Code.ensure_loaded?(Absinthe.Plug) do
   defmodule PrimaAuth0Ex.Absinthe.RequirePermissions do
     @moduledoc """
-    Absinthe middleware that ensure the permission is included in the current security context.
+    Absinthe middleware that ensures that the client has the required JWT permissions to access the GraphQL field.
+    If this is not the case, it returns an `unauthorized` error.
+
+    This middleware expects the required permissions of the field to be stored in the Absinthe context,
+    which can be done by using the `PrimaAuth0Ex.Absinthe.CreateSecurityContext` plug.
+
+    If prima_auth0_ex is configured to run in "dry run" mode, this middleware simply logs a warning when the context doesn't include the given permissions.
     """
 
     require Logger
@@ -32,7 +38,10 @@ if Code.ensure_loaded?(Absinthe) and Code.ensure_loaded?(Absinthe.Plug) do
            required_permissions
          ) do
       if permissions != nil do
-        Logger.warn("Received invalid token", required_permissions: required_permissions)
+        Logger.warn("Received token with incorrect permissions",
+          token_permissions: permissions,
+          required_permissions: required_permissions
+        )
       end
 
       resolution

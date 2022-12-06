@@ -1,8 +1,10 @@
 if Code.ensure_loaded?(Absinthe.Plug) do
   defmodule PrimaAuth0Ex.Absinthe.CreateSecurityContext do
     @moduledoc """
-    Plug that reads the permissions from the received token and creates the security context.
-    It does not validate the token!
+    Plug that reads the permissions from the JWT passed in the `Authorization` header and stores them in the Absinthe context,
+    so that they can be accessed by the `PrimaAuth0Ex.Absinthe.RequirePermissions` middleware.
+
+    It does not validate the token! You should use the `PrimaAuth0Ex.Plug.VerifyAndValidateToken` plug to do that.
     """
 
     defmodule Auth0 do
