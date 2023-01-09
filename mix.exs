@@ -39,7 +39,7 @@ defmodule PrimaAuth0Ex.MixProject do
       {:joken, "~> 2.4"},
       {:joken_jwks, "~> 1.4"},
       {:redix, "~> 0.9 or ~> 1.0"},
-      {:telepoison, "~> 1.0.1"},
+      {:telepoison, "~> 1.1"},
       {:telemetry, "~> 1.0"},
       {:timex, "~> 3.6"}
     ] ++ optional_deps() ++ dev_deps()
@@ -95,7 +95,8 @@ defmodule PrimaAuth0Ex.MixProject do
 
   defp package do
     [
-      description: "An easy to use library to authenticate machine-to-machine communications through Auth0.",
+      description:
+        "An easy to use library to authenticate machine-to-machine communications through Auth0.",
       name: "prima_auth0_ex",
       maintainers: ["Prima"],
       licenses: ["MIT"],
