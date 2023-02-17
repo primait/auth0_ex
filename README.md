@@ -101,7 +101,10 @@ To cache tokens on Redis you'll need to generate a `cache_encryption_key`. This 
 ```elixir
 :crypto.strong_rand_bytes(32) |> Base.encode64()
 ```
-
+Alternatively you can generate it on command line (Linux/MacOSX) with:
+```
+dd if=/dev/random bs=1 count=32 | base64
+```
 > :warning: **The token needs to be 32 bytes long AND base64 encoded**, failing to do so will result in tokens not getting cached on Redis. :warning:
 
 ## Usage
