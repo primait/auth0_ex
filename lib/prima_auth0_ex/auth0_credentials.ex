@@ -6,11 +6,14 @@ defmodule PrimaAuth0Ex.Auth0Credentials do
   defstruct [:base_url, :client_id, :client_secret]
 
   @spec from_env :: __MODULE__.t()
-  def from_env do
+  def from_env(name) do
+    clients = Application.fetch_env!(:prima_auth0_ex, :clients)
+    client = Map.fetch!(clients, name)
+
     %__MODULE__{
-      base_url: Application.fetch_env!(:prima_auth0_ex, :auth0_base_url),
-      client_id: Application.fetch_env!(:prima_auth0_ex, :client)[:client_id],
-      client_secret: Application.fetch_env!(:prima_auth0_ex, :client)[:client_secret]
+      base_url: Keyword.get(client, :auth0_base_url),
+      client_id: Keyword.get(client, :client_id),
+      client_secret: Keyword.get(client, :client_secret)
     }
   end
 end
