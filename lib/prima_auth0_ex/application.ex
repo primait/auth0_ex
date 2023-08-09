@@ -20,7 +20,13 @@ defmodule PrimaAuth0Ex.Application do
   defp client_children do
     if client_configured?() do
       clients = Application.get_env(:prima_auth0_ex, :clients, [])
-      Enum.map(clients, fn {name, opts} -> [{TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(name), name: String.to_atom("#{name}_token_provider")}])
+
+      Enum.map(clients, fn {name, opts} ->
+        [
+          {TokenProvider,
+           credentials: PrimaAuth0Ex.Auth0Credentials.from_env(name), name: String.to_atom("#{name}_token_provider")}
+        ]
+      end)
     else
       []
     end
