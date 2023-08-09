@@ -19,7 +19,8 @@ defmodule PrimaAuth0Ex.Application do
 
   defp client_children do
     if client_configured?() do
-      [{TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(), name: TokenProvider}]
+      clients = Application.get_env(:prima_auth0_ex, :clients, [])
+      Enum.map(clients, fn {name, opts} -> [{TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(name), name: String.to_atom("#{name}_token_provider")}])
     else
       []
     end
@@ -42,7 +43,7 @@ defmodule PrimaAuth0Ex.Application do
   end
 
   defp cache_enabled?, do: Application.get_env(:prima_auth0_ex, :client, cache_enabled: false)[:cache_enabled]
-  defp client_configured?, do: Application.get_env(:prima_auth0_ex, :client) != nil
+  defp client_configured?, do: Application.get_env(:prima_auth0_ex, :clients) != nil
   defp server_configured?, do: Application.get_env(:prima_auth0_ex, :server) != nil
 
   defp server_signature_ignored?,
