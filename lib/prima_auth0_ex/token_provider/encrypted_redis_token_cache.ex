@@ -11,17 +11,17 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   @behaviour TokenCache
 
   @impl TokenCache
-  def get_token_for(audience) do
-    if enabled?(), do: do_get_token_for(audience), else: {:ok, nil}
+  def get_token_for(client, audience) do
+    if enabled?(client), do: do_get_token_for(client, audience), else: {:ok, nil}
   end
 
   @impl TokenCache
-  def set_token_for(audience, token) do
-    if enabled?(), do: do_set_token_for(audience, token), else: :ok
+  def set_token_for(client, audience, token) do
+    if enabled?(client), do: do_set_token_for(client, audience, token), else: :ok
   end
 
-  defp do_get_token_for(audience) do
-    key = key_for(audience)
+  defp do_get_token_for(client, audience) do
+    key = key_for(client, audience)
 
     case Redix.command(PrimaAuth0Ex.Redix, ["GET", key]) do
       {:ok, nil} ->
@@ -37,10 +37,10 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
     end
   end
 
-  defp do_set_token_for(audience, token) do
+  defp do_set_token_for(client, audience, token) do
     with {:ok, json_token} <- to_json(token),
          {:ok, encrypted} <- TokenEncryptor.encrypt(json_token),
-         {:ok, _} <- save(encrypted, key_for(audience), token.expires_at) do
+         {:ok, _} <- save(encrypted, key_for(client, audience), token.expires_at) do
       Logger.info("Updated token on redis.", audience: audience)
       :ok
     else
@@ -50,7 +50,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
     end
   end
 
-  defp key_for(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
+  defp key_for(client, audience), do: "prima_auth0_ex_tokens:#{namespace(client)}:#{audience}"
 
   defp save(token, audience, expires_at) do
     expires_in = expires_at - current_time()
@@ -77,7 +77,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp build_token(_), do: {:error, :malformed_cached_data}
 
-  defp enabled?, do: :prima_auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:cache_enabled, true)
-  defp namespace, do: Application.fetch_env!(:prima_auth0_ex, :client)[:cache_namespace]
+  defp enabled?(client), do: :prima_auth0_ex |> Application.get_env(client, []) |> Keyword.get(:cache_enabled, true)
+  defp namespace(client), do: Application.fetch_env!(:prima_auth0_ex, client)[:cache_namespace]
   defp current_time, do: Timex.to_unix(Timex.now())
 end
