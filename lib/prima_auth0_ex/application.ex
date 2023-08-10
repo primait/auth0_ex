@@ -9,7 +9,7 @@ defmodule PrimaAuth0Ex.Application do
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
-    log_configuration_errors()
+    # log_configuration_errors()
     Telemetry.setup()
 
     children = client_children() ++ cache_children() ++ server_children()
@@ -18,27 +18,35 @@ defmodule PrimaAuth0Ex.Application do
   end
 
   defp client_children do
-    if client_configured?() do
-      Application.get_env(:prima_auth0_ex, :clients, %{})
-      |> Map.keys()
-      |> Enum.map(fn key ->
-        {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(key), name: key}
-      end)
-    else
-      []
-    end
+    clients = Application.get_env(:prima_auth0_ex, :clients, [])
+
+    Enum.reduce(clients, [], fn client_name, acc ->
+      if client_configured?(client_name) do
+        [
+          {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(client_name), name: client_name}
+          | acc
+        ]
+      else
+        acc
+      end
+    end)
   end
 
   defp cache_children do
-    if cache_enabled?() do
-      Application.get_env(:prima_auth0_ex, :clients, %{})
-      |> Map.keys()
-      |> Enum.map(fn key ->
-        {Redix, {redis_connection_uri(key), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts(key)}}
-      end)
-    else
-      []
-    end
+    clients = Application.get_env(:prima_auth0_ex, :clients, [])
+
+    Enum.reduce(clients, [], fn client_name, acc ->
+      if cache_enabled?(client_name) do
+        [
+          {Redix,
+           {redis_connection_uri(client_name),
+            [name: String.to_atom("#{client_name}_redix")] ++ redis_ssl_opts(client_name)}}
+          | acc
+        ]
+      else
+        acc
+      end
+    end)
   end
 
   defp server_children do
@@ -49,10 +57,12 @@ defmodule PrimaAuth0Ex.Application do
     end
   end
 
-  defp cache_enabled?,
-    do: Application.get_env(:prima_auth0_ex, :client, cache_enabled: false)[:cache_enabled]
+  defp cache_enabled?(client_name),
+    do: Application.get_env(:prima_auth0_ex, client_name, cache_enabled: false)[:cache_enabled]
 
-  defp client_configured?, do: Application.get_env(:prima_auth0_ex, :clients) != nil
+  defp client_configured?(client_name),
+    do: Application.get_env(:prima_auth0_ex, client_name) != nil
+
   defp server_configured?, do: Application.get_env(:prima_auth0_ex, :server) != nil
 
   defp server_signature_ignored?,
@@ -60,8 +70,7 @@ defmodule PrimaAuth0Ex.Application do
 
   defp redis_connection_uri(client_name),
     do:
-      Application.fetch_env!(:prima_auth0_ex, :clients)
-      |> Map.get(client_name)
+      Application.fetch_env!(:prima_auth0_ex, client_name)
       |> Keyword.get(:redis_connection_uri)
 
   def redis_ssl_opts(client_name) do
@@ -84,9 +93,7 @@ defmodule PrimaAuth0Ex.Application do
     do: get_redis_option(client_name, :redis_ssl_allow_wildcard_certificates)
 
   defp get_redis_option(client_name, option) do
-    Application.get_env(:prima_auth0_ex, :clients, %{})
-    |> Map.get(client_name)
-    |> Keyword.get(option) || false
+    Application.get_env(:prima_auth0_ex, client_name)[option] || false
   end
 
   defp first_jwks_fetch_sync do
@@ -95,15 +102,15 @@ defmodule PrimaAuth0Ex.Application do
     |> Keyword.get(:first_jwks_fetch_sync, false)
   end
 
-  defp log_configuration_errors do
-    unless Application.get_env(:prima_auth0_ex, :auth0_base_url) do
-      Logger.warning("Missing required configuration 'auth0_base_url'")
-    end
-
-    unless client_configured?() or server_configured?() do
-      Logger.warning("No configuration found neither for client nor for server")
-    end
-  end
+  # defp log_configuration_errors do
+  #   unless Application.get_env(:prima_auth0_ex, :auth0_base_url) do
+  #     Logger.warning("Missing required configuration 'auth0_base_url'")
+  #   end
+  #
+  #   unless client_configured?() or server_configured?() do
+  #     Logger.warning("No configuration found neither for client nor for server")
+  #   end
+  # end
 
   defp append_if(list, false, _value), do: list
   defp append_if(list, true, value), do: list ++ value

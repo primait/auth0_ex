@@ -5,10 +5,11 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   import PrimaAuth0Ex.TestSupport.TimeUtils
   alias PrimaAuth0Ex.TokenProvider.{EncryptedRedisTokenCache, TokenInfo}
 
+  @test_client_name :test_client
   @test_audience "redis-integration-test-audience"
 
   setup do
-    redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, :client)[:redis_connection_uri]
+    redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, @test_client_name)[:redis_connection_uri]
     Redix.start_link(redis_connection_uri, name: PrimaAuth0Ex.Redix)
     Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
 
@@ -28,8 +29,13 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
     end
 
     test "wrong cache_encryption_key" do
-      env_to_restore = Application.fetch_env!(:prima_auth0_ex, :client)
-      Application.put_env(:prima_auth0_ex, :client, Keyword.put(env_to_restore, :cache_encryption_key, "abcd"))
+      env_to_restore = Application.fetch_env!(:prima_auth0_ex, @test_client_name)
+
+      Application.put_env(
+        :prima_auth0_ex,
+        @test_client_name,
+        Keyword.put(env_to_restore, :cache_encryption_key, "abcd")
+      )
 
       log =
         capture_log(fn ->
@@ -40,7 +46,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
       assert String.match?(log, ~r/audience=redis-integration-test-audience/)
       assert String.match?(log, ~r/Error setting token on redis./)
 
-      Application.put_env(:prima_auth0_ex, :client, env_to_restore)
+      Application.put_env(:prima_auth0_ex, @test_client_name, env_to_restore)
     end
   end
 
@@ -97,5 +103,5 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
 
   defp token_key(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
   defp in_two_seconds, do: Timex.now() |> Timex.shift(seconds: 2) |> Timex.to_unix()
-  defp namespace, do: Application.fetch_env!(:prima_auth0_ex, :client)[:cache_namespace]
+  defp namespace, do: Application.fetch_env!(:prima_auth0_ex, @test_client_name)[:cache_namespace]
 end

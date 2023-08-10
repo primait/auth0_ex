@@ -7,8 +7,7 @@ defmodule PrimaAuth0Ex.Auth0Credentials do
 
   @spec from_env(atom()) :: __MODULE__.t()
   def from_env(name) do
-    clients = Application.fetch_env!(:prima_auth0_ex, :clients)
-    client = Map.fetch!(clients, name)
+    client = Application.fetch_env!(:prima_auth0_ex, name)
 
     %__MODULE__{
       base_url: Keyword.get(client, :auth0_base_url),
