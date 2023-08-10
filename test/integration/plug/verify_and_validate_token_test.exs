@@ -10,11 +10,12 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
   @moduletag capture_log: true
 
   @test_audience "test"
+  @test_client_name :test_client
   @opts VerifyAndValidateToken.init(audience: @test_audience, required_permissions: [])
 
   @tag :external
   test "does nothing when token is valid" do
-    credentials = Auth0Credentials.from_env()
+    credentials = Auth0Credentials.from_env(@test_client_name)
     {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     conn =
@@ -67,7 +68,7 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
 
   @tag :external
   test "supports setting a custom audience for validation" do
-    credentials = Auth0Credentials.from_env()
+    credentials = Auth0Credentials.from_env(@test_client_name)
     {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     opts = VerifyAndValidateToken.init(audience: "something-different-than-" <> audience(), required_permissions: [])
@@ -82,7 +83,7 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
 
   @tag :external
   test "supports setting required permissions" do
-    credentials = Auth0Credentials.from_env()
+    credentials = Auth0Credentials.from_env(@test_client_name)
     {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     opts = VerifyAndValidateToken.init(required_permissions: ["permission-that-user-on-auth0-should-not-have"])

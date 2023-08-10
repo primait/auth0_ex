@@ -5,9 +5,11 @@ defmodule Integration.TokenTest do
   alias PrimaAuth0Ex.Token
   alias PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService
 
+  @test_client_name :test_client
+
   @tag :external
   test "verifies token obtained from auth0" do
-    credentials = PrimaAuth0Ex.Auth0Credentials.from_env()
+    credentials = PrimaAuth0Ex.Auth0Credentials.from_env(:test_client)
     {:ok, auth0_token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     assert {:ok, _} = Token.verify_and_validate_token(auth0_token.jwt, audience(), [], false)
