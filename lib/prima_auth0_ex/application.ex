@@ -31,7 +31,11 @@ defmodule PrimaAuth0Ex.Application do
 
   defp cache_children do
     if cache_enabled?() do
-      [{Redix, {redis_connection_uri(), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts()}}]
+      Application.get_env(:prima_auth0_ex, :clients, %{})
+      |> Map.keys()
+      |> Enum.map(fn key ->
+        {Redix, {redis_connection_uri(key), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts(key)}}
+      end)
     else
       []
     end
@@ -45,18 +49,24 @@ defmodule PrimaAuth0Ex.Application do
     end
   end
 
-  defp cache_enabled?, do: Application.get_env(:prima_auth0_ex, :client, cache_enabled: false)[:cache_enabled]
+  defp cache_enabled?,
+    do: Application.get_env(:prima_auth0_ex, :client, cache_enabled: false)[:cache_enabled]
+
   defp client_configured?, do: Application.get_env(:prima_auth0_ex, :clients) != nil
   defp server_configured?, do: Application.get_env(:prima_auth0_ex, :server) != nil
 
   defp server_signature_ignored?,
     do: :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:ignore_signature, false)
 
-  defp redis_connection_uri, do: Application.fetch_env!(:prima_auth0_ex, :client)[:redis_connection_uri]
+  defp redis_connection_uri(client_name),
+    do:
+      Application.fetch_env!(:prima_auth0_ex, :clients)
+      |> Map.get(client_name)
+      |> Keyword.get(:redis_connection_uri)
 
-  def redis_ssl_opts do
-    if redis_ssl_enabled?() do
-      append_if([ssl: true], redis_ssl_allow_wildcard_certificates?(),
+  def redis_ssl_opts(client_name) do
+    if redis_ssl_enabled?(client_name) do
+      append_if([ssl: true], redis_ssl_allow_wildcard_certificates?(client_name),
         socket_opts: [
           customize_hostname_check: [
             match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
@@ -68,17 +78,21 @@ defmodule PrimaAuth0Ex.Application do
     end
   end
 
-  defp redis_ssl_enabled?, do: get_redis_option(:redis_ssl_enabled)
+  defp redis_ssl_enabled?(client_name), do: get_redis_option(client_name, :redis_ssl_enabled)
 
-  defp redis_ssl_allow_wildcard_certificates?, do: get_redis_option(:redis_ssl_allow_wildcard_certificates)
+  defp redis_ssl_allow_wildcard_certificates?(client_name),
+    do: get_redis_option(client_name, :redis_ssl_allow_wildcard_certificates)
 
-  defp get_redis_option(option) do
-    client = Application.get_env(:prima_auth0_ex, :client, [])
-    client[option] || false
+  defp get_redis_option(client_name, option) do
+    Application.get_env(:prima_auth0_ex, :clients, %{})
+    |> Map.get(client_name)
+    |> Keyword.get(option) || false
   end
 
   defp first_jwks_fetch_sync do
-    :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:first_jwks_fetch_sync, false)
+    :prima_auth0_ex
+    |> Application.get_env(:server, [])
+    |> Keyword.get(:first_jwks_fetch_sync, false)
   end
 
   defp log_configuration_errors do
