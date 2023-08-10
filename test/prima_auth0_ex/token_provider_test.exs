@@ -5,6 +5,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   alias PrimaAuth0Ex.{Auth0Credentials, TokenProvider}
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
+  @test_client_name :test_client
   @sample_credentials %Auth0Credentials{
     base_url: "base_url",
     client_id: "client_id",
@@ -134,11 +135,11 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   defp wait_for_first_check_to_complete, do: :timer.sleep(token_check_interval() + 500)
 
   defp token_check_interval,
-    do: Application.fetch_env!(:prima_auth0_ex, :client)[:token_check_interval]
+    do: Application.fetch_env!(:prima_auth0_ex, @test_client_name)[:token_check_interval]
 
   defp wait_for_first_signature_check_to_complete,
     do: :timer.sleep(signature_check_interval() + 500)
 
   defp signature_check_interval,
-    do: Application.fetch_env!(:prima_auth0_ex, :client)[:signature_check_interval]
+    do: Application.fetch_env!(:prima_auth0_ex, @test_client_name)[:signature_check_interval]
 end
