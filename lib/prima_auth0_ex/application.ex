@@ -22,10 +22,8 @@ defmodule PrimaAuth0Ex.Application do
       Application.get_env(:prima_auth0_ex, :clients, %{})
       |> Map.keys()
       |> Enum.map(fn key ->
-        [
-          {TokenProvider,
-           credentials: PrimaAuth0Ex.Auth0Credentials.from_env(key), name: String.to_atom("#{key}_token_provider")}
-        ]
+        {TokenProvider,
+         credentials: PrimaAuth0Ex.Auth0Credentials.from_env(key), name: String.to_atom("#{key}_token_provider")}
       end)
     else
       []
