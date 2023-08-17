@@ -14,15 +14,15 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
 
   @impl TokenService
   def retrieve_token(credentials, audience) do
-    audience
-    |> token_cache().get_token_for()
+    credentials.client
+    |> token_cache().get_token_for(audience)
     |> refresh_token_on_cache_miss(credentials, audience)
   end
 
   @impl TokenService
   def refresh_token(credentials, audience, current_token, false = _force_cache_bust) do
-    audience
-    |> token_cache().get_token_for()
+    credentials.client
+    |> token_cache().get_token_for(audience)
     |> refresh_token_unless_it_changed(current_token, credentials, audience)
   end
 
@@ -30,9 +30,17 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
     do_refresh_token(credentials, audience)
   end
 
-  defp refresh_token_on_cache_miss({:error, _}, credentials, audience), do: do_refresh_token(credentials, audience)
-  defp refresh_token_on_cache_miss({:ok, nil}, credentials, audience), do: do_refresh_token(credentials, audience)
-  defp refresh_token_on_cache_miss({:ok, cached_token}, _credentials, _audience), do: {:ok, cached_token}
+  defp refresh_token_on_cache_miss(result, credentials, audience)
+
+  defp refresh_token_on_cache_miss({:error, _}, credentials, audience),
+    do: do_refresh_token(credentials, audience)
+
+  defp refresh_token_on_cache_miss({:ok, nil}, credentials, audience),
+    do: do_refresh_token(credentials, audience)
+
+  defp refresh_token_on_cache_miss({:ok, cached_token}, _, _), do: {:ok, cached_token}
+
+  defp refresh_token_unless_it_changed(result, token, credentials, audience)
 
   defp refresh_token_unless_it_changed({:error, _}, _, credentials, audience) do
     do_refresh_token(credentials, audience)
@@ -42,7 +50,8 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
     do_refresh_token(credentials, audience)
   end
 
-  defp refresh_token_unless_it_changed({:ok, cached_token}, current_token, _, _) when cached_token != current_token do
+  defp refresh_token_unless_it_changed({:ok, cached_token}, current_token, _, _)
+       when cached_token != current_token do
     {:ok, cached_token}
   end
 
@@ -53,7 +62,7 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
   defp do_refresh_token(credentials, audience) do
     case authorization_service().retrieve_token(credentials, audience) do
       {:ok, token} ->
-        token_cache().set_token_for(audience, token)
+        token_cache().set_token_for(credentials.client, audience, token)
         {:ok, token}
 
       {:error, description} ->

@@ -46,8 +46,8 @@ defmodule PrimaAuth0Ex.TokenProvider do
 
   @impl true
   def init(auth0_credentials) do
-    with {:ok, _} <- :timer.send_interval(token_check_interval(), :periodic_check),
-         {:ok, _} <- :timer.send_interval(signature_check_interval(), :periodic_signature_check) do
+    with {:ok, _} <- :timer.send_interval(token_check_interval(auth0_credentials.client), :periodic_check),
+         {:ok, _} <- :timer.send_interval(signature_check_interval(auth0_credentials.client), :periodic_signature_check) do
       {:ok, %__MODULE__{credentials: auth0_credentials}}
     else
       error ->
@@ -173,18 +173,21 @@ defmodule PrimaAuth0Ex.TokenProvider do
     |> Timex.before?(Timex.now())
   end
 
-  defp token_check_interval do
-    :prima_auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:token_check_interval, :timer.minutes(1))
+  defp token_check_interval(client) do
+    :prima_auth0_ex |> Application.get_env(client, []) |> Keyword.get(:token_check_interval, :timer.minutes(1))
   end
 
-  defp signature_check_interval do
-    :prima_auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:signature_check_interval, :timer.minutes(5))
+  defp signature_check_interval(client) do
+    :prima_auth0_ex |> Application.get_env(client, []) |> Keyword.get(:signature_check_interval, :timer.minutes(5))
   end
 
   defp try_refresh(audience, token, credentials, parent) do
     case token_service().refresh_token(credentials, audience, token, false) do
-      {:ok, new_token} -> send(parent, {:set_token_for, audience, new_token})
-      {:error, description} -> Logger.warn("Error refreshing token", audience: audience, description: description)
+      {:ok, new_token} ->
+        send(parent, {:set_token_for, audience, new_token})
+
+      {:error, description} ->
+        Logger.warn("Error refreshing token", audience: audience, description: description)
     end
   end
 

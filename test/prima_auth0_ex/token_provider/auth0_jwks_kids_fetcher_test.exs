@@ -4,8 +4,11 @@ defmodule PrimaAuth0Ex.TokenProvider.AuthJwksKidsFetcherTest do
   alias PrimaAuth0Ex.Auth0Credentials
   alias PrimaAuth0Ex.TokenProvider.Auth0JwksKidsFetcher
 
+  @test_client :test_client
+
   @auth0_jwks_api_path "/.well-known/jwks.json"
   @sample_credentials %Auth0Credentials{
+    client: @test_client,
     base_url: "http://localhost",
     client_id: "client_id",
     client_secret: "client_secret"

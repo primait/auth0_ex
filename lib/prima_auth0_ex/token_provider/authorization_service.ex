@@ -4,5 +4,6 @@ defmodule PrimaAuth0Ex.TokenProvider.AuthorizationService do
   """
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
-  @callback retrieve_token(PrimaAuth0Ex.Auth0Credentials.t(), String.t()) :: {:ok, TokenInfo.t()} | {:error, atom()}
+  @callback retrieve_token(PrimaAuth0Ex.Auth0Credentials.t(), String.t()) ::
+              {:ok, TokenInfo.t()} | {:error, atom()}
 end
