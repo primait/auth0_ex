@@ -70,7 +70,8 @@ defmodule PrimaAuth0Ex.Application do
 
   defp redis_connection_uri(client_name),
     do:
-      Application.fetch_env!(:prima_auth0_ex, client_name)
+      :prima_auth0_ex
+      |> Application.fetch_env!(client_name)
       |> Keyword.get(:redis_connection_uri)
 
   def redis_ssl_opts(client_name) do
