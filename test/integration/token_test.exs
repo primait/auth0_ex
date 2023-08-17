@@ -7,7 +7,7 @@ defmodule Integration.TokenTest do
 
   @tag :external
   test "verifies token obtained from auth0" do
-    credentials = PrimaAuth0Ex.Auth0Credentials.from_env(:test_client)
+    credentials = PrimaAuth0Ex.Auth0Credentials.from_env()
     {:ok, auth0_token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
     assert {:ok, _} = Token.verify_and_validate_token(auth0_token.jwt, audience(), [], false)
