@@ -9,7 +9,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   @test_audience "redis-integration-test-audience"
 
   setup do
-    redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, @test_client)[:redis_connection_uri]
+    redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, :client)[:redis_connection_uri]
     Redix.start_link(redis_connection_uri, name: PrimaAuth0Ex.Redix)
     Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
 
