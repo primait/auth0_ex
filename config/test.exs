@@ -21,7 +21,7 @@ config :prima_auth0_ex, :test_client,
   signature_check_interval: :timer.seconds(1),
   token_check_interval: :timer.seconds(1)
 
-config :prima_auth0_ex, :another_test_client,
+config :prima_auth0_ex, :other_test_client,
   auth0_base_url: "https://tenant.eu.auth0.com",
   client_id: "",
   client_secret: "",
