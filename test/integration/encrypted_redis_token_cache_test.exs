@@ -5,7 +5,6 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   import PrimaAuth0Ex.TestSupport.TimeUtils
   alias PrimaAuth0Ex.TokenProvider.{EncryptedRedisTokenCache, TokenInfo}
 
-  @test_client :test_client
   @test_audience "redis-integration-test-audience"
 
   setup do
@@ -57,13 +56,6 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
     assert {:ok, token} == EncryptedRedisTokenCache.get_token_for(@test_audience)
   end
 
-  test "persists and retrieves tokens for named client" do
-    token = sample_token()
-    :ok = EncryptedRedisTokenCache.set_token_for(@test_client, @test_audience, token)
-
-    assert {:ok, token} == EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
-  end
-
   test "retrieves tokens set by a previous version of prima_auth0_ex, hence without kid" do
     issued_at = one_hour_ago()
     expires_at = in_one_hour()
@@ -90,7 +82,11 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   @tag capture_log: true
   test "returns error when persisted tokens are invalid and could not be decrypted" do
     # this may happen e.g., if the secret key changes
-    Redix.command!(PrimaAuth0Ex.Redix, ["SET", token_key(@test_audience), "malformed-encrypted-token"])
+    Redix.command!(PrimaAuth0Ex.Redix, [
+      "SET",
+      token_key(@test_audience),
+      "malformed-encrypted-token"
+    ])
 
     assert {:error, _} = EncryptedRedisTokenCache.get_token_for(@test_audience)
   end
@@ -105,10 +101,15 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   end
 
   defp sample_token do
-    %TokenInfo{jwt: "my-token", issued_at: one_hour_ago(), expires_at: in_one_hour(), kid: "my-kid"}
+    %TokenInfo{
+      jwt: "my-token",
+      issued_at: one_hour_ago(),
+      expires_at: in_one_hour(),
+      kid: "my-kid"
+    }
   end
 
-  defp token_key(client \\ :client, audience), do: "prima_auth0_ex_tokens:#{namespace(client)}:#{audience}"
+  defp token_key(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
   defp in_two_seconds, do: Timex.now() |> Timex.shift(seconds: 2) |> Timex.to_unix()
-  defp namespace(client), do: Application.fetch_env!(:prima_auth0_ex, client)[:cache_namespace]
+  defp namespace(), do: Application.fetch_env!(:prima_auth0_ex, :client)[:cache_namespace]
 end

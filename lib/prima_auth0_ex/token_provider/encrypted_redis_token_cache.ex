@@ -23,7 +23,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp do_get_token_for(client, audience) do
     key = key_for(client, audience)
 
-    case Redix.command(PrimaAuth0Ex.Redix, ["GET", key]) do
+    case Redix.command(redix_client_name(client), ["GET", key]) do
       {:ok, nil} ->
         Logger.info("Token not found on redis.", audience: audience, key: key)
         {:ok, nil}
@@ -40,7 +40,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp do_set_token_for(client, audience, token) do
     with {:ok, json_token} <- to_json(token),
          {:ok, encrypted} <- TokenEncryptor.encrypt(client, json_token),
-         {:ok, _} <- save(encrypted, key_for(client, audience), token.expires_at) do
+         {:ok, _} <- save(encrypted, client, key_for(client, audience), token.expires_at) do
       Logger.info("Updated token on redis.", audience: audience)
       :ok
     else
@@ -52,10 +52,10 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp key_for(client, audience), do: "prima_auth0_ex_tokens:#{namespace(client)}:#{audience}"
 
-  defp save(token, audience, expires_at) do
+  defp save(token, client, key, expires_at) do
     expires_in = expires_at - current_time()
 
-    Redix.command(PrimaAuth0Ex.Redix, ["SET", audience, token, "EX", expires_in])
+    Redix.command(redix_client_name(client), ["SET", key, token, "EX", expires_in])
   end
 
   defp decrypt_and_parse(client, cached_value) do
@@ -79,5 +79,10 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp enabled?(client), do: :prima_auth0_ex |> Application.get_env(client, []) |> Keyword.get(:cache_enabled, true)
   defp namespace(client), do: Application.fetch_env!(:prima_auth0_ex, client)[:cache_namespace]
+
+  defp redix_client_name(client)
+  defp redix_client_name(:client), do: PrimaAuth0Ex.Redix
+  defp redix_client_name(client_name), do: "#{client_name}_redix"
+
   defp current_time, do: Timex.to_unix(Timex.now())
 end
