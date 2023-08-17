@@ -111,5 +111,5 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
 
   defp token_key(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
   defp in_two_seconds, do: Timex.now() |> Timex.shift(seconds: 2) |> Timex.to_unix()
-  defp namespace(), do: Application.fetch_env!(:prima_auth0_ex, :client)[:cache_namespace]
+  defp namespace, do: Application.fetch_env!(:prima_auth0_ex, :client)[:cache_namespace]
 end
