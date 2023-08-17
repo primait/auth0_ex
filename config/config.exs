@@ -4,11 +4,10 @@ config :prima_auth0_ex,
   auth0_base_url: "https://tenant.eu.auth0.com"
 
 config :prima_auth0_ex,
-  clients: [
-    :example_client
-  ]
+  clients: []
 
-config :prima_auth0_ex, :example_client,
+# Default client
+config :prima_auth0_ex, :client,
   auth0_base_url: "https://tenant.eu.auth0.com",
   client_id: "",
   client_secret: "",

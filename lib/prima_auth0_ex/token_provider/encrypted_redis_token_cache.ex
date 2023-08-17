@@ -11,12 +11,12 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   @behaviour TokenCache
 
   @impl TokenCache
-  def get_token_for(client, audience) do
+  def get_token_for(client \\ :client, audience) do
     if enabled?(client), do: do_get_token_for(client, audience), else: {:ok, nil}
   end
 
   @impl TokenCache
-  def set_token_for(client, audience, token) do
+  def set_token_for(client \\ :client, audience, token) do
     if enabled?(client), do: do_set_token_for(client, audience, token), else: :ok
   end
 

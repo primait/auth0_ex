@@ -57,6 +57,13 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
     assert {:ok, token} == EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
   end
 
+  test "persists and retrieves tokens for default client" do
+    token = sample_token()
+    :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token)
+
+    assert {:ok, token} == EncryptedRedisTokenCache.get_token_for(@test_audience)
+  end
+
   test "retrieves tokens set by a previous version of prima_auth0_ex, hence without kid" do
     issued_at = one_hour_ago()
     expires_at = in_one_hour()

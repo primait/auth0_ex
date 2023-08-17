@@ -15,4 +15,15 @@ defmodule Integration.Auth0AuthorizationServiceTest do
     assert is_struct(token, TokenInfo)
     assert {:ok, %{"alg" => "RS256", "kid" => _kid, "typ" => "JWT"}} = Joken.peek_header(token.jwt)
   end
+
+  @tag :external
+  test "obtains a JWT from Auth0 using the default client" do
+    credentials = PrimaAuth0Ex.Auth0Credentials.from_env()
+    audience = Application.fetch_env!(:prima_auth0_ex, :server)[:audience]
+
+    {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience)
+
+    assert is_struct(token, TokenInfo)
+    assert {:ok, %{"alg" => "RS256", "kid" => _kid, "typ" => "JWT"}} = Joken.peek_header(token.jwt)
+  end
 end
