@@ -29,7 +29,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
     {:ok, pid} = TokenProvider.start_link(credentials: @sample_credentials)
 
     in_one_hour = Timex.shift(Timex.now(), hours: 1)
-    stub(RefreshStrategyMock, :refresh_time_for, fn _ -> in_one_hour end)
+    stub(RefreshStrategyMock, :refresh_time_for, fn @test_client, _ -> in_one_hour end)
     stub(JwksKidsFetcherMock, :fetch_kids, fn _ -> {:ok, ["valid-kid"]} end)
 
     {:ok, %{pid: pid}}
@@ -61,7 +61,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
 
   test "does not refresh token unless necessary", %{pid: pid} do
     sometime_after_next_check = Timex.shift(Timex.now(), hours: 1)
-    expect(RefreshStrategyMock, :refresh_time_for, 1, fn _ -> sometime_after_next_check end)
+    expect(RefreshStrategyMock, :refresh_time_for, 1, fn @test_client, _ -> sometime_after_next_check end)
 
     initialize_for_audience(@target_audience, @sample_token, pid)
 
@@ -74,7 +74,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
 
   test "refreshes its tokens when necessary", %{pid: pid} do
     before_next_check = Timex.shift(Timex.now(), milliseconds: token_check_interval() - 100)
-    expect(RefreshStrategyMock, :refresh_time_for, 2, fn _ -> before_next_check end)
+    expect(RefreshStrategyMock, :refresh_time_for, 2, fn @test_client, _ -> before_next_check end)
 
     initialize_for_audience(@target_audience, @sample_token, pid)
 
@@ -95,7 +95,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
     pid: pid
   } do
     sometime_after_next_check = Timex.shift(Timex.now(), hours: 1)
-    expect(RefreshStrategyMock, :refresh_time_for, 2, fn _ -> sometime_after_next_check end)
+    expect(RefreshStrategyMock, :refresh_time_for, 2, fn @test_client, _ -> sometime_after_next_check end)
 
     initialize_for_audience(@target_audience, @sample_token, pid)
 

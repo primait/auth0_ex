@@ -160,7 +160,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
   end
 
   defp set_token(state, audience, token) do
-    refresh_time = refresh_strategy().refresh_time_for(token)
+    refresh_time = refresh_strategy().refresh_time_for(state.credentials.client, token)
 
     state
     |> put_in([Access.key(:tokens), audience], token)
