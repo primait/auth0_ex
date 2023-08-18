@@ -49,6 +49,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
     end
   end
 
+  test "persists and retrieves tokens" do
     token = sample_token()
     :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token)
 
