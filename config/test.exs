@@ -8,6 +8,10 @@ config :prima_auth0_ex,
   token_cache: TokenCacheMock,
   token_service: TokenServiceMock
 
+config :prima_auth0_ex, :client,
+  token_check_interval: :timer.seconds(1),
+  signature_check_interval: :timer.seconds(1)
+
 config :prima_auth0_ex, :test_client,
   auth0_base_url: "https://tenant.eu.auth0.com",
   client_id: "",
