@@ -15,15 +15,10 @@ defmodule Integration.TokenProvider.MultiClientsTest do
     :ok = Application.stop(:prima_auth0_ex)
     :ok = Application.start(:prima_auth0_ex)
 
-    IO.inspect("here")
-
     for client <- @clients do
       redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, client)[:redis_connection_uri]
 
-      IO.inspect(client)
-
       redix_client_name = :"#{client}_redix"
-      IO.inspect(redix_client_name)
       Redix.start_link(redis_connection_uri, name: redix_client_name)
       Redix.command!(redix_client_name, ["DEL", token_key(client, @test_audience)])
     end

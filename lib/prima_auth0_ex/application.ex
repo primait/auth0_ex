@@ -13,7 +13,6 @@ defmodule PrimaAuth0Ex.Application do
     Telemetry.setup()
 
     children = client_children() ++ cache_children() ++ server_children()
-    IO.inspect(children)
     opts = [strategy: :one_for_one, name: PrimaAuth0Ex.Supervisor]
     Supervisor.start_link(children, opts)
   end
@@ -27,7 +26,10 @@ defmodule PrimaAuth0Ex.Application do
       Enum.reduce(clients, [], fn client_name, acc ->
         if client_configured?(client_name) do
           [
-            {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(client_name), name: client_name}
+            Supervisor.child_spec(
+              {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(client_name), name: client_name},
+              id: client_name
+            )
             | acc
           ]
         else
@@ -45,8 +47,13 @@ defmodule PrimaAuth0Ex.Application do
     else
       Enum.reduce(clients, [], fn client_name, acc ->
         if cache_enabled?(client_name) do
+          redix_client_name = :"#{client_name}_redix"
+
           [
-            {Redix, {redis_connection_uri(client_name), [name: :"#{client_name}_redix"] ++ redis_ssl_opts(client_name)}}
+            Supervisor.child_spec(
+              {Redix, {redis_connection_uri(client_name), [name: redix_client_name] ++ redis_ssl_opts(client_name)}},
+              id: redix_client_name
+            )
             | acc
           ]
         else

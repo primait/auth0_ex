@@ -82,7 +82,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp redix_client_name(client)
   defp redix_client_name(:client), do: PrimaAuth0Ex.Redix
-  defp redix_client_name(client_name), do: "#{client_name}_redix"
+  defp redix_client_name(client_name), do: :"#{client_name}_redix"
 
   defp current_time, do: Timex.to_unix(Timex.now())
 end
