@@ -3,8 +3,6 @@ defmodule Integration.Auth0AuthorizationServiceTest do
 
   alias PrimaAuth0Ex.TokenProvider.{Auth0AuthorizationService, TokenInfo}
 
-  @test_client :test_client
-
   @tag :external
   test "obtains a JWT from Auth0" do
     credentials = PrimaAuth0Ex.Auth0Credentials.from_env()
