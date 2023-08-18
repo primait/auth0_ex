@@ -1,5 +1,5 @@
 defmodule Integration.TokenProvider.MultiClientsTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   import PrimaAuth0Ex.TestSupport.TimeUtils
   alias PrimaAuth0Ex.TokenProvider.{EncryptedRedisTokenCache, TokenInfo}

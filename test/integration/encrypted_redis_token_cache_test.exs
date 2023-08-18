@@ -1,5 +1,5 @@
 defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   import ExUnit.CaptureLog
   import PrimaAuth0Ex.TestSupport.TimeUtils
