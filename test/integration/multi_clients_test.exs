@@ -16,11 +16,7 @@ defmodule Integration.TokenProvider.MultiClientsTest do
     :ok = Application.start(:prima_auth0_ex)
 
     for client <- @clients do
-      redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, client)[:redis_connection_uri]
-
-      redix_client_name = :"#{client}_redix"
-      Redix.start_link(redis_connection_uri, name: redix_client_name)
-      Redix.command!(redix_client_name, ["DEL", token_key(client, @test_audience)])
+      Redix.command!(:"#{client}_redix", ["DEL", token_key(client, @test_audience)])
     end
 
     :ok
@@ -32,19 +28,24 @@ defmodule Integration.TokenProvider.MultiClientsTest do
 
     assert {:ok, token} == EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
 
-    assert {:ok, token} ==
+    # Other client should not be able to retrieve this token
+    assert {:ok, nil} ==
              EncryptedRedisTokenCache.get_token_for(@other_test_client, @test_audience)
   end
 
-  # test "retrieves tokens set by a previous version of prima_auth0_ex, hence without kid" do
-  #   issued_at = one_hour_ago()
-  #   expires_at = in_one_hour()
-  #   token_without_kid = %{jwt: "my-token", issued_at: issued_at, expires_at: expires_at}
-  #   :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token_without_kid)
+  test "retrieves tokens set by a previous version of prima_auth0_ex, hence without kid" do
+    issued_at = one_hour_ago()
+    expires_at = in_one_hour()
+    token_without_kid = %{jwt: "my-token", issued_at: issued_at, expires_at: expires_at}
 
-  #   assert {:ok, %TokenInfo{jwt: "my-token", issued_at: ^issued_at, expires_at: ^expires_at, kid: nil}} =
-  #            EncryptedRedisTokenCache.get_token_for(@test_audience)
-  # end
+    :ok = EncryptedRedisTokenCache.set_token_for(@test_client, @test_audience, token_without_kid)
+
+    assert {:ok, %TokenInfo{jwt: "my-token", issued_at: ^issued_at, expires_at: ^expires_at, kid: nil}} =
+             EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
+
+    # Other client should not be able to retrieve this token
+    assert {:ok, nil} = EncryptedRedisTokenCache.get_token_for(@other_test_client, @test_audience)
+  end
 
   # test "returns {:ok, nil} when token is not cached" do
   #   assert {:ok, nil} == EncryptedRedisTokenCache.get_token_for(@test_audience)
