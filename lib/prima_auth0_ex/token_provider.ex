@@ -181,7 +181,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
     |> Timex.before?(Timex.now())
   end
 
-  defp token_check_interval(:client),
+  defp token_check_interval(:default_client),
     do:
       :prima_auth0_ex
       |> Application.get_env(:client, [])
@@ -194,7 +194,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
       |> Keyword.get(client)
       |> Keyword.get(:token_check_interval, :timer.minutes(1))
 
-  defp signature_check_interval(:client),
+  defp signature_check_interval(:default_client),
     do:
       :prima_auth0_ex
       |> Application.get_env(:client, [])

@@ -11,7 +11,7 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
   @test_audience "test"
 
   @sample_credentials %Auth0Credentials{
-    client: :client,
+    client: :default_client,
     base_url: "http://localhost",
     client_id: "client_id",
     client_secret: "client_secret"

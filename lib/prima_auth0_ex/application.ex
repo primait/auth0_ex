@@ -9,7 +9,7 @@ defmodule PrimaAuth0Ex.Application do
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
-    # log_configuration_errors()
+    log_configuration_errors()
     Telemetry.setup()
 
     children = client_children() ++ cache_children() ++ server_children()
@@ -18,29 +18,25 @@ defmodule PrimaAuth0Ex.Application do
   end
 
   defp client_children do
-    clients = Application.get_env(:prima_auth0_ex, :clients, [])
-
-    if Enum.empty?(clients) and client_configured?() do
+    if client_configured?() do
       [
         {TokenProvider,
          credentials: PrimaAuth0Ex.Auth0Credentials.from_env(), name: TokenProvider}
       ]
-    else
-      clients
+    end
+
+    if clients_configured?() do
+      Application.get_env(:prima_auth0_ex, :clients, [])
       |> Keyword.keys()
       |> Enum.reduce([], fn client_name, acc ->
-        if client_configured?(client_name) do
-          [
-            Supervisor.child_spec(
-              {TokenProvider,
-               credentials: PrimaAuth0Ex.Auth0Credentials.from_env(client_name), name: client_name},
-              id: client_name
-            )
-            | acc
-          ]
-        else
-          acc
-        end
+        [
+          Supervisor.child_spec(
+            {TokenProvider,
+             credentials: PrimaAuth0Ex.Auth0Credentials.from_env(client_name), name: client_name},
+            id: client_name
+          )
+          | acc
+        ]
       end)
     end
   end
@@ -64,13 +60,11 @@ defmodule PrimaAuth0Ex.Application do
   defp cache_enabled?(),
     do: Application.get_env(:prima_auth0_ex, :redis, enabled: false)[:enabled]
 
-  defp client_configured?(client_name \\ :client)
-
-  defp client_configured?(:client),
+  defp client_configured?(),
     do: Application.get_env(:prima_auth0_ex, :client) != nil
 
-  defp client_configured?(client_name),
-    do: Application.get_env(:prima_auth0_ex, :clients, client_name) != nil
+  defp clients_configured?(),
+    do: Application.get_env(:prima_auth0_ex, :clients) != nil
 
   defp server_configured?, do: Application.get_env(:prima_auth0_ex, :server) != nil
 
@@ -113,15 +107,15 @@ defmodule PrimaAuth0Ex.Application do
     |> Keyword.get(:first_jwks_fetch_sync, false)
   end
 
-  # defp log_configuration_errors do
-  #   unless Application.get_env(:prima_auth0_ex, :auth0_base_url) do
-  #     Logger.warning("Missing required configuration 'auth0_base_url'")
-  #   end
-  #
-  #   unless client_configured?() or server_configured?() do
-  #     Logger.warning("No configuration found neither for client nor for server")
-  #   end
-  # end
+  defp log_configuration_errors do
+    unless Application.get_env(:prima_auth0_ex, :auth0_base_url) do
+      Logger.warning("Missing required configuration 'auth0_base_url'")
+    end
+
+    unless client_configured?() or clients_configured?() or server_configured?() do
+      Logger.warning("No configuration found neither for client(s) nor for server")
+    end
+  end
 
   defp append_if(list, false, _value), do: list
   defp append_if(list, true, value), do: list ++ value

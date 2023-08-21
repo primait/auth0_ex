@@ -5,7 +5,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   alias PrimaAuth0Ex.{Auth0Credentials, TokenProvider}
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
-  @target_client :client
+  @target_client :default_client
   @target_audience "target_audience"
 
   @sample_credentials %Auth0Credentials{
@@ -61,7 +61,10 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
 
   test "does not refresh token unless necessary", %{pid: pid} do
     sometime_after_next_check = Timex.shift(Timex.now(), hours: 1)
-    expect(RefreshStrategyMock, :refresh_time_for, 1, fn @target_client, _ -> sometime_after_next_check end)
+
+    expect(RefreshStrategyMock, :refresh_time_for, 1, fn @target_client, _ ->
+      sometime_after_next_check
+    end)
 
     initialize_for_audience(@target_audience, @sample_token, pid)
 
@@ -74,7 +77,10 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
 
   test "refreshes its tokens when necessary", %{pid: pid} do
     before_next_check = Timex.shift(Timex.now(), milliseconds: token_check_interval() - 100)
-    expect(RefreshStrategyMock, :refresh_time_for, 2, fn @target_client, _ -> before_next_check end)
+
+    expect(RefreshStrategyMock, :refresh_time_for, 2, fn @target_client, _ ->
+      before_next_check
+    end)
 
     initialize_for_audience(@target_audience, @sample_token, pid)
 
@@ -95,7 +101,10 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
     pid: pid
   } do
     sometime_after_next_check = Timex.shift(Timex.now(), hours: 1)
-    expect(RefreshStrategyMock, :refresh_time_for, 2, fn @target_client, _ -> sometime_after_next_check end)
+
+    expect(RefreshStrategyMock, :refresh_time_for, 2, fn @target_client, _ ->
+      sometime_after_next_check
+    end)
 
     initialize_for_audience(@target_audience, @sample_token, pid)
 
@@ -138,11 +147,11 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   defp wait_for_first_check_to_complete, do: :timer.sleep(token_check_interval() + 500)
 
   defp token_check_interval,
-    do: Application.fetch_env!(:prima_auth0_ex, @target_client)[:token_check_interval]
+    do: Application.fetch_env!(:prima_auth0_ex, :client)[:token_check_interval]
 
   defp wait_for_first_signature_check_to_complete,
     do: :timer.sleep(signature_check_interval() + 500)
 
   defp signature_check_interval,
-    do: Application.fetch_env!(:prima_auth0_ex, @target_client)[:signature_check_interval]
+    do: Application.fetch_env!(:prima_auth0_ex, :client)[:signature_check_interval]
 end

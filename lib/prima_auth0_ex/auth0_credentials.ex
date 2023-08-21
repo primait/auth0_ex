@@ -11,9 +11,9 @@ defmodule PrimaAuth0Ex.Auth0Credentials do
   defstruct [:client, :base_url, :client_id, :client_secret]
 
   @spec from_env(atom()) :: __MODULE__.t()
-  def from_env(name \\ :client)
+  def from_env(name \\ :default_client)
 
-  def from_env(:client) do
+  def from_env(:default_client) do
     client = Application.fetch_env!(:prima_auth0_ex, :client)
 
     %__MODULE__{

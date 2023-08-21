@@ -11,12 +11,12 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   @behaviour TokenCache
 
   @impl TokenCache
-  def get_token_for(client \\ :client, audience) do
+  def get_token_for(client \\ :default_client, audience) do
     if cache_enabled?(), do: do_get_token_for(client, audience), else: {:ok, nil}
   end
 
   @impl TokenCache
-  def set_token_for(client \\ :client, audience, token) do
+  def set_token_for(client \\ :default_client, audience, token) do
     if cache_enabled?(), do: do_set_token_for(client, audience, token), else: :ok
   end
 
@@ -85,7 +85,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp cache_enabled?(),
     do: :prima_auth0_ex |> Application.get_env(:redis, []) |> Keyword.get(:cache_enabled, true)
 
-  defp namespace(:client),
+  defp namespace(:default_client),
     do:
       Application.fetch_env!(:prima_auth0_ex, :client)
       |> Keyword.get(:cache_namespace)

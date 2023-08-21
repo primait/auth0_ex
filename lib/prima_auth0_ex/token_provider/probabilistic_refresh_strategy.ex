@@ -35,7 +35,7 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
   defp random_time_between(start, finish), do: Enum.random(start..finish)
 
-  defp min_token_duration(:client),
+  defp min_token_duration(:default_client),
     do:
       :prima_auth0_ex
       |> Application.get_env(:client, [])
@@ -48,7 +48,7 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
       |> Keyword.get(client)
       |> Keyword.get(:min_token_duration, 0.5)
 
-  defp max_token_duration(:client),
+  defp max_token_duration(:default_client),
     do:
       :prima_auth0_ex
       |> Application.get_env(:client, [])

@@ -10,16 +10,6 @@ defmodule Integration.TokenProvider.MultiClientsTest do
   @clients [@test_client, @other_test_client]
 
   setup do
-    env_to_restore = Application.get_env(:prima_auth0_ex, :client)
-    Application.put_env(:prima_auth0_ex, :client, nil)
-
-    on_exit(fn ->
-      Application.put_env(:prima_auth0_ex, :client, env_to_restore)
-    end)
-
-    :ok = Application.stop(:prima_auth0_ex)
-    :ok = Application.start(:prima_auth0_ex)
-
     for client <- @clients do
       Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(client, @test_audience)])
     end

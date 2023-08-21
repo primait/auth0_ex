@@ -9,7 +9,7 @@ defmodule PrimaAuth0Ex do
   Obtain a token for the given audience.
   """
   @spec token_for(atom(), String.t()) :: {:ok, String.t()} | {:error, any()}
-  def token_for(client \\ :client, audience) do
+  def token_for(client \\ :default_client, audience) do
     TokenProvider.token_for(client, audience)
   end
 
@@ -17,7 +17,7 @@ defmodule PrimaAuth0Ex do
   Force the refresh of the token for a given audience, invalidating both the local and the shared cache.
   """
   @spec refresh_token_for(atom(), String.t()) :: {:ok, String.t()} | {:error, any()}
-  def refresh_token_for(client \\ :client, audience) do
+  def refresh_token_for(client \\ :default_client, audience) do
     TokenProvider.refresh_token_for(client, audience)
   end
 

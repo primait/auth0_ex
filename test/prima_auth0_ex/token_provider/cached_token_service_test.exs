@@ -6,7 +6,7 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenServiceTest do
   alias PrimaAuth0Ex.Auth0Credentials
   alias PrimaAuth0Ex.TokenProvider.{CachedTokenService, TokenInfo}
 
-  @target_client :client
+  @target_client :default_client
   @target_audience "target-audience"
 
   @credentials %Auth0Credentials{
