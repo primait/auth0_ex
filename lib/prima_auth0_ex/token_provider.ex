@@ -46,8 +46,13 @@ defmodule PrimaAuth0Ex.TokenProvider do
 
   @impl true
   def init(auth0_credentials) do
-    with {:ok, _} <- :timer.send_interval(token_check_interval(auth0_credentials.client), :periodic_check),
-         {:ok, _} <- :timer.send_interval(signature_check_interval(auth0_credentials.client), :periodic_signature_check) do
+    with {:ok, _} <-
+           :timer.send_interval(token_check_interval(auth0_credentials.client), :periodic_check),
+         {:ok, _} <-
+           :timer.send_interval(
+             signature_check_interval(auth0_credentials.client),
+             :periodic_signature_check
+           ) do
       {:ok, %__MODULE__{credentials: auth0_credentials}}
     else
       error ->
@@ -79,8 +84,11 @@ defmodule PrimaAuth0Ex.TokenProvider do
     Logger.info("Refreshing token...", audience: audience)
 
     case token_service().refresh_token(state.credentials, audience, nil, true) do
-      {:ok, %TokenInfo{jwt: jwt} = token} -> {:reply, {:ok, jwt}, set_token(state, audience, token)}
-      {:error, error} -> {:reply, {:error, error}, state}
+      {:ok, %TokenInfo{jwt: jwt} = token} ->
+        {:reply, {:ok, jwt}, set_token(state, audience, token)}
+
+      {:error, error} ->
+        {:reply, {:error, error}, state}
     end
   end
 
@@ -173,12 +181,30 @@ defmodule PrimaAuth0Ex.TokenProvider do
     |> Timex.before?(Timex.now())
   end
 
-  defp token_check_interval(client) do
-    :prima_auth0_ex |> Application.get_env(client, []) |> Keyword.get(:token_check_interval, :timer.minutes(1))
-  end
+  defp token_check_interval(:client),
+    do:
+      :prima_auth0_ex
+      |> Application.get_env(:client, [])
+      |> Keyword.get(:token_check_interval, :timer.minutes(1))
+
+  defp token_check_interval(client),
+    do:
+      :prima_auth0_ex
+      |> Application.get_env(:clients, [])
+      |> Keyword.get(client)
+      |> Keyword.get(:token_check_interval, :timer.minutes(1))
+
+  defp signature_check_interval(:client),
+    do:
+      :prima_auth0_ex
+      |> Application.get_env(:client, [])
+      |> Keyword.get(:signature_check_interval, :timer.minutes(5))
 
   defp signature_check_interval(client) do
-    :prima_auth0_ex |> Application.get_env(client, []) |> Keyword.get(:signature_check_interval, :timer.minutes(5))
+    :prima_auth0_ex
+    |> Application.get_env(:clients, [])
+    |> Keyword.get(client)
+    |> Keyword.get(:signature_check_interval, :timer.minutes(5))
   end
 
   defp try_refresh(audience, token, credentials, parent) do

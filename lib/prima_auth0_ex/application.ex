@@ -22,14 +22,18 @@ defmodule PrimaAuth0Ex.Application do
 
     if Enum.empty?(clients) and client_configured?() do
       [
-        {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(), name: TokenProvider}
+        {TokenProvider,
+         credentials: PrimaAuth0Ex.Auth0Credentials.from_env(), name: TokenProvider}
       ]
     else
-      Enum.reduce(clients, [], fn client_name, acc ->
+      clients
+      |> Keyword.keys()
+      |> Enum.reduce([], fn client_name, acc ->
         if client_configured?(client_name) do
           [
             Supervisor.child_spec(
-              {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(client_name), name: client_name},
+              {TokenProvider,
+               credentials: PrimaAuth0Ex.Auth0Credentials.from_env(client_name), name: client_name},
               id: client_name
             )
             | acc
@@ -60,13 +64,19 @@ defmodule PrimaAuth0Ex.Application do
   defp cache_enabled?(),
     do: Application.get_env(:prima_auth0_ex, :redis, enabled: false)[:enabled]
 
-  defp client_configured?(client_name \\ :client),
-    do: Application.get_env(:prima_auth0_ex, client_name) != nil
+  defp client_configured?(client_name \\ :client)
+
+  defp client_configured?(:client),
+    do: Application.get_env(:prima_auth0_ex, :client) != nil
+
+  defp client_configured?(client_name),
+    do: Application.get_env(:prima_auth0_ex, :clients, client_name) != nil
 
   defp server_configured?, do: Application.get_env(:prima_auth0_ex, :server) != nil
 
   defp server_signature_ignored?,
-    do: :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:ignore_signature, false)
+    do:
+      :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:ignore_signature, false)
 
   defp redis_connection_uri(),
     do:

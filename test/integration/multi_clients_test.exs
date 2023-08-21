@@ -10,7 +10,12 @@ defmodule Integration.TokenProvider.MultiClientsTest do
   @clients [@test_client, @other_test_client]
 
   setup do
-    Application.put_env(:prima_auth0_ex, :clients, @clients)
+    env_to_restore = Application.get_env(:prima_auth0_ex, :client)
+    Application.put_env(:prima_auth0_ex, :client, nil)
+
+    on_exit(fn ->
+      Application.put_env(:prima_auth0_ex, :client, env_to_restore)
+    end)
 
     :ok = Application.stop(:prima_auth0_ex)
     :ok = Application.start(:prima_auth0_ex)
@@ -46,8 +51,7 @@ defmodule Integration.TokenProvider.MultiClientsTest do
 
     :ok = EncryptedRedisTokenCache.set_token_for(@test_client, @test_audience, token_without_kid)
 
-    assert {:ok,
-            %TokenInfo{jwt: "my-token", issued_at: ^issued_at, expires_at: ^expires_at, kid: nil}} =
+    assert {:ok, %TokenInfo{jwt: "my-token", issued_at: ^issued_at, expires_at: ^expires_at, kid: nil}} =
              EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
 
     # Other client should not be able to retrieve this token
@@ -57,8 +61,7 @@ defmodule Integration.TokenProvider.MultiClientsTest do
   test "token encryption works with multiple clients" do
     :ok = EncryptedRedisTokenCache.set_token_for(@test_client, @test_audience, sample_token())
 
-    persisted_token =
-      Redix.command!(PrimaAuth0Ex.Redix, ["GET", token_key(@test_client, @test_audience)])
+    persisted_token = Redix.command!(PrimaAuth0Ex.Redix, ["GET", token_key(@test_client, @test_audience)])
 
     assert is_binary(persisted_token)
     assert {:error, _} = Jason.decode(persisted_token)
@@ -68,8 +71,7 @@ defmodule Integration.TokenProvider.MultiClientsTest do
     short_expiration_token = %TokenInfo{sample_token() | expires_at: in_one_second()}
     normal_expiration_token = sample_token()
 
-    :ok =
-      EncryptedRedisTokenCache.set_token_for(@test_client, @test_audience, short_expiration_token)
+    :ok = EncryptedRedisTokenCache.set_token_for(@test_client, @test_audience, short_expiration_token)
 
     :ok =
       EncryptedRedisTokenCache.set_token_for(
@@ -78,25 +80,21 @@ defmodule Integration.TokenProvider.MultiClientsTest do
         normal_expiration_token
       )
 
-    assert {:ok, ^short_expiration_token} =
-             EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
+    assert {:ok, ^short_expiration_token} = EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
 
-    assert {:ok, ^normal_expiration_token} =
-             EncryptedRedisTokenCache.get_token_for(@other_test_client, @test_audience)
+    assert {:ok, ^normal_expiration_token} = EncryptedRedisTokenCache.get_token_for(@other_test_client, @test_audience)
 
     :timer.sleep(1100)
 
     assert {:ok, nil} = EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
 
-    assert {:ok, ^normal_expiration_token} =
-             EncryptedRedisTokenCache.get_token_for(@other_test_client, @test_audience)
+    assert {:ok, ^normal_expiration_token} = EncryptedRedisTokenCache.get_token_for(@other_test_client, @test_audience)
   end
 
   test "tokens are deleted from cache when they expire, even for multiple clients" do
     short_expiration_token = %TokenInfo{sample_token() | expires_at: in_one_second()}
 
-    :ok =
-      EncryptedRedisTokenCache.set_token_for(@test_client, @test_audience, short_expiration_token)
+    :ok = EncryptedRedisTokenCache.set_token_for(@test_client, @test_audience, short_expiration_token)
 
     :ok =
       EncryptedRedisTokenCache.set_token_for(
@@ -105,11 +103,9 @@ defmodule Integration.TokenProvider.MultiClientsTest do
         short_expiration_token
       )
 
-    assert {:ok, ^short_expiration_token} =
-             EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
+    assert {:ok, ^short_expiration_token} = EncryptedRedisTokenCache.get_token_for(@test_client, @test_audience)
 
-    assert {:ok, ^short_expiration_token} =
-             EncryptedRedisTokenCache.get_token_for(@other_test_client, @test_audience)
+    assert {:ok, ^short_expiration_token} = EncryptedRedisTokenCache.get_token_for(@other_test_client, @test_audience)
 
     :timer.sleep(1100)
 
@@ -127,7 +123,12 @@ defmodule Integration.TokenProvider.MultiClientsTest do
   end
 
   defp token_key(client, audience), do: "prima_auth0_ex_tokens:#{namespace(client)}:#{audience}"
-  defp namespace(client), do: Application.fetch_env!(:prima_auth0_ex, client)[:cache_namespace]
+
+  defp namespace(client),
+    do:
+      Application.fetch_env!(:prima_auth0_ex, :clients)
+      |> Keyword.get(client)
+      |> Keyword.get(:cache_namespace)
 
   defp in_one_second, do: Timex.now() |> Timex.shift(seconds: 1) |> Timex.to_unix()
 end
