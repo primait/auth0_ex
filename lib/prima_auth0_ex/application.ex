@@ -44,6 +44,8 @@ defmodule PrimaAuth0Ex.Application do
   defp cache_children do
     if cache_enabled?() do
       [{Redix, {redis_connection_uri(), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts()}}]
+    else
+      []
     end
   end
 
