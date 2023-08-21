@@ -49,7 +49,7 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptor do
     err -> {:error, err}
   end
 
-  defp token_encryption_key() do
+  defp token_encryption_key do
     encoded_key = Application.fetch_env!(:prima_auth0_ex, :redis)[:encryption_key]
     Base.decode64!(encoded_key)
   end

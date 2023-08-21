@@ -57,13 +57,13 @@ defmodule PrimaAuth0Ex.Application do
     end
   end
 
-  defp cache_enabled?(),
+  defp cache_enabled?,
     do: Application.get_env(:prima_auth0_ex, :redis, enabled: false)[:enabled]
 
-  defp client_configured?(),
+  defp client_configured?,
     do: Application.get_env(:prima_auth0_ex, :client) != nil
 
-  defp clients_configured?(),
+  defp clients_configured?,
     do: Application.get_env(:prima_auth0_ex, :clients) != nil
 
   defp server_configured?, do: Application.get_env(:prima_auth0_ex, :server) != nil
@@ -72,13 +72,13 @@ defmodule PrimaAuth0Ex.Application do
     do:
       :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:ignore_signature, false)
 
-  defp redis_connection_uri(),
+  defp redis_connection_uri,
     do:
       :prima_auth0_ex
       |> Application.fetch_env!(:redis)
       |> Keyword.get(:connection_uri)
 
-  def redis_ssl_opts() do
+  def redis_ssl_opts do
     if redis_ssl_enabled?() do
       append_if([ssl: true], redis_ssl_allow_wildcard_certificates?(),
         socket_opts: [
@@ -92,9 +92,9 @@ defmodule PrimaAuth0Ex.Application do
     end
   end
 
-  defp redis_ssl_enabled?(), do: get_redis_option(:ssl_enabled)
+  defp redis_ssl_enabled?, do: get_redis_option(:ssl_enabled)
 
-  defp redis_ssl_allow_wildcard_certificates?(),
+  defp redis_ssl_allow_wildcard_certificates?,
     do: get_redis_option(:ssl_allow_wildcard_certificates)
 
   defp get_redis_option(option) do

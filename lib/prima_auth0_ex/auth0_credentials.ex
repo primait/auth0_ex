@@ -25,7 +25,7 @@ defmodule PrimaAuth0Ex.Auth0Credentials do
   end
 
   def from_env(name) do
-    client = Application.fetch_env!(:prima_auth0_ex, :clients) |> Keyword.get(name)
+    client = :prima_auth0_ex |> Application.fetch_env!(:clients) |> Keyword.get(name)
 
     %__MODULE__{
       client: name,
