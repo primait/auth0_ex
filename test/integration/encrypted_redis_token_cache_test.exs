@@ -8,7 +8,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   @test_audience "redis-integration-test-audience"
 
   setup do
-    redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, :client)[:redis_connection_uri]
+    redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, :redis)[:connection_uri]
     Redix.start_link(redis_connection_uri, name: PrimaAuth0Ex.Redix)
     Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
 
@@ -28,12 +28,12 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
     end
 
     test "wrong cache_encryption_key" do
-      env_to_restore = Application.fetch_env!(:prima_auth0_ex, :client)
+      env_to_restore = Application.fetch_env!(:prima_auth0_ex, :redis)
 
       Application.put_env(
         :prima_auth0_ex,
-        :client,
-        Keyword.put(env_to_restore, :cache_encryption_key, "abcd")
+        :redis,
+        Keyword.put(env_to_restore, :encryption_key, "abcd")
       )
 
       log =
@@ -45,7 +45,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
       assert String.match?(log, ~r/audience=redis-integration-test-audience/)
       assert String.match?(log, ~r/Error setting token on redis./)
 
-      Application.put_env(:prima_auth0_ex, :client, env_to_restore)
+      Application.put_env(:prima_auth0_ex, :redis, env_to_restore)
     end
   end
 
