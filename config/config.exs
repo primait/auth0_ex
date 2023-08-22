@@ -15,6 +15,7 @@ config :prima_auth0_ex, :redis,
   ssl_allow_wildcard_certificates: false
 
 config :prima_auth0_ex, :server,
+  auth0_base_url: "https://tenant.eu.auth0.com",
   ignore_signature: false,
   audience: "some-audience",
   issuer: "https://tenant.eu.auth0.com/",
