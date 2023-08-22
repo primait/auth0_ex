@@ -40,11 +40,9 @@ To configure the library for use from a client (ie. a service that needs to obta
 the following configuration is supported:
 
 ```elixir
-config :prima_auth0_ex,
+config :prima_auth0_ex, :client,
   # Base url for Auth0 API
   auth0_base_url: "https://tenant.eu.auth0.com"
-
-config :prima_auth0_ex, :client,
   # Credentials on Auth0
   client_id: "",
   client_secret: "",
@@ -72,10 +70,6 @@ To configure the library for use from a server (ie. a service that exposes an AP
 the following configuration is supported:
 
 ```elixir
-config :prima_auth0_ex,
-  # Base url for Auth0 API
-  auth0_base_url: "https://tenant.eu.auth0.com"
-
 config :prima_auth0_ex, :server,
   # Default audience used to verify tokens. Not necessary when audience is set explicitly on usage.
   audience: "audience",
@@ -101,10 +95,13 @@ To cache tokens on Redis you'll need to generate a `cache_encryption_key`. This 
 ```elixir
 :crypto.strong_rand_bytes(32) |> Base.encode64()
 ```
+
 Alternatively you can generate it on command line (Linux/MacOSX) with:
+
 ```
 dd if=/dev/random bs=1 count=32 | base64
 ```
+
 > :warning: **The token needs to be 32 bytes long AND base64 encoded**, failing to do so will result in tokens not getting cached on Redis. :warning:
 
 ## Usage

@@ -1,8 +1,5 @@
 import Config
 
-config :prima_auth0_ex,
-  auth0_base_url: "https://tenant.eu.auth0.com"
-
 # Default client, for backwards compatibility
 config :prima_auth0_ex, :client,
   auth0_base_url: "https://tenant.eu.auth0.com",

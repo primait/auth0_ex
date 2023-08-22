@@ -5,11 +5,15 @@ defmodule PrimaAuth0Ex.Application do
 
   require Logger
 
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.Telemetry
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
-    log_configuration_errors()
+    unless client_configured?() or clients_configured?() or server_configured?() do
+      Logger.warning("No configuration found neither for client(s) nor for server")
+    end
+
     Telemetry.setup()
 
     children = client_children() ++ cache_children() ++ server_children()
@@ -25,7 +29,7 @@ defmodule PrimaAuth0Ex.Application do
     end
 
     if clients_configured?() do
-      Application.get_env(:prima_auth0_ex, :clients, [])
+      Config.clients()
       |> Keyword.keys()
       |> Enum.reduce([], fn client_name, acc ->
         [
@@ -40,44 +44,32 @@ defmodule PrimaAuth0Ex.Application do
   end
 
   defp cache_children do
-    if cache_enabled?() do
-      [{Redix, {redis_connection_uri(), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts()}}]
+    if Config.redis(:enabled, false) do
+      [{Redix, {Config.redis(:connection_uri), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts()}}]
     else
       []
     end
   end
 
   defp server_children do
-    if server_configured?() && not server_signature_ignored?() do
-      [{JwksStrategy, [first_fetch_sync: first_jwks_fetch_sync()]}]
+    if server_configured?() && not Config.server(:ignore_signature, false) do
+      [{JwksStrategy, [first_fetch_sync: Config.server(:first_jwks_fetch_sync, false)]}]
     else
       []
     end
   end
 
-  defp cache_enabled?,
-    do: Application.get_env(:prima_auth0_ex, :redis, enabled: false)[:enabled]
-
   defp client_configured?,
-    do: Application.get_env(:prima_auth0_ex, :client) != nil
+    do: Config.default_client() != nil
 
   defp clients_configured?,
-    do: Application.get_env(:prima_auth0_ex, :clients) != nil
+    do: Config.clients() != nil
 
-  defp server_configured?, do: Application.get_env(:prima_auth0_ex, :server) != nil
-
-  defp server_signature_ignored?,
-    do: :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:ignore_signature, false)
-
-  defp redis_connection_uri,
-    do:
-      :prima_auth0_ex
-      |> Application.fetch_env!(:redis)
-      |> Keyword.get(:connection_uri)
+  defp server_configured?, do: Config.server() != nil
 
   def redis_ssl_opts do
-    if redis_ssl_enabled?() do
-      append_if([ssl: true], redis_ssl_allow_wildcard_certificates?(),
+    if Config.redis(:ssl_enabled, false) do
+      append_if([ssl: true], Config.redis(:ssl_allow_wildcard_certificates, false),
         socket_opts: [
           customize_hostname_check: [
             match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
@@ -86,31 +78,6 @@ defmodule PrimaAuth0Ex.Application do
       )
     else
       []
-    end
-  end
-
-  defp redis_ssl_enabled?, do: get_redis_option(:ssl_enabled)
-
-  defp redis_ssl_allow_wildcard_certificates?,
-    do: get_redis_option(:ssl_allow_wildcard_certificates)
-
-  defp get_redis_option(option) do
-    Application.get_env(:prima_auth0_ex, :redis)[option] || false
-  end
-
-  defp first_jwks_fetch_sync do
-    :prima_auth0_ex
-    |> Application.get_env(:server, [])
-    |> Keyword.get(:first_jwks_fetch_sync, false)
-  end
-
-  defp log_configuration_errors do
-    unless Application.get_env(:prima_auth0_ex, :auth0_base_url) do
-      Logger.warning("Missing required configuration 'auth0_base_url'")
-    end
-
-    unless client_configured?() or clients_configured?() or server_configured?() do
-      Logger.warning("No configuration found neither for client(s) nor for server")
     end
   end
 

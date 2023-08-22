@@ -1,6 +1,8 @@
 defmodule PrimaAuth0Ex.Auth0Credentials do
   @moduledoc "Credentials to access Auth0"
 
+  alias PrimaAuth0Ex.Config
+
   @type t :: %__MODULE__{
           client: atom(),
           base_url: String.t(),
@@ -14,7 +16,7 @@ defmodule PrimaAuth0Ex.Auth0Credentials do
   def from_env(name \\ :default_client)
 
   def from_env(:default_client) do
-    client = Application.fetch_env!(:prima_auth0_ex, :client)
+    client = Config.default_client()
 
     %__MODULE__{
       client: :default_client,
@@ -25,7 +27,7 @@ defmodule PrimaAuth0Ex.Auth0Credentials do
   end
 
   def from_env(name) do
-    client = :prima_auth0_ex |> Application.fetch_env!(:clients) |> Keyword.get(name)
+    client = Config.clients(name)
 
     %__MODULE__{
       client: name,
