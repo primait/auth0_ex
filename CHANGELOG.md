@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `:client` and `:server` now have an `:auth0_base_url` parameter
+- `:clients` can now be used to configure multiple clients (with same config as `:client`)
+- `:redis` configuration, which is now separate from the clients' ones
+
+### Changed
+
+- `:client` no longer has configurations for caching
+
+### Removed
+
+- `config :prima_auth0_ex, auth0_base_url: ...` is not used anymore, each base url is now client and server specific
+
 ---
 
 ## [0.5.0] - 2022-09-28
@@ -200,7 +214,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
-
 
 [Unreleased]: https://github.com/primait/auth0_ex/compare/0.5.0...HEAD
 [0.5.0]: https://github.com/primait/auth0_ex/compare/0.4.6...0.5.0
