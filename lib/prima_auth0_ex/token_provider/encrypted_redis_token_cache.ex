@@ -6,6 +6,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   """
 
   require Logger
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.TokenProvider.{TokenCache, TokenEncryptor, TokenInfo}
 
   @behaviour TokenCache
@@ -83,19 +84,13 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp build_token(_), do: {:error, :malformed_cached_data}
 
   defp cache_enabled?,
-    do: :prima_auth0_ex |> Application.get_env(:redis, []) |> Keyword.get(:cache_enabled, true)
+    do: Config.redis(:cache_enabled, true)
 
   defp namespace(:default_client),
-    do:
-      :prima_auth0_ex
-      |> Application.fetch_env!(:client)
-      |> Keyword.get(:cache_namespace)
+    do: Config.default_client!(:cache_namespace)
 
   defp namespace(client),
-    do:
-      Application.fetch_env!(:prima_auth0_ex, :clients)
-      |> Keyword.get(client, [])
-      |> Keyword.get(:cache_namespace)
+    do: Config.clients!(client, :cache_namespace)
 
   defp current_time, do: Timex.to_unix(Timex.now())
 end

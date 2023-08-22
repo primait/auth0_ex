@@ -1,11 +1,18 @@
 defmodule PrimaAuth0Ex.Config do
+  def authorization_service(default),
+    do: get_env(:authorization_service, default)
+
   def clients, do: get_env(:clients)
-  def clients(client), do: :clients |> get_env() |> Keyword.get(client, [])
+  def clients(client), do: get_env(:clients, client, []) |> Keyword.get(client, [])
 
   def clients(client, prop, default),
-    do: :clients |> get_env() |> Keyword.get(client, []) |> Keyword.get(prop, default)
+    do: :clients |> get_env(client, []) |> Keyword.get(prop, default)
+
+  def clients!(client, prop),
+    do: fetch_env!(:clients, client) |> Keyword.fetch!(prop)
 
   def default_client(prop \\ nil, default \\ nil), do: get_env(:client, prop, default)
+  def default_client!(prop), do: fetch_env!(:client, prop)
 
   def jwks_kids_fetcher(default),
     do: get_env(:jwks_kids_fetcher, default)
@@ -19,11 +26,14 @@ defmodule PrimaAuth0Ex.Config do
   def server!(prop), do: fetch_env!(:server, prop)
   def telemetry_reporter, do: get_env(:telemetry_reporter)
 
+  def token_cache(default), do: get_env(:token_cache, default)
+
   def token_service(default), do: get_env(:token_service, default)
 
   # Base methods
 
-  defp fetch_env!(conf, prop), do: :prima_auth0_ex |> Application.fetch_env!(conf) |> Keyword.fetch!(prop)
+  defp fetch_env!(conf, prop),
+    do: :prima_auth0_ex |> Application.fetch_env!(conf) |> Keyword.fetch!(prop)
 
   defp get_env(conf, default \\ []), do: Application.get_env(:prima_auth0_ex, conf, default)
 
