@@ -20,8 +20,7 @@ defmodule PrimaAuth0Ex.TokenTest do
 
   test "tokens with no claims are not valid" do
     # testing this since joken by default skips validation of a claim if the token does not have that claim
-    assert {:error, _} =
-             Token.validate(%{}, %{audience: "somme-audience", required_permissions: []})
+    assert {:error, _} = Token.validate(%{}, %{audience: "somme-audience", required_permissions: []})
   end
 
   test "when permissions are required, a token is valid if its permissions are a superset of the required ones" do

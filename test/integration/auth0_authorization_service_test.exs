@@ -13,7 +13,6 @@ defmodule Integration.Auth0AuthorizationServiceTest do
 
     assert is_struct(token, TokenInfo)
 
-    assert {:ok, %{"alg" => "RS256", "kid" => _kid, "typ" => "JWT"}} =
-             Joken.peek_header(token.jwt)
+    assert {:ok, %{"alg" => "RS256", "kid" => _kid, "typ" => "JWT"}} = Joken.peek_header(token.jwt)
   end
 end
