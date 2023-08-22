@@ -3,6 +3,7 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
   use Plug.Test
 
   alias PrimaAuth0Ex.Auth0Credentials
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.Plug.VerifyAndValidateToken
   alias PrimaAuth0Ex.TestSupport.JwtUtils
   alias PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService
@@ -70,7 +71,11 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
     credentials = Auth0Credentials.from_env()
     {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
-    opts = VerifyAndValidateToken.init(audience: "something-different-than-" <> audience(), required_permissions: [])
+    opts =
+      VerifyAndValidateToken.init(
+        audience: "something-different-than-" <> audience(),
+        required_permissions: []
+      )
 
     conn =
       conn(:get, "/")
@@ -85,7 +90,10 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
     credentials = Auth0Credentials.from_env()
     {:ok, token} = Auth0AuthorizationService.retrieve_token(credentials, audience())
 
-    opts = VerifyAndValidateToken.init(required_permissions: ["permission-that-user-on-auth0-should-not-have"])
+    opts =
+      VerifyAndValidateToken.init(
+        required_permissions: ["permission-that-user-on-auth0-should-not-have"]
+      )
 
     conn =
       conn(:get, "/")
@@ -98,7 +106,13 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
   test "supports disabling verification of signatures" do
     # mostly useful for dev environments, to work with locally forged JWTs
     forged_token = JwtUtils.jwt_that_expires_in(1_000, @test_audience)
-    opts = VerifyAndValidateToken.init(audience: @test_audience, ignore_signature: true, required_permissions: [])
+
+    opts =
+      VerifyAndValidateToken.init(
+        audience: @test_audience,
+        ignore_signature: true,
+        required_permissions: []
+      )
 
     conn =
       conn(:get, "/")
@@ -119,5 +133,5 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
     refute conn.status == 401
   end
 
-  defp audience, do: Application.fetch_env!(:prima_auth0_ex, :server)[:audience]
+  defp audience, do: Config.server!(:audience)
 end

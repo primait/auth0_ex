@@ -2,6 +2,7 @@ defmodule PrimaAuth0Ex.TokenTest do
   use ExUnit.Case, async: true
 
   import PrimaAuth0Ex.TestSupport.{JwtUtils, TimeUtils}
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.Token
 
   @audience "some-audience"
@@ -19,7 +20,8 @@ defmodule PrimaAuth0Ex.TokenTest do
 
   test "tokens with no claims are not valid" do
     # testing this since joken by default skips validation of a claim if the token does not have that claim
-    assert {:error, _} = Token.validate(%{}, %{audience: "somme-audience", required_permissions: []})
+    assert {:error, _} =
+             Token.validate(%{}, %{audience: "somme-audience", required_permissions: []})
   end
 
   test "when permissions are required, a token is valid if its permissions are a superset of the required ones" do
@@ -147,5 +149,5 @@ defmodule PrimaAuth0Ex.TokenTest do
     }
   end
 
-  defp issuer, do: Application.fetch_env!(:prima_auth0_ex, :server)[:issuer]
+  defp issuer, do: Config.server!(:issuer)
 end

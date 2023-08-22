@@ -1,6 +1,7 @@
 defmodule PrimaAuth0Ex.LocalTokenTest do
   use ExUnit.Case, async: true
 
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.LocalToken
   alias PrimaAuth0Ex.TestSupport.TimeUtils
 
@@ -25,7 +26,7 @@ defmodule PrimaAuth0Ex.LocalTokenTest do
   end
 
   test "default issuer is the same configured for the server" do
-    expected_issuer = Application.fetch_env!(:prima_auth0_ex, :server)[:issuer]
+    expected_issuer = Config.server!(:issuer)
 
     jwt = LocalToken.forge("audience")
     %{"iss" => issuer} = claims_of(jwt)
