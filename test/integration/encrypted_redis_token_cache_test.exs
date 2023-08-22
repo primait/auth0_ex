@@ -3,12 +3,13 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
 
   import ExUnit.CaptureLog
   import PrimaAuth0Ex.TestSupport.TimeUtils
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.TokenProvider.{EncryptedRedisTokenCache, TokenInfo}
 
   @test_audience "redis-integration-test-audience"
 
   setup do
-    redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, :redis)[:connection_uri]
+    redis_connection_uri = Config.redis!(:connection_uri)
     Redix.start_link(redis_connection_uri, name: PrimaAuth0Ex.Redix)
     Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
 

@@ -7,6 +7,8 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptor do
     config :prima_auth0_ex, :redis,
       encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
   """
+  alias PrimaAuth0Ex.Config
+
   @aad "AES256GCM"
 
   @spec encrypt(String.t()) :: {:ok, String.t()} | {:error, any()}
@@ -50,7 +52,7 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptor do
   end
 
   defp token_encryption_key do
-    encoded_key = Application.fetch_env!(:prima_auth0_ex, :redis)[:encryption_key]
+    encoded_key = Config.redis!(:encryption_key)
     Base.decode64!(encoded_key)
   end
 end

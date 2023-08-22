@@ -18,6 +18,7 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
       max_token_duration: 0.75,
   """
 
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.TokenProvider.RefreshStrategy
 
   @behaviour RefreshStrategy
@@ -36,28 +37,14 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
   defp random_time_between(start, finish), do: Enum.random(start..finish)
 
   defp min_token_duration(:default_client),
-    do:
-      :prima_auth0_ex
-      |> Application.get_env(:client, [])
-      |> Keyword.get(:min_token_duration, 0.5)
+    do: Config.default_client(:min_token_duration, 0.5)
 
   defp min_token_duration(client),
-    do:
-      :prima_auth0_ex
-      |> Application.get_env(:clients, [])
-      |> Keyword.get(client)
-      |> Keyword.get(:min_token_duration, 0.5)
+    do: Config.clients(client, :min_token_duration, 0.5)
 
   defp max_token_duration(:default_client),
-    do:
-      :prima_auth0_ex
-      |> Application.get_env(:client, [])
-      |> Keyword.get(:max_token_duration, 0.75)
+    do: Config.default_client(:max_token_duration, 0.75)
 
   defp max_token_duration(client),
-    do:
-      :prima_auth0_ex
-      |> Application.get_env(:clients, [])
-      |> Keyword.get(client)
-      |> Keyword.get(:max_token_duration, 0.75)
+    do: Config.clients(client, :max_token_duration, 0.75)
 end

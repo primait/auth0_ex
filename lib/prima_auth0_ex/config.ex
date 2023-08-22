@@ -1,15 +1,17 @@
 defmodule PrimaAuth0Ex.Config do
+  @moduledoc "Configuration wrapper"
+
   def authorization_service(default),
     do: get_env(:authorization_service, default)
 
   def clients, do: get_env(:clients)
-  def clients(client), do: get_env(:clients, client, []) |> Keyword.get(client, [])
+  def clients(client), do: :clients |> get_env(client, []) |> Keyword.get(client, [])
 
   def clients(client, prop, default),
     do: :clients |> get_env(client, []) |> Keyword.get(prop, default)
 
   def clients!(client, prop),
-    do: fetch_env!(:clients, client) |> Keyword.fetch!(prop)
+    do: :clients |> fetch_env!(client) |> Keyword.fetch!(prop)
 
   def default_client(prop \\ nil, default \\ nil), do: get_env(:client, prop, default)
   def default_client!(prop), do: fetch_env!(:client, prop)
@@ -18,6 +20,7 @@ defmodule PrimaAuth0Ex.Config do
     do: get_env(:jwks_kids_fetcher, default)
 
   def redis(prop \\ nil, default \\ nil), do: get_env(:redis, prop, default)
+  def redis!(prop), do: fetch_env!(:redis, prop)
 
   def refresh_strategy(default),
     do: get_env(:refresh_strategy, default)
