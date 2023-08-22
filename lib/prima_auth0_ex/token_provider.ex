@@ -11,6 +11,8 @@ defmodule PrimaAuth0Ex.TokenProvider do
 
   require Logger
 
+  alias PrimaAuth0Ex.Config
+
   alias PrimaAuth0Ex.TokenProvider.{
     Auth0JwksKidsFetcher,
     CachedTokenService,
@@ -182,30 +184,15 @@ defmodule PrimaAuth0Ex.TokenProvider do
   end
 
   defp token_check_interval(:default_client),
-    do:
-      :prima_auth0_ex
-      |> Application.get_env(:client, [])
-      |> Keyword.get(:token_check_interval, :timer.minutes(1))
+    do: Config.default_client(:token_check_interval, :timer.minutes(1))
 
   defp token_check_interval(client),
-    do:
-      :prima_auth0_ex
-      |> Application.get_env(:clients, [])
-      |> Keyword.get(client)
-      |> Keyword.get(:token_check_interval, :timer.minutes(1))
+    do: Config.clients(client, :token_check_interval, :timer.minutes(1))
 
   defp signature_check_interval(:default_client),
-    do:
-      :prima_auth0_ex
-      |> Application.get_env(:client, [])
-      |> Keyword.get(:signature_check_interval, :timer.minutes(5))
+    do: Config.default_client(:signature_check_interval, :timer.minutes(5))
 
-  defp signature_check_interval(client) do
-    :prima_auth0_ex
-    |> Application.get_env(:clients, [])
-    |> Keyword.get(client)
-    |> Keyword.get(:signature_check_interval, :timer.minutes(5))
-  end
+  defp signature_check_interval(client), do: Config.clients(client, :signature_check_interval, :timer.minutes(5))
 
   defp try_refresh(audience, token, credentials, parent) do
     case token_service().refresh_token(credentials, audience, token, false) do
@@ -218,10 +205,10 @@ defmodule PrimaAuth0Ex.TokenProvider do
   end
 
   defp jwks_kids_fetcher,
-    do: Application.get_env(:prima_auth0_ex, :jwks_kids_fetcher, Auth0JwksKidsFetcher)
+    do: Config.jwks_kids_fetcher(Auth0JwksKidsFetcher)
 
   defp refresh_strategy,
-    do: Application.get_env(:prima_auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
+    do: Config.refresh_strategy(ProbabilisticRefreshStrategy)
 
-  defp token_service, do: Application.get_env(:prima_auth0_ex, :token_service, CachedTokenService)
+  defp token_service, do: Config.token_service(CachedTokenService)
 end

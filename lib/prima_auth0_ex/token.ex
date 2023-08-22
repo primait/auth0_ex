@@ -3,6 +3,8 @@ defmodule PrimaAuth0Ex.Token do
   Module to verify the integrity and validate the claims of tokens.
   """
 
+  alias PrimaAuth0Ex.Config
+
   use Joken.Config
 
   add_hook JokenJwks, strategy: PrimaAuth0Ex.JwksStrategy
@@ -60,7 +62,7 @@ defmodule PrimaAuth0Ex.Token do
          do: validate(claims, context)
   end
 
-  defp issuer, do: Application.fetch_env!(:prima_auth0_ex, :server)[:issuer]
+  defp issuer, do: Config.server!(:issuer)
 
   defp validate_audience(token_audience, _claims, context) do
     expected_audience = context[:audience]

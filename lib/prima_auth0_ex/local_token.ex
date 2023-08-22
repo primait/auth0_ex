@@ -3,6 +3,8 @@ defmodule PrimaAuth0Ex.LocalToken do
   Utilities to help working with `prima_auth0_ex` on a local environment, without the need to integrate with Auth0.
   """
 
+  alias PrimaAuth0Ex.Config
+
   @signer Joken.Signer.create("HS256", "any-secret")
 
   @doc """
@@ -50,5 +52,5 @@ defmodule PrimaAuth0Ex.LocalToken do
     %{"aud" => audience, "iat" => time_from_now(seconds: -1), "exp" => time_from_now(hours: 24), "iss" => issuer()}
   end
 
-  defp issuer, do: Application.fetch_env!(:prima_auth0_ex, :server)[:issuer]
+  defp issuer, do: Config.server(:issuer)
 end

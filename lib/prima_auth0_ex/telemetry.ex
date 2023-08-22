@@ -3,6 +3,7 @@ defmodule PrimaAuth0Ex.Telemetry do
   A pre-defined module which sets up telemetry with a given reporter
   """
 
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.Telemetry.Handler
 
   @auth0_handler_id "auth0-handler"
@@ -24,7 +25,7 @@ defmodule PrimaAuth0Ex.Telemetry do
     end
   end
 
-  defp telemetry_reporter, do: Application.get_env(:prima_auth0_ex, :telemetry_reporter)
+  defp telemetry_reporter, do: Config.telemetry_reporter()
 end
 
 defmodule PrimaAuth0Ex.Telemetry.Handler do
