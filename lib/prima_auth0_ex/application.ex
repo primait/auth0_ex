@@ -10,7 +10,7 @@ defmodule PrimaAuth0Ex.Application do
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
-    unless client_configured?() or clients_configured?() or server_configured?() do
+    unless Config.default_client() or Config.client() or Config.server() do
       Logger.warning("No configuration found neither for client(s) nor for server")
     end
 
