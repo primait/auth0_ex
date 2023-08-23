@@ -52,5 +52,5 @@ defmodule PrimaAuth0Ex.LocalToken do
     %{"aud" => audience, "iat" => time_from_now(seconds: -1), "exp" => time_from_now(hours: 24), "iss" => issuer()}
   end
 
-  defp issuer, do: Config.server(:issuer)
+  defp issuer, do: Config.server!(:issuer)
 end
