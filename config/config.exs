@@ -3,7 +3,7 @@ import Config
 # Default client, for backwards compatibility
 config :prima_auth0_ex, :clients,
   default_client: [
-    auth0_base_url: "https://tenant.eu.auth0.com",
+    auth0_base_url: "https://your-auth0-provider.com",
     client_id: "",
     client_secret: "",
     cache_namespace: "my-service",
@@ -19,10 +19,10 @@ config :prima_auth0_ex, :redis,
   ssl_allow_wildcard_certificates: false
 
 config :prima_auth0_ex, :server,
-  auth0_base_url: "https://tenant.eu.auth0.com",
+  auth0_base_url: "https://your-auth0-provider.com",
   ignore_signature: false,
   audience: "some-audience",
-  issuer: "https://tenant.eu.auth0.com/",
+  issuer: "https://your-auth0-tenant.com",
   first_jwks_fetch_sync: true
 
 config :logger, :console, metadata: :all

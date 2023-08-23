@@ -16,7 +16,7 @@ config :prima_auth0_ex, :redis,
 
 config :prima_auth0_ex, :clients,
   test_client: [
-    auth0_base_url: "https://tenant.eu.auth0.com",
+    auth0_base_url: "https://your-auth0-client.com",
     client_id: "",
     client_secret: "",
     cache_namespace: "test-client-namespace",
@@ -26,7 +26,7 @@ config :prima_auth0_ex, :clients,
 
 config :prima_auth0_ex, :clients,
   other_test_client: [
-    auth0_base_url: "https://tenant.eu.auth0.com",
+    auth0_base_url: "https://your-auth0-client.com",
     client_id: "",
     client_secret: "",
     cache_namespace: "other-test-client-namespace",
