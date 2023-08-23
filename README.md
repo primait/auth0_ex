@@ -138,10 +138,16 @@ dd if=/dev/random bs=1 count=32 | base64
 
 ### Obtaining tokens
 
-Tokens for a given audience can be obtained as follows:
+Tokens for a given audience - and through the `:default_client` - can be obtained as follows:
 
 ```elixir
 {:ok, token} = PrimaAuth0Ex.token_for("target-audience")
+```
+
+Instead, if you want to obtain a token for a different client you can do it like so:
+
+```elixir
+{:ok, token} = PrimaAuth0Ex.token_for("target-audience", :target_client)
 ```
 
 Tokens are automatically refreshed when they expire and when the signing keys are revoked.
