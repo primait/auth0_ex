@@ -10,7 +10,7 @@ defmodule PrimaAuth0Ex.Application do
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
-    unless Config.default_client() or Config.clients() or Config.server() do
+    unless client_configured?() or clients_configured?() or server_configured?() do
       Logger.warning("No configuration found neither for client(s) nor for server")
     end
 
@@ -22,13 +22,13 @@ defmodule PrimaAuth0Ex.Application do
   end
 
   defp client_children do
-    if Config.default_client() do
+    if client_configured?() do
       [
         {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(), name: TokenProvider}
       ]
     end
 
-    if Config.clients() do
+    if clients_configured?() do
       Config.clients()
       |> Keyword.keys()
       |> Enum.reduce([], fn client_name, acc ->
@@ -52,12 +52,20 @@ defmodule PrimaAuth0Ex.Application do
   end
 
   defp server_children do
-    if Config.server() && not Config.server(:ignore_signature, false) do
+    if server_configured?() && not Config.server(:ignore_signature, false) do
       [{JwksStrategy, [first_fetch_sync: Config.server(:first_jwks_fetch_sync, false)]}]
     else
       []
     end
   end
+
+  defp client_configured?,
+    do: Config.default_client() != nil
+
+  defp clients_configured?,
+    do: Config.clients() != nil
+
+  defp server_configured?, do: Config.server() != nil
 
   def redis_ssl_opts do
     if Config.redis(:ssl_enabled, false) do
