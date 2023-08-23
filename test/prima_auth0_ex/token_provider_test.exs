@@ -2,6 +2,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   use ExUnit.Case
 
   import Hammox
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.{Auth0Credentials, TokenProvider}
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
@@ -147,11 +148,11 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   defp wait_for_first_check_to_complete, do: :timer.sleep(token_check_interval() + 500)
 
   defp token_check_interval,
-    do: Application.fetch_env!(:prima_auth0_ex, :client)[:token_check_interval]
+    do: Config.default_client!(:token_check_interval)
 
   defp wait_for_first_signature_check_to_complete,
     do: :timer.sleep(signature_check_interval() + 500)
 
   defp signature_check_interval,
-    do: Application.fetch_env!(:prima_auth0_ex, :client)[:signature_check_interval]
+    do: Config.default_client!(:signature_check_interval)
 end

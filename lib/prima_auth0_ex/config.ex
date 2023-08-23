@@ -13,8 +13,9 @@ defmodule PrimaAuth0Ex.Config do
   def clients!(client, prop),
     do: :clients |> fetch_env!(client) |> Keyword.fetch!(prop)
 
-  def default_client(prop \\ nil, default \\ nil), do: get_env(:client, prop, default)
-  def default_client!(prop), do: fetch_env!(:client, prop)
+  def default_client, do: clients(:default_client)
+  def default_client(prop, default \\ nil), do: clients(:default_client, prop, default)
+  def default_client!(prop), do: clients!(:default_client, prop)
 
   def jwks_kids_fetcher(default),
     do: get_env(:jwks_kids_fetcher, default)

@@ -14,10 +14,6 @@ config :prima_auth0_ex, :redis,
   ssl_enabled: false,
   ssl_allow_wildcard_certificates: false
 
-config :prima_auth0_ex, :client,
-  token_check_interval: :timer.seconds(1),
-  signature_check_interval: :timer.seconds(1)
-
 config :prima_auth0_ex, :clients,
   test_client: [
     auth0_base_url: "https://tenant.eu.auth0.com",

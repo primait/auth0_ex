@@ -1,11 +1,15 @@
 import Config
 
 # Default client, for backwards compatibility
-config :prima_auth0_ex, :client,
-  auth0_base_url: "https://tenant.eu.auth0.com",
-  client_id: "",
-  client_secret: "",
-  cache_namespace: "my-service"
+config :prima_auth0_ex, :clients,
+  default_client: [
+    auth0_base_url: "https://tenant.eu.auth0.com",
+    client_id: "",
+    client_secret: "",
+    cache_namespace: "my-service",
+    token_check_interval: :timer.seconds(1),
+    signature_check_interval: :timer.seconds(1)
+  ]
 
 config :prima_auth0_ex, :redis,
   enabled: true,

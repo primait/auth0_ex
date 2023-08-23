@@ -36,18 +36,19 @@ end
 
 ### API Consumer
 
-To configure the library for use from a client (ie. a service that needs to obtain tokens to access some API),
+To configure the library for use from a client (i.e. a service that needs to obtain tokens to access some API),
 the following configuration is supported:
 
 ```elixir
-config :prima_auth0_ex, :client,
+config :prima_auth0_ex, :clients, default_client: [
   # Base url for Auth0 API
   auth0_base_url: "https://tenant.eu.auth0.com"
   # Credentials on Auth0
   client_id: "",
   client_secret: "",
   # Namespace for tokens of this client on the shared cache. Should be unique per client
-  cache_namespace: "my-client",
+  cache_namespace: "my-client"
+]
 ```
 
 **If the client will access APIs that perform validation of permissions, make sure that the API on Auth0 is configured to have both "Enable RBAC" and "Add Permissions in the Access Token" enabled.**
@@ -138,13 +139,15 @@ dd if=/dev/random bs=1 count=32 | base64
 
 ### Obtaining tokens
 
-Tokens for a given audience - and through the `:default_client` - can be obtained as follows:
+Tokens for a given audience can be obtained as follows:
 
 ```elixir
 {:ok, token} = PrimaAuth0Ex.token_for("target-audience")
 ```
 
-Instead, if you want to obtain a token for a different client you can do it like so:
+This call will target the `:default_client`, assuming it's configured.
+
+Instead, if you want to obtain a token for a specific client you can do it like so:
 
 ```elixir
 {:ok, token} = PrimaAuth0Ex.token_for("target-audience", :target_client)
@@ -154,7 +157,11 @@ Tokens are automatically refreshed when they expire and when the signing keys ar
 It is also possible to force the refresh of the token, both on the local instance and on the shared cache, as follows:
 
 ```elixir
+# With the default client
 {:ok, new_token} = PrimaAuth0Ex.refresh_token_for("target-audience")
+
+# With a specific client
+{:ok, new_token} = PrimaAuth0Ex.refresh_token_for("target-audience", :target_client)
 ```
 
 A use-case for forcing the refresh of the token may be e.g. if new permissions are added to an application on Auth0, and we want to propagate this change without waiting for the natural expiration of tokens.

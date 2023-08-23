@@ -13,9 +13,10 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
   The "refresh window" can be customized from config as follows
 
-    config :prima_auth0_ex, :client,
+    config :prima_auth0_ex, :clients, default_client: [
       min_token_duration: 0.5,
-      max_token_duration: 0.75,
+      max_token_duration: 0.75
+    ]
   """
 
   alias PrimaAuth0Ex.Config
