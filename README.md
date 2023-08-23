@@ -81,7 +81,7 @@ the following configuration is supported:
 ```elixir
 config :prima_auth0_ex, :server,
   # Base url for Auth0 API
-  auth0_base_url: "https://tenant.eu.auth0.com/",
+  auth0_base_url: "https://your-tenant.eu.auth0.com/",
   # Default audience used to verify tokens. Not necessary when audience is set explicitly on usage.
   audience: "audience",
   # Issuer used to verify tokens. Can be found at https://your-tenant.eu.auth0.com/.well-known/openid-configuration
