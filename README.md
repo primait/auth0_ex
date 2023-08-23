@@ -60,7 +60,7 @@ A visualization of the logic behind the `TokenProvider` is available [here](clie
 If you need to use multiple clients which target different Auth0 instances, you can configure them like so
 
 ```elixir
-config :prima_auth0_ex, :clients, client_name: [
+config :prima_auth0_ex, :clients, your_client_name: [
   # Base url for Auth0 API
   auth0_base_url: "https://tenant.eu.auth0.com"
   # Credentials on Auth0
@@ -71,7 +71,7 @@ config :prima_auth0_ex, :clients, client_name: [
 ]
 ```
 
-for each client you need.
+You can configure multiple `:clients`, the name is arbitrary and the only requirement is that it be unique.
 
 ### API Provider
 
