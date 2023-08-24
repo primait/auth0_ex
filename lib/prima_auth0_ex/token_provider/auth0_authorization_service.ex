@@ -15,7 +15,7 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
     request_body = body(credentials, audience)
     url = credentials.base_url <> @auth0_token_api_path
 
-    Logger.info("Requesting token to Auth0", audience: audience, url: url)
+    Logger.info("Requesting token to Auth0", client: credentials.client, audience: audience, url: url)
 
     url
     |> Telepoison.post(request_body, "content-type": "application/json")

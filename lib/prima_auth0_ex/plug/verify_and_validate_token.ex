@@ -24,6 +24,8 @@ if Code.ensure_loaded?(Plug) do
       Default is `false`, overridable from `config.exs`.
     """
 
+    alias PrimaAuth0Ex.Config
+
     import Plug.Conn
 
     require Logger
@@ -45,12 +47,24 @@ if Code.ensure_loaded?(Plug) do
       missing_auth_header_log_level =
         Keyword.get(opts, :missing_auth_header_log_level, global_missing_auth_header_log_level())
 
-      if authorized?(conn, audience, required_permissions, ignore_signature, missing_auth_header_log_level),
-        do: conn,
-        else: forbidden(conn, dry_run?)
+      if authorized?(
+           conn,
+           audience,
+           required_permissions,
+           ignore_signature,
+           missing_auth_header_log_level
+         ),
+         do: conn,
+         else: forbidden(conn, dry_run?)
     end
 
-    defp authorized?(conn, audience, required_permissions, ignore_signature, missing_auth_header_log_level) do
+    defp authorized?(
+           conn,
+           audience,
+           required_permissions,
+           ignore_signature,
+           missing_auth_header_log_level
+         ) do
       case get_req_header(conn, "authorization") do
         [] ->
           Logger.log(missing_auth_header_log_level, "Authorization header not found")
@@ -66,7 +80,12 @@ if Code.ensure_loaded?(Plug) do
     end
 
     defp valid_token?(token, audience, required_permissions, ignore_signature) do
-      case PrimaAuth0Ex.verify_and_validate(token, audience, required_permissions, ignore_signature) do
+      case PrimaAuth0Ex.verify_and_validate(
+             token,
+             audience,
+             required_permissions,
+             ignore_signature
+           ) do
         {:ok, _} ->
           true
 
@@ -90,21 +109,15 @@ if Code.ensure_loaded?(Plug) do
     end
 
     defp global_audience,
-      do: :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:audience)
+      do: Config.server(:audience)
 
     defp global_dry_run,
-      do: :prima_auth0_ex |> Application.get_env(:server, []) |> Keyword.get(:dry_run, false)
+      do: Config.server(:dry_run, false)
 
     defp global_ignore_signature,
-      do:
-        :prima_auth0_ex
-        |> Application.get_env(:server, [])
-        |> Keyword.get(:ignore_signature, false)
+      do: Config.server(:ignore_signature, false)
 
     defp global_missing_auth_header_log_level,
-      do:
-        :prima_auth0_ex
-        |> Application.get_env(:server, [])
-        |> Keyword.get(:missing_auth_header_log_level, :warn)
+      do: Config.server(:missing_auth_header_log_level, :warn)
   end
 end

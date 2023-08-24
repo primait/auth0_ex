@@ -2,6 +2,7 @@ defmodule PrimaAuth0Ex.TokenTest do
   use ExUnit.Case, async: true
 
   import PrimaAuth0Ex.TestSupport.{JwtUtils, TimeUtils}
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.Token
 
   @audience "some-audience"
@@ -147,5 +148,5 @@ defmodule PrimaAuth0Ex.TokenTest do
     }
   end
 
-  defp issuer, do: Application.fetch_env!(:prima_auth0_ex, :server)[:issuer]
+  defp issuer, do: Config.server!(:issuer)
 end

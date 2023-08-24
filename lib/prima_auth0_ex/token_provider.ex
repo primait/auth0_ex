@@ -11,6 +11,8 @@ defmodule PrimaAuth0Ex.TokenProvider do
 
   require Logger
 
+  alias PrimaAuth0Ex.Config
+
   alias PrimaAuth0Ex.TokenProvider.{
     Auth0JwksKidsFetcher,
     CachedTokenService,
@@ -46,8 +48,13 @@ defmodule PrimaAuth0Ex.TokenProvider do
 
   @impl true
   def init(auth0_credentials) do
-    with {:ok, _} <- :timer.send_interval(token_check_interval(), :periodic_check),
-         {:ok, _} <- :timer.send_interval(signature_check_interval(), :periodic_signature_check) do
+    with {:ok, _} <-
+           :timer.send_interval(token_check_interval(auth0_credentials.client), :periodic_check),
+         {:ok, _} <-
+           :timer.send_interval(
+             signature_check_interval(auth0_credentials.client),
+             :periodic_signature_check
+           ) do
       {:ok, %__MODULE__{credentials: auth0_credentials}}
     else
       error ->
@@ -79,8 +86,11 @@ defmodule PrimaAuth0Ex.TokenProvider do
     Logger.info("Refreshing token...", audience: audience)
 
     case token_service().refresh_token(state.credentials, audience, nil, true) do
-      {:ok, %TokenInfo{jwt: jwt} = token} -> {:reply, {:ok, jwt}, set_token(state, audience, token)}
-      {:error, error} -> {:reply, {:error, error}, state}
+      {:ok, %TokenInfo{jwt: jwt} = token} ->
+        {:reply, {:ok, jwt}, set_token(state, audience, token)}
+
+      {:error, error} ->
+        {:reply, {:error, error}, state}
     end
   end
 
@@ -160,7 +170,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
   end
 
   defp set_token(state, audience, token) do
-    refresh_time = refresh_strategy().refresh_time_for(token)
+    refresh_time = refresh_strategy().refresh_time_for(state.credentials.client, token)
 
     state
     |> put_in([Access.key(:tokens), audience], token)
@@ -173,26 +183,32 @@ defmodule PrimaAuth0Ex.TokenProvider do
     |> Timex.before?(Timex.now())
   end
 
-  defp token_check_interval do
-    :prima_auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:token_check_interval, :timer.minutes(1))
-  end
+  defp token_check_interval(:default_client),
+    do: Config.default_client(:token_check_interval, :timer.minutes(1))
 
-  defp signature_check_interval do
-    :prima_auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:signature_check_interval, :timer.minutes(5))
-  end
+  defp token_check_interval(client),
+    do: Config.clients(client, :token_check_interval, :timer.minutes(1))
+
+  defp signature_check_interval(:default_client),
+    do: Config.default_client(:signature_check_interval, :timer.minutes(5))
+
+  defp signature_check_interval(client), do: Config.clients(client, :signature_check_interval, :timer.minutes(5))
 
   defp try_refresh(audience, token, credentials, parent) do
     case token_service().refresh_token(credentials, audience, token, false) do
-      {:ok, new_token} -> send(parent, {:set_token_for, audience, new_token})
-      {:error, description} -> Logger.warn("Error refreshing token", audience: audience, description: description)
+      {:ok, new_token} ->
+        send(parent, {:set_token_for, audience, new_token})
+
+      {:error, description} ->
+        Logger.warn("Error refreshing token", audience: audience, description: description)
     end
   end
 
   defp jwks_kids_fetcher,
-    do: Application.get_env(:prima_auth0_ex, :jwks_kids_fetcher, Auth0JwksKidsFetcher)
+    do: Config.jwks_kids_fetcher(Auth0JwksKidsFetcher)
 
   defp refresh_strategy,
-    do: Application.get_env(:prima_auth0_ex, :refresh_strategy, ProbabilisticRefreshStrategy)
+    do: Config.refresh_strategy(ProbabilisticRefreshStrategy)
 
-  defp token_service, do: Application.get_env(:prima_auth0_ex, :token_service, CachedTokenService)
+  defp token_service, do: Config.token_service(CachedTokenService)
 end

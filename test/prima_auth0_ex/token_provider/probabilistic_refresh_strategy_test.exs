@@ -9,7 +9,9 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategyTest do
 
   test "refresh time is randomic" do
     token = %TokenInfo{jwt: "ignored", issued_at: one_hour_ago(), expires_at: in_one_hour()}
-    assert ProbabilisticRefreshStrategy.refresh_time_for(token) != ProbabilisticRefreshStrategy.refresh_time_for(token)
+
+    assert ProbabilisticRefreshStrategy.refresh_time_for(:default_client, token) !=
+             ProbabilisticRefreshStrategy.refresh_time_for(:default_client, token)
   end
 
   property "refresh always happens during the lifetime of the token" do
@@ -19,7 +21,7 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategyTest do
           ) do
       token = %TokenInfo{jwt: "ignored", issued_at: issued_at, expires_at: expires_at}
 
-      refresh_time = ProbabilisticRefreshStrategy.refresh_time_for(token)
+      refresh_time = ProbabilisticRefreshStrategy.refresh_time_for(:default_client, token)
 
       assert Timex.after?(refresh_time, Timex.from_unix(issued_at))
       assert Timex.before?(refresh_time, Timex.from_unix(expires_at))

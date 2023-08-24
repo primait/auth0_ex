@@ -1,14 +1,15 @@
 defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   import ExUnit.CaptureLog
   import PrimaAuth0Ex.TestSupport.TimeUtils
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.TokenProvider.{EncryptedRedisTokenCache, TokenInfo}
 
   @test_audience "redis-integration-test-audience"
 
   setup do
-    redis_connection_uri = Application.fetch_env!(:prima_auth0_ex, :client)[:redis_connection_uri]
+    redis_connection_uri = Config.redis!(:connection_uri)
     Redix.start_link(redis_connection_uri, name: PrimaAuth0Ex.Redix)
     Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
 
@@ -28,8 +29,13 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
     end
 
     test "wrong cache_encryption_key" do
-      env_to_restore = Application.fetch_env!(:prima_auth0_ex, :client)
-      Application.put_env(:prima_auth0_ex, :client, Keyword.put(env_to_restore, :cache_encryption_key, "abcd"))
+      env_to_restore = Application.fetch_env!(:prima_auth0_ex, :redis)
+
+      Application.put_env(
+        :prima_auth0_ex,
+        :redis,
+        Keyword.put(env_to_restore, :encryption_key, "abcd")
+      )
 
       log =
         capture_log(fn ->
@@ -40,7 +46,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
       assert String.match?(log, ~r/audience=redis-integration-test-audience/)
       assert String.match?(log, ~r/Error setting token on redis./)
 
-      Application.put_env(:prima_auth0_ex, :client, env_to_restore)
+      Application.put_env(:prima_auth0_ex, :redis, env_to_restore)
     end
   end
 
@@ -77,7 +83,11 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   @tag capture_log: true
   test "returns error when persisted tokens are invalid and could not be decrypted" do
     # this may happen e.g., if the secret key changes
-    Redix.command!(PrimaAuth0Ex.Redix, ["SET", token_key(@test_audience), "malformed-encrypted-token"])
+    Redix.command!(PrimaAuth0Ex.Redix, [
+      "SET",
+      token_key(@test_audience),
+      "malformed-encrypted-token"
+    ])
 
     assert {:error, _} = EncryptedRedisTokenCache.get_token_for(@test_audience)
   end
@@ -92,10 +102,15 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   end
 
   defp sample_token do
-    %TokenInfo{jwt: "my-token", issued_at: one_hour_ago(), expires_at: in_one_hour(), kid: "my-kid"}
+    %TokenInfo{
+      jwt: "my-token",
+      issued_at: one_hour_ago(),
+      expires_at: in_one_hour(),
+      kid: "my-kid"
+    }
   end
 
   defp token_key(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
   defp in_two_seconds, do: Timex.now() |> Timex.shift(seconds: 2) |> Timex.to_unix()
-  defp namespace, do: Application.fetch_env!(:prima_auth0_ex, :client)[:cache_namespace]
+  defp namespace, do: Config.default_client!(:cache_namespace)
 end

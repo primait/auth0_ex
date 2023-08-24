@@ -3,6 +3,8 @@ defmodule PrimaAuth0Ex.JwksStrategy do
   Strategy used by `Joken` to obtain JWKS from Auth0.
   """
 
+  alias PrimaAuth0Ex.Config
+
   use JokenJwks.DefaultStrategyTemplate
 
   def init_opts(opts) do
@@ -11,5 +13,5 @@ defmodule PrimaAuth0Ex.JwksStrategy do
 
   defp jwks_url, do: base_url() <> "/.well-known/jwks.json"
 
-  defp base_url, do: Application.fetch_env!(:prima_auth0_ex, :auth0_base_url)
+  defp base_url, do: Config.server!(:auth0_base_url)
 end

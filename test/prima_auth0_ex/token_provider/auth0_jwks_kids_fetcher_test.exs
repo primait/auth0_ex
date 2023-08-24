@@ -6,6 +6,7 @@ defmodule PrimaAuth0Ex.TokenProvider.AuthJwksKidsFetcherTest do
 
   @auth0_jwks_api_path "/.well-known/jwks.json"
   @sample_credentials %Auth0Credentials{
+    client: :default_client,
     base_url: "http://localhost",
     client_id: "client_id",
     client_secret: "client_secret"

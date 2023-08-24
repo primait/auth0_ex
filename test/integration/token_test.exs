@@ -1,6 +1,7 @@
 defmodule Integration.TokenTest do
   use ExUnit.Case, async: true
 
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.TestSupport.JwtUtils
   alias PrimaAuth0Ex.Token
   alias PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService
@@ -27,5 +28,5 @@ defmodule Integration.TokenTest do
     assert {:ok, _} = Token.verify_and_validate_token(locally_forged_token, audience, [], true)
   end
 
-  defp audience, do: Application.fetch_env!(:prima_auth0_ex, :server)[:audience]
+  defp audience, do: Config.server!(:audience)
 end

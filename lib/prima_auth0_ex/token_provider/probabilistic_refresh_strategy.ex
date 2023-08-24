@@ -13,20 +13,22 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
   The "refresh window" can be customized from config as follows
 
-    config :prima_auth0_ex, :client,
+    config :prima_auth0_ex, :clients, default_client: [
       min_token_duration: 0.5,
-      max_token_duration: 0.75,
+      max_token_duration: 0.75
+    ]
   """
 
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.TokenProvider.RefreshStrategy
 
   @behaviour RefreshStrategy
 
   @impl RefreshStrategy
-  def refresh_time_for(token) do
+  def refresh_time_for(client, token) do
     token_lifespan = token.expires_at - token.issued_at
-    refresh_window_start = token.issued_at + trunc(token_lifespan * min_token_duration())
-    refresh_window_end = token.issued_at + trunc(token_lifespan * max_token_duration())
+    refresh_window_start = token.issued_at + trunc(token_lifespan * min_token_duration(client))
+    refresh_window_end = token.issued_at + trunc(token_lifespan * max_token_duration(client))
 
     refresh_time = random_time_between(refresh_window_start, refresh_window_end)
 
@@ -35,9 +37,15 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
   defp random_time_between(start, finish), do: Enum.random(start..finish)
 
-  defp min_token_duration,
-    do: :prima_auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:min_token_duration, 0.5)
+  defp min_token_duration(:default_client),
+    do: Config.default_client(:min_token_duration, 0.5)
 
-  defp max_token_duration,
-    do: :prima_auth0_ex |> Application.get_env(:client, []) |> Keyword.get(:max_token_duration, 0.75)
+  defp min_token_duration(client),
+    do: Config.clients(client, :min_token_duration, 0.5)
+
+  defp max_token_duration(:default_client),
+    do: Config.default_client(:max_token_duration, 0.75)
+
+  defp max_token_duration(client),
+    do: Config.clients(client, :max_token_duration, 0.75)
 end

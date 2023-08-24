@@ -5,5 +5,5 @@ defmodule PrimaAuth0Ex.TokenProvider.RefreshStrategy do
 
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
-  @callback refresh_time_for(TokenInfo.t()) :: Timex.Types.valid_datetime()
+  @callback refresh_time_for(atom(), TokenInfo.t()) :: Timex.Types.valid_datetime()
 end

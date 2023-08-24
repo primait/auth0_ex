@@ -7,6 +7,8 @@ if Code.ensure_loaded?(Absinthe.Plug) do
     It does not validate the token! You should use the `PrimaAuth0Ex.Plug.VerifyAndValidateToken` plug to do that.
     """
 
+    alias PrimaAuth0Ex.Config
+
     defmodule Auth0 do
       @moduledoc false
 
@@ -41,10 +43,6 @@ if Code.ensure_loaded?(Absinthe.Plug) do
       )
     end
 
-    defp dry_run do
-      :prima_auth0_ex
-      |> Application.get_env(:server, [])
-      |> Keyword.get(:dry_run, false)
-    end
+    defp dry_run, do: Config.server(:dry_run, false)
   end
 end
