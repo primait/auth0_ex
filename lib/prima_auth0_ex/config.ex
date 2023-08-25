@@ -4,8 +4,8 @@ defmodule PrimaAuth0Ex.Config do
   def authorization_service(default),
     do: get_env(:authorization_service, default)
 
-  def clients, do: get_env(:clients, [])
-  def clients(client_id), do: :clients |> get_env([]) |> Keyword.get(client_id, [])
+  def clients, do: get_env(:clients, nil)
+  def clients(client_id), do: :clients |> get_env([]) |> Keyword.get(client_id)
 
   def clients(client_id, prop, default),
     do: client_id |> clients() |> Keyword.get(prop, default)
@@ -26,7 +26,7 @@ defmodule PrimaAuth0Ex.Config do
   def refresh_strategy(default),
     do: get_env(:refresh_strategy, default)
 
-  def server, do: get_env(:server, [])
+  def server, do: get_env(:server, nil)
   def server(prop, default \\ nil), do: get_env(:server, prop, default)
   def server!(prop), do: fetch_env!(:server, prop)
   def telemetry_reporter, do: get_env(:telemetry_reporter, nil)
