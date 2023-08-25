@@ -5,10 +5,10 @@ defmodule PrimaAuth0Ex.Config do
     do: get_env(:authorization_service, default)
 
   def clients, do: get_env(:clients, [])
-  def clients(client), do: :clients |> get_env(client, []) |> Keyword.get(client, [])
+  def clients(client_id), do: :clients |> get_env([]) |> Keyword.get(client_id, [])
 
-  def clients(client, prop, default),
-    do: :clients |> get_env(client, []) |> Keyword.get(prop, default)
+  def clients(client_id, prop, default),
+    do: client_id |> clients() |> Keyword.get(prop, default)
 
   def clients!(client, prop),
     do: :clients |> fetch_env!(client) |> Keyword.fetch!(prop)
