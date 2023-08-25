@@ -4,7 +4,7 @@ defmodule PrimaAuth0Ex.Config do
   def authorization_service(default),
     do: get_env(:authorization_service, default)
 
-  def clients, do: get_env(:clients)
+  def clients, do: get_env(:clients, [])
   def clients(client), do: :clients |> get_env(client, []) |> Keyword.get(client, [])
 
   def clients(client, prop, default),
@@ -28,7 +28,7 @@ defmodule PrimaAuth0Ex.Config do
 
   def server(prop \\ nil, default \\ nil), do: get_env(:server, prop, default)
   def server!(prop), do: fetch_env!(:server, prop)
-  def telemetry_reporter, do: get_env(:telemetry_reporter)
+  def telemetry_reporter, do: get_env(:telemetry_reporter, nil)
 
   def token_cache(default), do: get_env(:token_cache, default)
 
@@ -39,7 +39,7 @@ defmodule PrimaAuth0Ex.Config do
   defp fetch_env!(conf, prop),
     do: :prima_auth0_ex |> Application.fetch_env!(conf) |> Keyword.fetch!(prop)
 
-  defp get_env(conf, default \\ []), do: Application.get_env(:prima_auth0_ex, conf, default)
+  defp get_env(conf, default), do: Application.get_env(:prima_auth0_ex, conf, default)
 
   defp get_env(conf, prop, default),
     do: :prima_auth0_ex |> Application.get_env(conf, []) |> Keyword.get(prop, default)
