@@ -13,9 +13,13 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
   @impl PrimaAuth0Ex.TokenProvider.AuthorizationService
   def retrieve_token(credentials, audience) do
     request_body = body(credentials, audience)
-    url = credentials.base_url <> @auth0_token_api_path
+    url = credentials.base_url |> URI.merge(@auth0_token_api_path) |> URI.to_string()
 
-    Logger.info("Requesting token to Auth0", client: credentials.client, audience: audience, url: url)
+    Logger.info("Requesting token to Auth0",
+      client: credentials.client,
+      audience: audience,
+      url: url
+    )
 
     url
     |> Telepoison.post(request_body, "content-type": "application/json")
@@ -54,12 +58,18 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
   end
 
   defp emit_event({:error, _} = result, audience) do
-    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :failure], %{count: 1}, %{audience: audience})
+    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :failure], %{count: 1}, %{
+      audience: audience
+    })
+
     result
   end
 
   defp emit_event({:ok, _} = result, audience) do
-    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :success], %{count: 1}, %{audience: audience})
+    :telemetry.execute([:prima_auth0_ex, :retrieve_token, :success], %{count: 1}, %{
+      audience: audience
+    })
+
     result
   end
 end
