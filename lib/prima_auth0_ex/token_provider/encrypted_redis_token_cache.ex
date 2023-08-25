@@ -84,7 +84,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   defp build_token(_), do: {:error, :malformed_cached_data}
 
   defp cache_enabled?,
-    do: Config.redis(:cache_enabled, true)
+    do: Config.redis(:enabled, true)
 
   defp namespace(:default_client),
     do: Config.default_client!(:cache_namespace)
