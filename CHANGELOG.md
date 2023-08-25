@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.1] - 2023-08-25
+
+Bug fixing!
+
+---
+
 ## [0.6.0] - 2023-08-24
 
 ### Added
@@ -221,8 +227,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
 
-
-[Unreleased]: https://github.com/primait/auth0_ex/compare/0.6.0...HEAD
+[Unreleased]: https://github.com/primait/auth0_ex/compare/0.6.1...HEAD
+[0.6.1]: https://github.com/primait/auth0_ex/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/primait/auth0_ex/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/primait/auth0_ex/compare/0.4.6...0.5.0
 [0.4.6]: https://github.com/primait/auth0_ex/compare/0.4.5...0.4.6
