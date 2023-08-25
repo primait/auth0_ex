@@ -18,8 +18,6 @@ defmodule PrimaAuth0Ex.Auth0Credentials do
   def from_env(:default_client) do
     client = Config.default_client()
 
-    IO.inspect(client)
-
     %__MODULE__{
       client: :default_client,
       base_url: Keyword.get(client, :auth0_base_url),
