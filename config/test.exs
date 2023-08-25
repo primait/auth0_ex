@@ -7,6 +7,13 @@ config :prima_auth0_ex,
   token_cache: TokenCacheMock,
   token_service: TokenServiceMock
 
+config :prima_auth0_ex, :server,
+  auth0_base_url: "server",
+  ignore_signature: false,
+  audience: "server",
+  issuer: "server",
+  first_jwks_fetch_sync: true
+
 config :prima_auth0_ex, :redis,
   enabled: true,
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
@@ -15,21 +22,21 @@ config :prima_auth0_ex, :redis,
   ssl_allow_wildcard_certificates: false
 
 config :prima_auth0_ex, :clients,
-  test_client: [
-    auth0_base_url: "https://your-auth0-client.com",
-    client_id: "",
-    client_secret: "",
-    cache_namespace: "test-client-namespace",
-    signature_check_interval: :timer.seconds(1),
-    token_check_interval: :timer.seconds(1)
+  default_client: [
+    auth0_base_url: "default",
+    client_id: "default",
+    client_secret: "default",
+    cache_namespace: "default",
+    token_check_interval: :timer.seconds(1),
+    signature_check_interval: :timer.seconds(1)
   ]
 
 config :prima_auth0_ex, :clients,
-  other_test_client: [
-    auth0_base_url: "https://your-auth0-client.com",
-    client_id: "",
-    client_secret: "",
-    cache_namespace: "other-test-client-namespace",
+  test_client: [
+    auth0_base_url: "test",
+    client_id: "test",
+    client_secret: "test",
+    cache_namespace: "test",
     signature_check_interval: :timer.seconds(1),
     token_check_interval: :timer.seconds(1)
   ]

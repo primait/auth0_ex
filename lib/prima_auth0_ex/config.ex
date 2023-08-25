@@ -20,13 +20,14 @@ defmodule PrimaAuth0Ex.Config do
   def jwks_kids_fetcher(default),
     do: get_env(:jwks_kids_fetcher, default)
 
-  def redis(prop \\ nil, default \\ nil), do: get_env(:redis, prop, default)
+  def redis(prop, default \\ nil), do: get_env(:redis, prop, default)
   def redis!(prop), do: fetch_env!(:redis, prop)
 
   def refresh_strategy(default),
     do: get_env(:refresh_strategy, default)
 
-  def server(prop \\ nil, default \\ nil), do: get_env(:server, prop, default)
+  def server, do: get_env(:server, [])
+  def server(prop, default \\ nil), do: get_env(:server, prop, default)
   def server!(prop), do: fetch_env!(:server, prop)
   def telemetry_reporter, do: get_env(:telemetry_reporter, nil)
 
