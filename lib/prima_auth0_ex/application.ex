@@ -24,7 +24,7 @@ defmodule PrimaAuth0Ex.Application do
   defp client_children do
     if Config.default_client() do
       [
-        {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(), name: TokenProvider}
+        {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(), name: :default_client}
       ]
     end
 
