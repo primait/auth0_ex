@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- If clients are not defined `[]` is returned instead of `nil` at startup
-- Default client is now properly independent from other clients and vice versa
+- If no client is defined, application doesn't fail to start
 
 ---
 
