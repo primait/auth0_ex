@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- If clients are not defined `[]` is returned instead of `nil` at startup
+- Default client is now properly independent from other clients and vice versa
+
 ---
 
 ## [0.6.2] - 2023-08-25
