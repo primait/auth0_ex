@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.6.3] - 2023-08-30
+## [0.6.3] - 2023-08-31
 
 ---
 
@@ -246,8 +246,6 @@ Bug fixes
 ### Fixed
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
-
-
 
 [Unreleased]: https://github.com/primait/auth0_ex/compare/0.6.3...HEAD
 [0.6.3]: https://github.com/primait/auth0_ex/compare/0.6.3-rc.0...0.6.3
