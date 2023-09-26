@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MESSAGE: ${{ inputs.message }}
+      REASON: ${{ inputs.reason }}
       VERSION: ${{ inputs.version }}
     steps:
       - uses: actions/checkout@v4
@@ -40,4 +41,4 @@ jobs:
         env:
           HEX_AUTH_KEY: ${{ secrets.HEX_AUTH_KEY }}
       - run: mix hex.user whoami
-      - run: mix hex.retire prima_auth0_ex $VERSION --message $MESSAGE
+      - run: mix hex.retire prima_auth0_ex $VERSION $REASON --message $MESSAGE
