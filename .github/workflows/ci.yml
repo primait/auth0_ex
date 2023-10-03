@@ -31,8 +31,8 @@ jobs:
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: '26'
-          elixir-version: '1.15'
+          otp-version: '24'
+          elixir-version: '1.13'
       # Define how to cache the `_build` directory.
       # After the first run, this speeds up tests runs a lot.
       # This includes not re-compiling our project's downloaded deps every run.
