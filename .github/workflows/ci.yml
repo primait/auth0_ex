@@ -73,11 +73,13 @@ jobs:
 
     services:
       redis:
-        image: redis:5.0
+        image: redis:5
         ports:
           - "6379:6379"
         env:
           ALLOW_EMPTY_PASSWORD: yes
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
 
   alls-green:
     if: always()
