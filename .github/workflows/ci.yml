@@ -71,6 +71,14 @@ jobs:
       - name: Dialyzer
         run: mix dialyzer
 
+    services:
+      redis:
+        image: redis:5
+        ports:
+          - "6379:6379"
+        env:
+          ALLOW_EMPTY_PASSWORD: yes
+
   alls-green:
     if: always()
     needs:
