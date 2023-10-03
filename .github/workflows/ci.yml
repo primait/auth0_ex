@@ -1,5 +1,3 @@
-# Remember to move this to the proper folder
-
 name: CI
 
 on:
@@ -15,11 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MIX_ENV: test
-    # Use a strategy if you want to run tests for different versions of Erlang/Elixir
-    # strategy:
-    #   matrix:
-    #     otp: ['26']       # Define the OTP version [required]
-    #     elixir: ['1.15']    # Define the elixir version [required]
     steps:
       # Check out the code.
       - name: Checkout
