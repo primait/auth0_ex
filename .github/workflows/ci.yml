@@ -73,7 +73,7 @@ jobs:
 
     services:
       redis:
-        image: redis:5
+        image: public.ecr.aws/bitnami/redis:5.0
         env:
           ALLOW_EMPTY_PASSWORD: true
         options: >-
