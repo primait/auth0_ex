@@ -11,6 +11,8 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    container:
+      image: elixir:1.13
     env:
       MIX_ENV: test
     steps:
@@ -28,11 +30,11 @@ jobs:
           key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
             ${{ runner.os }}-mix-${{ env.cache-name }}-
-      - name: Setup Elixir
-        uses: erlef/setup-beam@v1
-        with:
-          otp-version: '24'
-          elixir-version: '1.13'
+      # - name: Setup Elixir
+      #   uses: erlef/setup-beam@v1
+      #   with:
+      #     otp-version: '24'
+      #     elixir-version: '1.13'
       # Define how to cache the `_build` directory.
       # After the first run, this speeds up tests runs a lot.
       # This includes not re-compiling our project's downloaded deps every run.
