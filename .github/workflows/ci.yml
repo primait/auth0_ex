@@ -74,12 +74,13 @@ jobs:
     services:
       redis:
         image: redis:5
-        ports:
-          - "6379:6379"
         env:
-          ALLOW_EMPTY_PASSWORD: yes
-          REDIS_HOST: redis
-          REDIS_PORT: 6379
+          ALLOW_EMPTY_PASSWORD: true
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
   alls-green:
     if: always()
