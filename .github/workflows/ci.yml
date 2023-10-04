@@ -58,6 +58,8 @@ jobs:
         run: |
           mix deps.clean --all
           mix clean
+      - name: Hex setup
+        run: mix local.hex --force
       - name: Deps get
         run: mix deps.get
       - name: Dependencies Check
