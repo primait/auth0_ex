@@ -95,8 +95,7 @@ defmodule PrimaAuth0Ex.MixProject do
 
   defp package do
     [
-      description:
-        "An easy to use library to authenticate machine-to-machine communications through Auth0.",
+      description: "An easy to use library to authenticate machine-to-machine communications through Auth0.",
       name: "prima_auth0_ex",
       maintainers: ["Prima"],
       licenses: ["MIT"],
