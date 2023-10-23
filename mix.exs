@@ -15,7 +15,7 @@ defmodule PrimaAuth0Ex.MixProject do
       aliases: aliases(),
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit],
-        plt_add_deps: :transitive,
+        plt_add_deps: :app_tree,
         ignore_warnings: ".dialyzerignore",
         list_unused_filters: true
       ],
