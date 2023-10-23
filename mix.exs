@@ -14,7 +14,7 @@ defmodule PrimaAuth0Ex.MixProject do
       deps: deps(),
       aliases: aliases(),
       dialyzer: [
-        plt_add_apps: [:mix, :ex_unit],
+        plt_add_apps: [:mix, :plug, :absinthe, :absinthe_plug, :ex_unit],
         plt_add_deps: :app_tree,
         ignore_warnings: ".dialyzerignore",
         list_unused_filters: true
@@ -95,7 +95,8 @@ defmodule PrimaAuth0Ex.MixProject do
 
   defp package do
     [
-      description: "An easy to use library to authenticate machine-to-machine communications through Auth0.",
+      description:
+        "An easy to use library to authenticate machine-to-machine communications through Auth0.",
       name: "prima_auth0_ex",
       maintainers: ["Prima"],
       licenses: ["MIT"],
