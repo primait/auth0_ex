@@ -22,7 +22,7 @@ defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
       :get
       |> conn("/")
       |> put_req_header("authorization", "Bearer " <> token.jwt)
-      |> VerifyAndValidateToken.call(VerifyAndValidateToken.init([]))
+      |> VerifyAndValidateToken.call(VerifyAndValidateToken.init(required_permissions: ["1st:perm", "some:permission"]))
 
     refute conn.status == 401
   end
