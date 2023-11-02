@@ -20,6 +20,10 @@ defmodule PrimaAuth0Ex.JwksStrategy do
     |> Map.fetch!("jwks_uri")
   end
 
+<<<<<<< HEAD
   defp base_url, do: Config.server!(:auth0_base_url)
   defp oidc_metadata_url, do: base_url() <> "/.well-known/openid-configuration"
+=======
+  defp oidc_metadata_url, do: PrimaAuth0Ex.Auth0Credentials.from_env().base_url <> "/.well-known/openid-configuration"
+>>>>>>> 87a1c15 (Fix localauth0 configuration)
 end

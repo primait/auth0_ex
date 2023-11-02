@@ -3,7 +3,7 @@ import Config
 # Default client, for backwards compatibility
 config :prima_auth0_ex, :clients,
   default_client: [
-    auth0_base_url: "https://your-auth0-provider.com",
+    auth0_base_url: "http://localauth0:3000",
     client_id: "",
     client_secret: "",
     cache_namespace: "my-service",
