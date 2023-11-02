@@ -9,8 +9,6 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
   alias PrimaAuth0Ex.OpenIDConfiguration
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
-  @auth0_token_api_path "/oauth/token"
-
   @impl PrimaAuth0Ex.TokenProvider.AuthorizationService
   def retrieve_token(credentials, audience) do
     url = OpenIDConfiguration.fetch(credentials.base_url).token_endpoint
