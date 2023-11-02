@@ -19,6 +19,11 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
 
   setup do
     bypass = Bypass.open()
+
+    Bypass.stub(bypass, "GET", "/.well-known/openid-configuration", fn conn ->
+      Plug.Conn.resp(conn, 200, Jason.encode!(openid_configuration(bypass)))
+    end)
+
     {:ok, bypass: bypass}
   end
 
@@ -114,4 +119,22 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
   end
 
   defp valid_auth0_response, do: ~s<{"access_token":"#{sample_token()}","expires_in":86400,"token_type":"Bearer"}>
+
+  defp openid_configuration(bypass) do
+    %{
+      issuer: "https://tenant.eu.auth0.com/",
+      authorization_endpoint: "http://localhost:#{bypass.port}/oauth/login",
+      token_endpoint: "http://localhost:#{bypass.port}/oauth/token",
+      jwks_uri: "http://localhost:#{bypass.port}/jwks.json",
+      response_types_supported: [
+        "token id_token"
+      ],
+      subject_types_supported: [
+        "public"
+      ],
+      id_token_signing_alg_values_supported: [
+        "RS256"
+      ]
+    }
+  end
 end

@@ -8,7 +8,9 @@ defmodule PrimaAuth0Ex.OpenIDConfiguration do
 
   @spec fetch(String.t()) :: __MODULE__.t()
   def fetch(base_url) do
-    %HTTPoison.Response{status_code: status_code, body: meta_body} = base_url |> oidc_metadata_url |> Telepoison.get!()
+    url = oidc_metadata_url(base_url)
+    %HTTPoison.Response{status_code: status_code, body: meta_body} = Telepoison.get!(url, accept: "application/json")
+
     true = status_code in 200..299
 
     metadata = Jason.decode!(meta_body)
