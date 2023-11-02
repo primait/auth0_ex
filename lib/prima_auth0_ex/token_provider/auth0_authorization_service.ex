@@ -6,14 +6,15 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
   @behaviour PrimaAuth0Ex.TokenProvider.AuthorizationService
 
   require Logger
+  alias PrimaAuth0Ex.OpenIDConfiguration
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @auth0_token_api_path "/oauth/token"
 
   @impl PrimaAuth0Ex.TokenProvider.AuthorizationService
   def retrieve_token(credentials, audience) do
+    url = OpenIDConfiguration.fetch(credentials.base_url).token_endpoint
     request_body = body(credentials, audience)
-    url = credentials.base_url |> URI.merge(@auth0_token_api_path) |> URI.to_string()
 
     Logger.info("Requesting token to Auth0",
       client: credentials.client,
