@@ -1,0 +1,5 @@
+issuer = "https://your-auth0-tenant.com"
+
+[[audience]]
+name = "server"
+permissions = [ "1st:perm", "2nd:perm", "some:permission"]

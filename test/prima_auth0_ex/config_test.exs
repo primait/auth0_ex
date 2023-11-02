@@ -7,18 +7,18 @@ defmodule ConfigTest do
     test "by getting whole config" do
       config = Config.default_client()
 
-      assert config[:auth0_base_url] == "default"
-      assert config[:client_id] == "default"
-      assert config[:client_secret] == "default"
+      assert config[:auth0_base_url] == "http://localauth0:3000"
+      assert config[:client_id] == "client_id"
+      assert config[:client_secret] == "client_secret"
       assert config[:cache_namespace] == "default"
       assert config[:token_check_interval] == :timer.seconds(1)
       assert config[:signature_check_interval] == :timer.seconds(1)
     end
 
     test "by getting specific props" do
-      assert Config.default_client(:auth0_base_url) == "default"
-      assert Config.default_client(:client_id) == "default"
-      assert Config.default_client(:client_secret) == "default"
+      assert Config.default_client(:auth0_base_url) == "http://localauth0:3000"
+      assert Config.default_client(:client_id) == "client_id"
+      assert Config.default_client(:client_secret) == "client_secret"
       assert Config.default_client(:cache_namespace) == "default"
       assert Config.default_client(:token_check_interval) == :timer.seconds(1)
       assert Config.default_client(:signature_check_interval) == :timer.seconds(1)
@@ -31,7 +31,7 @@ defmodule ConfigTest do
 
     test "bang version" do
       assert_raise KeyError, fn -> Config.default_client!(:non_existing_property) end
-      assert Config.default_client!(:client_id) == "default"
+      assert Config.default_client!(:client_id) == "client_id"
     end
   end
 
@@ -81,23 +81,23 @@ defmodule ConfigTest do
     test "by getting whole config" do
       config = Config.server()
 
-      assert config[:auth0_base_url] == "server"
+      assert config[:auth0_base_url] == "http://localauth0:3000"
       assert config[:ignore_signature] == false
       assert config[:audience] == "server"
-      assert config[:issuer] == "server"
+      assert config[:issuer] == "https://your-auth0-tenant.com"
       assert config[:first_jwks_fetch_sync] == true
     end
 
     test "by getting specific props" do
-      assert Config.server(:auth0_base_url) == "server"
+      assert Config.server(:auth0_base_url) == "http://localauth0:3000"
       assert Config.server(:ignore_signature) == false
       assert Config.server(:audience) == "server"
-      assert Config.server(:issuer) == "server"
+      assert Config.server(:issuer) == "https://your-auth0-tenant.com"
       assert Config.server(:first_jwks_fetch_sync) == true
     end
 
     test "by getting specific props with a bang" do
-      assert Config.server!(:auth0_base_url) == "server"
+      assert Config.server!(:auth0_base_url) == "http://localauth0:3000"
       assert_raise KeyError, fn -> Config.server!(:non_existing_property) end
     end
   end

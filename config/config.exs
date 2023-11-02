@@ -4,8 +4,8 @@ import Config
 config :prima_auth0_ex, :clients,
   default_client: [
     auth0_base_url: "http://localauth0:3000",
-    client_id: "",
-    client_secret: "",
+    client_id: "client_id",
+    client_secret: "client_secret",
     cache_namespace: "my-service",
     token_check_interval: :timer.seconds(1),
     signature_check_interval: :timer.seconds(1)
@@ -20,7 +20,7 @@ config :prima_auth0_ex, :redis,
   ssl_allow_wildcard_certificates: false
 
 config :prima_auth0_ex, :server,
-  auth0_base_url: "https://your-auth0-provider.com",
+  auth0_base_url: "http://localauth0:3000",
   ignore_signature: false,
   audience: "some-audience",
   issuer: "https://your-auth0-tenant.com",
