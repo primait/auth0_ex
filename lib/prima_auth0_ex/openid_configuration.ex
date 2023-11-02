@@ -12,7 +12,6 @@ defmodule PrimaAuth0Ex.OpenIDConfiguration do
     true = status_code in 200..299
 
     metadata = Jason.decode!(meta_body)
-
     metadata = Map.new(@struct_keys, fn key -> {key, metadata[Atom.to_string(key)]} end)
 
     struct!(__MODULE__, metadata)
