@@ -17,7 +17,7 @@ defmodule PrimaAuth0Ex.OpenIDConfigurationTest do
 
     base_url = "http://localhost:#{bypass.port}"
 
-    fetched = OpenIDConfiguration.fetch(base_url)
+    fetched = OpenIDConfiguration.fetch!(base_url)
 
     assert fetched.issuer == config.issuer
     assert fetched.token_endpoint == config.token_endpoint

@@ -11,7 +11,7 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
 
   @impl PrimaAuth0Ex.TokenProvider.AuthorizationService
   def retrieve_token(credentials, audience) do
-    url = OpenIDConfiguration.fetch(credentials.base_url).token_endpoint
+    url = OpenIDConfiguration.fetch!(credentials.base_url).token_endpoint
     request_body = body(credentials, audience)
 
     Logger.info("Requesting token to Auth0",
