@@ -10,17 +10,18 @@ defmodule PrimaAuth0Ex.OpenIDConfigurationTest do
 
   test "Fetches and parses metadata from a server", %{bypass: bypass} do
     config = openid_configuration(bypass)
+
     Bypass.expect_once(bypass, "GET", "/.well-known/openid-configuration", fn conn ->
       Plug.Conn.resp(conn, 200, Jason.encode!(config))
     end)
+
     base_url = "http://localhost:#{bypass.port}"
-    
+
     fetched = OpenIDConfiguration.fetch(base_url)
 
     assert fetched.issuer == config.issuer
     assert fetched.token_endpoint == config.token_endpoint
     assert fetched.jwks_uri == config.jwks_uri
-    
   end
 
   defp openid_configuration(bypass) do
