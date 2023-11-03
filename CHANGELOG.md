@@ -18,6 +18,9 @@ To migrate set `:prima_auth0_ex, :token_cache` to `EncryptedRedisTokenCache` or 
 - Use the [rfc8414](https://www.rfc-editor.org/rfc/rfc8414) metadata endpoint to fetch information about the auth server
 
 This allows auth0_ex to be used with other compliant openid servers, like okta.
+
+Note that if you're using [localauth0](https://github.com/primait/localauth0), you will need to update to version 0.6.2 or later(public.ecr.aws/c6i9l4r6/localauth0:0.6.2).
+
 ---
 
 ## [0.6.4] - 2023-11-20
