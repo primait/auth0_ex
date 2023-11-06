@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
       - name: setup hex
         run: |
-          mix mix local.hex --force
+          mix local.hex --force
           mix local.rebar --force
       - name: Get deps
         run: mix deps.get
@@ -26,9 +26,9 @@ jobs:
           VERSION=$(grep -m1 version mix.exs | cut -d'"' -f2)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Check version
-        if: github.ref_tag != ${{ env.VERSION }}
+        if: ${{ github.event.release.tag_name != env.VERSION }}
         run: |
-          echo "Github ref tag [${{ github.ref_tag }}] is different from mix.exs version [${{ env.VERSION }}]"
+          echo "Github ref tag [${{ github.event.release.tag_name }}] is different from mix.exs version [${{ env.VERSION }}]"
           exit 1
       - name: Login to hex.pm
         run: |
