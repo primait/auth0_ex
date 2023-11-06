@@ -34,8 +34,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: '25'
-          elixir-version: '1.15'
+          otp-version: '24'
+          elixir-version: '1.13'
       - run: echo "Attempting to retire version $VERSION"
       - run: mix hex.config api_key "$HEX_AUTH_KEY"
         env:

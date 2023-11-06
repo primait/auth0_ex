@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    container:
+      image: elixir:1.13
+    env:
+      MIX_ENV: test
+    steps:
+      # Check out the code.
+      - name: Checkout
+        uses: actions/checkout@v3
+      # Define how to cache deps. Restores existing cache if present.
+      - name: Cache deps
+        id: cache-deps
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-elixir-deps
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ env.cache-name }}-
+      # Define how to cache the `_build` directory.
+      # After the first run, this speeds up tests runs a lot.
+      # This includes not re-compiling our project's downloaded deps every run.
+      - name: Cache compiled build
+        id: cache-build
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-compiled-build
+        with:
+          path: _build
+          key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ env.cache-name }}-
+            ${{ runner.os }}-mix-
+      # Conditionally bust the cache when job is re-run.
+      # Sometimes, we may have issues with incremental builds that are fixed by doing a full recompile.
+      # In order to not waste dev time on such trivial issues force a full recompile only on builds that are retried.
+      # See https://fly.io/docs/elixir/advanced-guides/github-actions-elixir-ci-cd/ for more infos
+      - name: Clean to rule out incremental build as a source of flakiness
+        if: github.run_attempt != '1'
+        run: |
+          mix deps.clean --all
+          mix clean
+      - name: Elixir setup
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+      - name: Deps get
+        run: mix deps.get
+      - name: Dependencies Check
+        run: mix deps.unlock --check-unused
+      - name: Compiles without warnings
+        run: mix compile --warnings-as-errors
+      - name: Check Formatting
+        run: mix format --check-formatted
+      - name: Credo
+        run: mix credo -a --strict
+      - name: Test
+        run: mix test
+      - name: Dialyzer
+        run: mix dialyzer
+
+    services:
+      redis:
+        image: public.ecr.aws/bitnami/redis:5.0
+        env:
+          ALLOW_EMPTY_PASSWORD: true
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+  alls-green:
+    if: always()
+    needs:
+      - ci
+    runs-on: ubuntu-latest
+    steps:
+        - name: Decide whether the needed jobs succeeded or failed
+          uses: re-actors/alls-green@release/v1
+          with:
+            jobs: ${{ toJSON(needs) }}
