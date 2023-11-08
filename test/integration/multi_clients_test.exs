@@ -3,7 +3,8 @@ defmodule Integration.TokenProvider.MultiClientsTest do
 
   import PrimaAuth0Ex.TestSupport.TimeUtils
   alias PrimaAuth0Ex.Config
-  alias PrimaAuth0Ex.TokenProvider.{EncryptedRedisTokenCache, TokenInfo}
+  alias PrimaAuth0Ex.TokenProvider.TokenInfo
+  alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
 
   @test_audience "redis-integration-test-audience"
   @test_client :test_client

@@ -1,51 +1,38 @@
-defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptorTest do
+defmodule PrimaAuth0Ex.TokenCache.TokenEncryptorTest do
   @moduledoc false
 
   use ExUnit.Case, async: false
 
-  alias PrimaAuth0Ex.TestHelper
-  alias PrimaAuth0Ex.TokenProvider.TokenEncryptor
+  alias PrimaAuth0Ex.TokenCache.TokenEncryptor
 
-  @token_encryption_key "eT4YutFXY/PCV5Kr6gBD/K2NxM60OqeXFux09te6Z80="
+  @token_encryption_key :crypto.strong_rand_bytes(32)
 
   test "encrypts and decrypts correctly" do
-    TestHelper.set_redis_env(:encryption_key, @token_encryption_key)
-
     plaintext = "test"
 
-    {:ok, enc} = TokenEncryptor.encrypt(plaintext)
-    {:ok, dec} = TokenEncryptor.decrypt(enc)
+    {:ok, enc} = TokenEncryptor.encrypt(plaintext, @token_encryption_key)
+    {:ok, dec} = TokenEncryptor.decrypt(enc, @token_encryption_key)
 
     assert plaintext == dec
   end
 
   test "decrypting returns with :error if key changes" do
-    TestHelper.set_redis_env(:encryption_key, @token_encryption_key)
-
-    {:ok, enc} = TokenEncryptor.encrypt("test")
+    {:ok, enc} = TokenEncryptor.encrypt("test", @token_encryption_key)
 
     new_key = generate_key()
 
-    TestHelper.set_redis_env(:encryption_key, new_key, reset?: false)
-
-    assert {:error, _} = TokenEncryptor.decrypt(enc)
+    assert {:error, _} = TokenEncryptor.decrypt(enc, new_key)
   end
 
   test "encrypting returns with :error if key is not binary" do
-    TestHelper.set_redis_env(:encryption_key, 1234)
-
-    assert {:error, _} = TokenEncryptor.encrypt("test")
+    assert {:error, _} = TokenEncryptor.encrypt("test", 1234)
   end
 
   test "decrypting returns with :error if key is not binary" do
-    TestHelper.set_redis_env(:encryption_key, @token_encryption_key)
+    {:ok, enc} = TokenEncryptor.encrypt("test", @token_encryption_key)
 
-    {:ok, enc} = TokenEncryptor.encrypt("test")
-
-    TestHelper.set_redis_env(:encryption_key, 1234, reset?: false)
-
-    assert {:error, _} = TokenEncryptor.decrypt(enc)
+    assert {:error, _} = TokenEncryptor.decrypt(enc, 1234)
   end
 
-  defp generate_key, do: Base.encode64(:crypto.strong_rand_bytes(32))
+  defp generate_key, do: :crypto.strong_rand_bytes(32)
 end

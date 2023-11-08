@@ -1,4 +1,4 @@
-defmodule PrimaAuth0Ex.TokenProvider.TokenCache do
+defmodule PrimaAuth0Ex.TokenCache do
   @moduledoc """
   Behaviour that defines a cache for tokens.
   """

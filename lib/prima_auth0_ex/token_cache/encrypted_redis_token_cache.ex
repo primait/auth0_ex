@@ -1,4 +1,4 @@
-defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
+defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
   @moduledoc """
   Implementation of `PrimaAuth0Ex.TokenProvider.TokenCache` that persists encrypted copies of tokens on Redis.
 
@@ -7,7 +7,9 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   require Logger
   alias PrimaAuth0Ex.Config
-  alias PrimaAuth0Ex.TokenProvider.{TokenCache, TokenEncryptor, TokenInfo}
+  alias PrimaAuth0Ex.TokenProvider.TokenInfo
+  alias PrimaAuth0Ex.TokenCache
+  alias TokenCache.TokenEncryptor
 
   @behaviour TokenCache
 
@@ -45,7 +47,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
 
   defp do_set_token_for(client, audience, token) do
     with {:ok, json_token} <- to_json(token),
-         {:ok, encrypted} <- TokenEncryptor.encrypt(json_token),
+         {:ok, encrypted} <- TokenEncryptor.encrypt(json_token, token_encryption_key()),
          {:ok, _} <- save(encrypted, key_for(client, audience), token.expires_at) do
       Logger.info("Updated token on redis.", audience: audience)
       :ok
@@ -65,7 +67,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
   end
 
   defp decrypt_and_parse(cached_value) do
-    with {:ok, decrypted} <- TokenEncryptor.decrypt(cached_value),
+    with {:ok, decrypted} <- TokenEncryptor.decrypt(cached_value, token_encryption_key()),
          {:ok, token_attributes} <- Jason.decode(decrypted) do
       build_token(token_attributes)
     else
@@ -93,4 +95,9 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
     do: Config.clients!(client, :cache_namespace)
 
   defp current_time, do: Timex.to_unix(Timex.now())
+
+  defp token_encryption_key do
+    encoded_key = Config.redis!(:encryption_key)
+    Base.decode64!(encoded_key)
+  end
 end

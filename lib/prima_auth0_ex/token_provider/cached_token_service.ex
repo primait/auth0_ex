@@ -16,6 +16,8 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
     TokenService
   }
 
+  alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
+
   @behaviour TokenService
 
   @impl TokenService
