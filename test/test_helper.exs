@@ -1,5 +1,5 @@
 ExUnit.configure(exclude: :external)
-ExUnit.start()
+ExUnit.start(capture_log: true)
 
 defmodule PrimaAuth0Ex.TestHelper do
   import ExUnit.Callbacks
