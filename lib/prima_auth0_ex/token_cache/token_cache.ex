@@ -19,6 +19,10 @@ defmodule PrimaAuth0Ex.TokenCache do
     get_configured_cache_provider().get_token_for(client, audience)
   end
 
+  def child_spec(opts) do
+    get_configured_cache_provider().child_spec(opts)
+  end
+
   def get_configured_cache_provider do
     case Config.cache(:provider, :none) do
       :redis ->
@@ -27,4 +31,5 @@ defmodule PrimaAuth0Ex.TokenCache do
         PrimaAuth0Ex.TokenCache.NoopCache
     end
   end
+
 end

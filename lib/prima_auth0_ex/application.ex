@@ -93,7 +93,7 @@ defmodule PrimaAuth0Ex.Application do
     end
   end
 
-  defp cache_children, do: PrimaAuth0Ex.TokenCache.children()
+  defp cache_children, do: [PrimaAuth0Ex.TokenCache]
 
   defp server_children do
     if Config.server() && not Config.server(:ignore_signature, false) do

@@ -11,12 +11,11 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
 
   @behaviour TokenCache
 
-  def start_link(_) do
-    nil
-  end
-
-  def children() do
-    [{Redix, {Config.redis!(:connection_uri), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts()}}]
+  def child_spec(_) do
+    %{
+      id: Redix, 
+      start: {Redix, :start_link, [Config.redis!(:connection_uri), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts()]}
+    }
   end
 
   @impl TokenCache
