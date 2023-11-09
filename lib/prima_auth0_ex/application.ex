@@ -5,6 +5,8 @@ defmodule PrimaAuth0Ex.Application do
 
   require Logger
 
+  alias PrimaAuth0Ex.TokenCache.NoopCache
+  alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
   alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.Telemetry
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
@@ -25,52 +27,40 @@ defmodule PrimaAuth0Ex.Application do
 
   defp migrate_depracated_cache_options() do
     redis_enabled = Config.redis(:enabled)
-    cache_provieder = Config.cache(:provider)
+    cache_provieder = Config.token_cache(nil)
 
     case {redis_enabled, cache_provieder} do
       {nil, _} ->
         nil
 
       {true, nil} ->
-        Application.put_env(:prima_auth0_ex, :cache, provider: :redis)
+        Application.put_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
 
         Logger.warning("""
         The 
           :prima_auth0_ex, :redis, :enabled option 
         is depracated.
         Set
-          :prima_auth0_ex, :cache, provider: :redis
+          :prima_auth0_ex, token_cache: EncryptedRedisTokenCache 
         instead
         """)
 
       {false, nil} ->
-        Application.put_env(:prima_auth0_ex, :cache, provider: :none)
+        Application.put_env(:prima_auth0_ex, :token_cache, NoopCache)
 
         Logger.warning("""
         The :prima_auth0_ex, :redis, :enabled option is depracated.
         Set
-          :prima_auth0_ex, :cache, provider: :none
-        or
-          :prima_auth0_ex, :cache, provider: :ets
-        instead
+          :prima_auth0_ex, token_cache: NoopCache
+        instead to disable caching
         """)
 
-      _ ->
-        raise """
-        Both 
-          :prima_auth0_ex, :cache, :provider
-        and
-          :prima_auth0_ex, :redis, :enabled
-        are configured. 
-        The :prima_auth0_ex, :redis, :enabled option is depracated, and should be removed.
-        """
-    end
-
-    unless redis_enabled == nil do
-      Logger.warning("""
-      Configuration option :prima_auth0_ex, :redis, :enabled is depreacted. 
-      Set :prima_auth0_ex, :cache, provider: :redis instead
-      """)
+      {false, _} ->
+        Logger.warning("""
+        The :prima_auth0_ex, :redis, :enabled option is depracated. You can safely remove it
+          :prima_auth0_ex, :token_cache,
+        is used instead
+        """)
     end
   end
 

@@ -22,12 +22,13 @@ defmodule PrimaAuth0Ex.TokenCache do
   end
 
   def get_configured_cache_provider do
-    case Config.cache(:provider, :none) do
-      :redis ->
-        PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
+    cache_provider = Config.token_cache(NoopCache)
 
-      :none ->
-        PrimaAuth0Ex.TokenCache.NoopCache
+    with builtin_cache_provider <- Module.concat(PrimaAuth0Ex.TokenCache, cache_provider),
+         {:module, ^builtin_cache_provider} <- Code.ensure_compiled(builtin_cache_provider) do
+      builtin_cache_provider
+    else
+      _ -> cache_provider
     end
   end
 end

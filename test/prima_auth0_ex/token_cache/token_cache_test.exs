@@ -12,12 +12,13 @@ defmodule PrimaAuth0Ex.TokenCache.TokenCacheTest do
   end
 
   test "picks the right cache provider based on configuration" do
-    Application.put_env(:prima_auth0_ex, :cache, provider: :redis)
+    Application.put_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
     PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache = TokenCache.get_configured_cache_provider()
 
-    Application.put_env(:prima_auth0_ex, :cache, provider: :none)
+    Application.put_env(:prima_auth0_ex, :token_cache, NoopCache)
     PrimaAuth0Ex.TokenCache.NoopCache = TokenCache.get_configured_cache_provider()
 
-    Application.put_env(:prima_auth0_ex, :cache, provider: :redis)
+    Application.put_env(:prima_auth0_ex, :token_cache, Non.Existent)
+    Non.Existent = TokenCache.get_configured_cache_provider()
   end
 end

@@ -13,7 +13,7 @@ defmodule PrimaAuth0Ex.TokenCache.NoopCache do
       start: {__MODULE__, :start_link, []}
     }
 
-  def start_link(_), do: :ignore
+  def start_link, do: :ignore
 
   @impl TokenCache
   def get_token_for(_, _), do: {:ok, nil}

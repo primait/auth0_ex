@@ -18,12 +18,12 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
     Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
 
     redis_env = Application.fetch_env!(:prima_auth0_ex, :redis)
-    cache_env = Application.fetch_env!(:prima_auth0_ex, :cache)
-    Application.put_env(:prima_auth0_ex, :cache, provider: :redis)
+    cache_env = Application.fetch_env!(:prima_auth0_ex, :token_cache)
+    Application.put_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
 
     on_exit(fn ->
       Application.put_env(:prima_auth0_ex, :redis, redis_env)
-      Application.put_env(:prima_auth0_ex, :cache, cache_env)
+      Application.put_env(:prima_auth0_ex, :token_cache, cache_env)
     end)
 
     :ok
