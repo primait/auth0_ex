@@ -21,6 +21,7 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenServiceTest do
   setup do
     saved_env = Application.get_env(:prima_auth0_ex, :token_cache)
     Application.put_env(:prima_auth0_ex, :token_cache, TokenCacheMock)
+
     on_exit(fn ->
       Application.put_env(:prima_auth0_ex, :token_cache, saved_env)
     end)

@@ -12,6 +12,7 @@ defmodule Integration.TokenProvider.MultiClientsTest do
 
   setup do
     start_supervised(EncryptedRedisTokenCache)
+
     for client <- @clients do
       Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(client, @test_audience)])
     end

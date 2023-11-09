@@ -10,6 +10,7 @@ defmodule Integration.TokenCache.MemoryCacheTest do
 
   setup do
     cache_env = Application.get_env(:prima_auth0_ex, :memory_cache, nil)
+
     on_exit(fn ->
       Application.put_env(:prima_auth0_ex, :memory_cache, cache_env)
     end)
