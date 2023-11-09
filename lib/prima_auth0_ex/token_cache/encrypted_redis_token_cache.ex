@@ -21,15 +21,6 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
 
   @impl TokenCache
   def get_token_for(client \\ :default_client, audience) do
-    if cache_enabled?(), do: do_get_token_for(client, audience), else: {:ok, nil}
-  end
-
-  @impl TokenCache
-  def set_token_for(client \\ :default_client, audience, token) do
-    if cache_enabled?(), do: do_set_token_for(client, audience, token), else: :ok
-  end
-
-  defp do_get_token_for(client, audience) do
     key = key_for(client, audience)
 
     case Redix.command(PrimaAuth0Ex.Redix, ["GET", key]) do
@@ -51,7 +42,8 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
     end
   end
 
-  defp do_set_token_for(client, audience, token) do
+  @impl TokenCache
+  def set_token_for(client \\ :default_client, audience, token) do
     with {:ok, json_token} <- to_json(token),
          {:ok, encrypted} <- TokenEncryptor.encrypt(json_token, token_encryption_key()),
          {:ok, _} <- save(encrypted, key_for(client, audience), token.expires_at) do
@@ -90,9 +82,6 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
   end
 
   defp build_token(_), do: {:error, :malformed_cached_data}
-
-  defp cache_enabled?,
-    do: Config.cache(:provider, :ets) == :redis
 
   defp namespace(:default_client),
     do: Config.default_client!(:cache_namespace)
