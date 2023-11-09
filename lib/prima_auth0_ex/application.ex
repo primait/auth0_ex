@@ -81,8 +81,7 @@ defmodule PrimaAuth0Ex.Application do
       |> Enum.reduce([], fn client_name, acc ->
         [
           Supervisor.child_spec(
-            {TokenProvider,
-             credentials: PrimaAuth0Ex.Auth0Credentials.from_env(client_name), name: client_name},
+            {TokenProvider, credentials: PrimaAuth0Ex.Auth0Credentials.from_env(client_name), name: client_name},
             id: client_name
           )
           | acc

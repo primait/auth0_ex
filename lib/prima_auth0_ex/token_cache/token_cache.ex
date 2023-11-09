@@ -8,7 +8,7 @@ defmodule PrimaAuth0Ex.TokenCache do
   @callback set_token_for(atom(), String.t(), TokenInfo.t()) :: :ok | {:error, any()}
   @callback get_token_for(atom(), String.t()) :: {:ok, TokenInfo.t() | nil} | {:error, any()}
 
-  def start_link(opts), do: get_configured_cache_provider().start_link(opts) 
+  def start_link(opts), do: get_configured_cache_provider().start_link(opts)
   def children, do: get_configured_cache_provider().children()
 
   def set_token_for(client, audience, token) do
@@ -27,9 +27,9 @@ defmodule PrimaAuth0Ex.TokenCache do
     case Config.cache(:provider, :none) do
       :redis ->
         PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
+
       :none ->
         PrimaAuth0Ex.TokenCache.NoopCache
     end
   end
-
 end

@@ -9,6 +9,11 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
 
   @test_audience "redis-integration-test-audience"
 
+  setup_all do
+    start_supervised(EncryptedRedisTokenCache)
+    :ok
+  end
+
   setup do
     Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
 
@@ -20,11 +25,7 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
       Application.put_env(:prima_auth0_ex, :redis, redis_env)
       Application.put_env(:prima_auth0_ex, :cache, cache_env)
     end)
-    :ok
-  end
 
-  setup_all do
-    start_supervised(EncryptedRedisTokenCache)
     :ok
   end
 
