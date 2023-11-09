@@ -10,4 +10,8 @@ defmodule PrimaAuth0Ex.TestSupport.TimeUtils do
   def shifted_by_hours(n) do
     Timex.now() |> Timex.shift(hours: n) |> Timex.to_unix()
   end
+
+  def shifted_by_seconds(n) do
+    Timex.now() |> Timex.shift(seconds: n) |> Timex.to_unix()
+  end
 end

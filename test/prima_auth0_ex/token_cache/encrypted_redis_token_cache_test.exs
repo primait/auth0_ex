@@ -94,7 +94,7 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
   end
 
   test "tokens are deleted from cache when they expire" do
-    token = %TokenInfo{sample_token() | expires_at: in_two_seconds()}
+    token = %TokenInfo{sample_token() | expires_at: shifted_by_seconds(2)}
     :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token)
 
     assert {:ok, ^token} = EncryptedRedisTokenCache.get_token_for(@test_audience)
@@ -112,6 +112,5 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
   end
 
   defp token_key(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
-  defp in_two_seconds, do: Timex.now() |> Timex.shift(seconds: 2) |> Timex.to_unix()
   defp namespace, do: Config.default_client!(:cache_namespace)
 end
