@@ -19,7 +19,7 @@ defmodule PrimaAuth0Ex.TokenCache do
     get_configured_cache_provider().get_token_for(client, audience)
   end
 
-  defp get_configured_cache_provider do
+  def get_configured_cache_provider do
     case Config.cache(:provider, :none) do
       :redis ->
         PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
