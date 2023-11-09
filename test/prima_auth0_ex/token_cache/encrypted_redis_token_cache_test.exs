@@ -10,10 +10,21 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
   @test_audience "redis-integration-test-audience"
 
   setup do
-    redis_connection_uri = Config.redis!(:connection_uri)
-    Redix.start_link(redis_connection_uri, name: PrimaAuth0Ex.Redix)
     Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
 
+    redis_env = Application.fetch_env!(:prima_auth0_ex, :redis)
+    cache_env = Application.fetch_env!(:prima_auth0_ex, :cache)
+    Application.put_env(:prima_auth0_ex, :cache, provider: :redis)
+
+    on_exit(fn ->
+      Application.put_env(:prima_auth0_ex, :redis, redis_env)
+      Application.put_env(:prima_auth0_ex, :cache, cache_env)
+    end)
+    :ok
+  end
+
+  setup_all do
+    start_supervised(EncryptedRedisTokenCache)
     :ok
   end
 
@@ -30,13 +41,7 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
     end
 
     test "wrong cache_encryption_key" do
-      env_to_restore = Application.fetch_env!(:prima_auth0_ex, :redis)
-
-      Application.put_env(
-        :prima_auth0_ex,
-        :redis,
-        Keyword.put(env_to_restore, :encryption_key, "abcd")
-      )
+      put_redis_config(encryption_key: "abcd")
 
       log =
         capture_log(fn ->
@@ -46,8 +51,6 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
       assert String.match?(log, ~r/reason=/)
       assert String.match?(log, ~r/audience=redis-integration-test-audience/)
       assert String.match?(log, ~r/Error setting token on redis./)
-
-      Application.put_env(:prima_auth0_ex, :redis, env_to_restore)
     end
   end
 
@@ -113,4 +116,17 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
 
   defp token_key(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
   defp namespace, do: Config.default_client!(:cache_namespace)
+
+  defp put_redis_config(new_conf) do
+    config =
+      :prima_auth0_ex
+      |> Application.get_env(:redis)
+      |> Keyword.merge(new_conf)
+
+    Application.put_env(
+      :prima_auth0_ex,
+      :redis,
+      config
+    )
+  end
 end
