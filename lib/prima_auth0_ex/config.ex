@@ -4,6 +4,9 @@ defmodule PrimaAuth0Ex.Config do
   def authorization_service(default),
     do: get_env(:authorization_service, default)
 
+  def cache(prop, default \\ nil), do: get_env(:cache, prop, default)
+  def cache!(prop), do: fetch_env!(:cache, prop)
+
   def clients, do: get_env(:clients, nil)
   def clients(client_id), do: :clients |> get_env([]) |> Keyword.get(client_id)
 

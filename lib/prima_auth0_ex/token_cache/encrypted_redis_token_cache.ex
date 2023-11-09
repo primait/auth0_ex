@@ -1,8 +1,6 @@
 defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
   @moduledoc """
-  Implementation of `PrimaAuth0Ex.TokenProvider.TokenCache` that persists encrypted copies of tokens on Redis.
-
-  Encryption-related functionalities are implemented in `PrimaAuth0Ex.TokenProvider.TokenEncryptor`.
+  Implementation of `PrimaAuth0Ex.TokenCache` that persists encrypted copies of tokens on Redis.
   """
 
   require Logger
@@ -12,6 +10,14 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
   alias TokenCache.TokenEncryptor
 
   @behaviour TokenCache
+
+  def start_link(_) do
+    nil
+  end
+
+  def children() do
+    [{Redix, {Config.redis!(:connection_uri), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts()}}]
+  end
 
   @impl TokenCache
   def get_token_for(client \\ :default_client, audience) do
@@ -86,7 +92,7 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
   defp build_token(_), do: {:error, :malformed_cached_data}
 
   defp cache_enabled?,
-    do: Config.redis(:enabled, true)
+    do: Config.cache(:provider, :ets) == :redis
 
   defp namespace(:default_client),
     do: Config.default_client!(:cache_namespace)
@@ -100,4 +106,21 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
     encoded_key = Config.redis!(:encryption_key)
     Base.decode64!(encoded_key)
   end
+
+  def redis_ssl_opts do
+    if Config.redis(:ssl_enabled, false) do
+      append_if([ssl: true], Config.redis(:ssl_allow_wildcard_certificates, false),
+        socket_opts: [
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ]
+        ]
+      )
+    else
+      []
+    end
+  end
+
+  defp append_if(list, false, _value), do: list
+  defp append_if(list, true, value), do: list ++ value
 end

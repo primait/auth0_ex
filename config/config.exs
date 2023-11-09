@@ -11,8 +11,10 @@ config :prima_auth0_ex, :clients,
     signature_check_interval: :timer.seconds(1)
   ]
 
+config :prima_auth0_ex, :cache,
+  provider: :redis
+
 config :prima_auth0_ex, :redis,
-  enabled: true,
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
   connection_uri: "redis://redis:6379",
   ssl_enabled: false,

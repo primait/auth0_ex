@@ -70,8 +70,11 @@ defmodule ConfigTest do
     end
   end
 
+  test "can read cache config" do
+    assert Config.cache(:provider) == :redis
+  end
+
   test "can read redis config" do
-    assert Config.redis(:enabled) == true
     assert Config.redis(:encryption_key) == "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
     assert Config.redis(:connection_uri) == "redis://redis:6379"
     assert Config.redis(:ssl_enabled) == false
