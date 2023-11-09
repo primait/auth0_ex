@@ -11,6 +11,7 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
 
   @behaviour TokenCache
 
+  @impl TokenCache
   def child_spec(_) do
     %{
       id: Redix,

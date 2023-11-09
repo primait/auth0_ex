@@ -7,9 +7,7 @@ defmodule PrimaAuth0Ex.TokenCache do
 
   @callback set_token_for(atom(), String.t(), TokenInfo.t()) :: :ok | {:error, any()}
   @callback get_token_for(atom(), String.t()) :: {:ok, TokenInfo.t() | nil} | {:error, any()}
-
-  def start_link(opts), do: get_configured_cache_provider().start_link(opts)
-  def children, do: get_configured_cache_provider().children()
+  @callback child_spec(any()) :: Supervisor.child_spec()
 
   def set_token_for(client, audience, token) do
     get_configured_cache_provider().set_token_for(client, audience, token)

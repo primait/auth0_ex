@@ -6,6 +6,7 @@ defmodule PrimaAuth0Ex.TokenCache.NoopCache do
   """
   @behaviour TokenCache
 
+  @impl TokenCache
   def child_spec(_),
     do: %{
       id: __MODULE__,
