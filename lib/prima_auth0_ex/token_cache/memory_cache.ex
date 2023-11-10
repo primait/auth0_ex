@@ -72,5 +72,7 @@ defmodule PrimaAuth0Ex.TokenCache.MemoryCache do
 
   defp now_unix, do: :os.system_time(:seconds)
   defp schedule_cleanup, do: Process.send_after(self(), :cleanup, cleanup_interval())
-  defp cleanup_interval, do: Config.memory_cache(:cleanup_interval, 60 * 1000)
+
+  @default_cleanup_interval_ms 60*1000
+  defp cleanup_interval, do: Config.memory_cache(:cleanup_interval, @default_cleanup_interval_ms)
 end
