@@ -63,7 +63,7 @@ defmodule PrimaAuth0Ex.TokenCache.MemoryCache do
   def handle_info(:cleanup, tokens) do
     tokens =
       Map.filter(tokens, fn {_, %TokenInfo{expires_at: expires_at}} ->
-        expires_at < now_unix()
+        expires_at > now_unix()
       end)
 
     schedule_cleanup()
