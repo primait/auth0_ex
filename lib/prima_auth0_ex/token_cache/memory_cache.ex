@@ -1,12 +1,12 @@
 defmodule PrimaAuth0Ex.TokenCache.MemoryCache do
-  # Use a genserver for the implementation. 
+  # Use a genserver for the implementation.
   # We could use ets instead, to allow multiple readers at once
   # but that wouldn't allow cache access from other nodes.
   use GenServer
 
   alias PrimaAuth0Ex.Config
-  alias PrimaAuth0Ex.TokenProvider.TokenInfo
   alias PrimaAuth0Ex.TokenCache
+  alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @moduledoc """
   Implementation of `PrimaAuth0Ex.TokenCache` that stores tokens in memory.
@@ -73,6 +73,6 @@ defmodule PrimaAuth0Ex.TokenCache.MemoryCache do
   defp now_unix, do: :os.system_time(:seconds)
   defp schedule_cleanup, do: Process.send_after(self(), :cleanup, cleanup_interval())
 
-  @default_cleanup_interval_ms 60*1000
+  @default_cleanup_interval_ms 60 * 1000
   defp cleanup_interval, do: Config.memory_cache(:cleanup_interval, @default_cleanup_interval_ms)
 end

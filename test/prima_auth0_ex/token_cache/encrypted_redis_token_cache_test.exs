@@ -3,9 +3,10 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
 
   import ExUnit.CaptureLog
   import PrimaAuth0Ex.TestSupport.TimeUtils
+
   alias PrimaAuth0Ex.Config
-  alias PrimaAuth0Ex.TokenProvider.TokenInfo
   alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
+  alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @test_audience "redis-integration-test-audience"
 

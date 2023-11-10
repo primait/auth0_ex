@@ -8,8 +8,8 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
   instances will retrieve the new token from the new cache and will not have to generate a new
   one from the authorization provider.
   """
-  alias PrimaAuth0Ex.TokenCache
   alias PrimaAuth0Ex.Config
+  alias PrimaAuth0Ex.TokenCache
 
   alias PrimaAuth0Ex.TokenProvider.{
     Auth0AuthorizationService,

@@ -5,10 +5,10 @@ defmodule PrimaAuth0Ex.Application do
 
   require Logger
 
-  alias PrimaAuth0Ex.TokenCache.NoopCache
-  alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
   alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.Telemetry
+  alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
+  alias PrimaAuth0Ex.TokenCache.NoopCache
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
@@ -25,7 +25,7 @@ defmodule PrimaAuth0Ex.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp migrate_depracated_cache_options() do
+  defp migrate_depracated_cache_options do
     redis_enabled = Config.redis(:enabled)
     cache_provieder = Config.token_cache(nil)
 

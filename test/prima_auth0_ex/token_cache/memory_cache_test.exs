@@ -2,8 +2,9 @@ defmodule Integration.TokenCache.MemoryCacheTest do
   use ExUnit.Case, async: true
 
   import PrimaAuth0Ex.TestSupport.TimeUtils
-  alias PrimaAuth0Ex.TokenProvider.TokenInfo
+
   alias PrimaAuth0Ex.TokenCache.MemoryCache
+  alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @client :memory_cache_client
   @test_audience "memory-cache-test-audience"

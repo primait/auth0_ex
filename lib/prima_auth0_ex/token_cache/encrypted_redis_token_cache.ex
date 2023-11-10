@@ -5,8 +5,9 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
 
   require Logger
   alias PrimaAuth0Ex.Config
-  alias PrimaAuth0Ex.TokenProvider.TokenInfo
+
   alias PrimaAuth0Ex.TokenCache
+  alias PrimaAuth0Ex.TokenProvider.TokenInfo
   alias TokenCache.TokenEncryptor
 
   @behaviour TokenCache
