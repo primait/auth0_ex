@@ -9,13 +9,16 @@ defmodule Integration.TokenCache.MemoryCacheTest do
   @test_audience "memory-cache-test-audience"
 
   setup do
-    cache_env = Application.get_env(:prima_auth0_ex, :memory_cache, nil)
+    cache_env = Application.get_env(:prima_auth0_ex, :memory_cache)
 
     on_exit(fn ->
-      Application.put_env(:prima_auth0_ex, :memory_cache, cache_env)
+      if cache_env == nil do
+        Application.delete_env(:prima_auth0_ex, :memory_cache)
+      else
+        Application.put_env(:prima_auth0_ex, :memory_cache, cache_env)
+      end
     end)
 
-    Application.put_env(:prima_auth0_ex, :memory_cache, cleanup_interval: 25)
     start_supervised!(MemoryCache)
     :ok
   end
@@ -38,9 +41,12 @@ defmodule Integration.TokenCache.MemoryCacheTest do
 
     token = %TokenInfo{sample_token() | expires_at: shifted_by_seconds(2)}
     :ok = MemoryCache.set_token_for(@client, @test_audience, token)
-
+    :timer.sleep(1000)
+    # Token shouldn't have expired yet
     assert {:ok, ^token} = MemoryCache.get_token_for(@client, @test_audience)
+
     :timer.sleep(2100)
+    # Token expired
     assert {:ok, nil} = MemoryCache.get_token_for(@client, @test_audience)
   end
 

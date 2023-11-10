@@ -101,7 +101,11 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
     token = %TokenInfo{sample_token() | expires_at: shifted_by_seconds(2)}
     :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token)
 
+    # Token shouldn't have expired yet
+    :timer.sleep(1000)
     assert {:ok, ^token} = EncryptedRedisTokenCache.get_token_for(@test_audience)
+
+    # Token expired
     :timer.sleep(2100)
     assert {:ok, nil} = EncryptedRedisTokenCache.get_token_for(@test_audience)
   end
