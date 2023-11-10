@@ -39,7 +39,7 @@ defmodule PrimaAuth0Ex.Config do
   @doc """
   Module to use for caching tokens.
   Needs to implement the PrimaAuth0Ex.TokenCache behavior.
-  Modules with the PrimaAuth0Ex.TokenCache prefix(EncryptedRedisTokenCache, NoopCache and MemoryCache) can be used without the prefix
+  Modules with the PrimaAuth0Ex.TokenCache prefix (EncryptedRedisTokenCache, NoopCache and MemoryCache) can be used without the prefix
   """
   def token_cache(default), do: get_env(:token_cache, default)
 
