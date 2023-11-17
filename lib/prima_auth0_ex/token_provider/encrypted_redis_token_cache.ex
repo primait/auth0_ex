@@ -33,7 +33,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
         decrypt_and_parse(cached_value)
 
       {:error, reason} ->
-        Logger.warn("Error retrieving token from redis.",
+        Logger.warning("Error retrieving token from redis.",
           audience: audience,
           key: key,
           reason: reason
@@ -70,7 +70,7 @@ defmodule PrimaAuth0Ex.TokenProvider.EncryptedRedisTokenCache do
       build_token(token_attributes)
     else
       {:error, message} ->
-        Logger.warn("Found invalid data on redis.", message: inspect(message))
+        Logger.warning("Found invalid data on redis.", message: inspect(message))
         {:error, message}
     end
   end

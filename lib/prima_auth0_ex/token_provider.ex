@@ -200,7 +200,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
         send(parent, {:set_token_for, audience, new_token})
 
       {:error, description} ->
-        Logger.warn("Error refreshing token", audience: audience, description: description)
+        Logger.warning("Error refreshing token", audience: audience, description: description)
     end
   end
 
