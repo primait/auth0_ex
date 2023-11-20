@@ -100,14 +100,24 @@ config :prima_auth0_ex, :server,
   missing_auth_header_log_level: :warn
 ```
 
-### Redis & caching
+### Caching
 
-Clients can be configured to use caching through Redis. To use cachine you can use the following configuration:
+By default clients use an in memory cache, shared between nodes. You can disable it with the following configuration:
 
 ```elixir
+config :prima_auth0_ex, token_cache: NoopCache
+```
+
+Note that right now caching is assumed to be all-or-nothing with respect to multiple clients i.e. either all clients use caching or none of them do. If you have a use case that is not supported by this please contact us so that we can see what we can do.
+
+#### Redis
+
+Clients can be configured to cache tokens using Redis. To use caching you can use the following configuration:
+
+```elixir
+config :prima_auth0_ex, token_cache: EncryptedRedisTokenCache 
+
 config :prima_auth0_ex, :redis,
-  # Enables cache on redis for tokens obtained from Auth0. Defaults to false.
-  enabled: true,
   # AES 256 key used to encrypt tokens on the shared cache.
   # Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
@@ -117,9 +127,7 @@ config :prima_auth0_ex, :redis,
   ssl_allow_wildcard_certificates: false
 ```
 
-Note that right now caching is assumed to be all-or-nothing with respect to multiple clients i.e. either all clients use caching or none of them do. If you have a use case that is not supported by this please contact us so that we can see what we can do.
-
-### Operational requirements
+# Operational requirements
 
 To cache tokens on Redis you'll need to generate a `cache_encryption_key`. This can be done either by running `mix keygen` or by using the following snippet:
 
