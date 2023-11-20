@@ -33,18 +33,18 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationService do
         {:ok, TokenInfo.from_jwt(access_token)}
 
       response ->
-        Logger.warn("Invalid response from Auth0", response: inspect(response))
+        Logger.warning("Invalid response from Auth0", response: inspect(response))
         {:error, :invalid_auth0_response}
     end
   end
 
   defp parse_response({:ok, %HTTPoison.Response{status_code: status_code}}) do
-    Logger.warn("Request to Auth0 failed", status_code: status_code)
+    Logger.warning("Request to Auth0 failed", status_code: status_code)
     {:error, :request_error}
   end
 
   defp parse_response({:error, message}) do
-    Logger.warn("Error sending request to Auth0", error: inspect(message))
+    Logger.warning("Error sending request to Auth0", error: inspect(message))
     {:error, message}
   end
 

@@ -74,7 +74,7 @@ if Code.ensure_loaded?(Plug) do
           valid_token?(token, audience, required_permissions, ignore_signature)
 
         _other ->
-          Logger.warn("Authorization header malformed")
+          Logger.warning("Authorization header malformed")
           false
       end
     end
@@ -90,7 +90,7 @@ if Code.ensure_loaded?(Plug) do
           true
 
         {:error, error} ->
-          Logger.warn("Received invalid token",
+          Logger.warning("Received invalid token",
             audience: audience,
             required_permissions: required_permissions,
             error: inspect(error)
