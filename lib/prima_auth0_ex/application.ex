@@ -16,7 +16,7 @@ defmodule PrimaAuth0Ex.Application do
       Logger.warning("No configuration found neither for client(s) nor for server")
     end
 
-    migrate_depracated_cache_options()
+    migrate_deprecated_cache_options()
 
     Telemetry.setup()
 
@@ -25,7 +25,7 @@ defmodule PrimaAuth0Ex.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp migrate_depracated_cache_options do
+  defp migrate_deprecated_cache_options do
     redis_enabled = Config.redis(:enabled)
     cache_provieder = Config.token_cache(nil)
 
@@ -39,7 +39,7 @@ defmodule PrimaAuth0Ex.Application do
         Logger.warning("""
         The 
           :prima_auth0_ex, :redis, :enabled option 
-        is depracated.
+        is deprecated.
         Set
           :prima_auth0_ex, token_cache: EncryptedRedisTokenCache 
         instead
@@ -49,7 +49,7 @@ defmodule PrimaAuth0Ex.Application do
         Application.put_env(:prima_auth0_ex, :token_cache, NoopCache)
 
         Logger.warning("""
-        The :prima_auth0_ex, :redis, :enabled option is depracated.
+        The :prima_auth0_ex, :redis, :enabled option is deprecated.
         Set
           :prima_auth0_ex, token_cache: NoopCache
         instead to disable caching
@@ -57,7 +57,7 @@ defmodule PrimaAuth0Ex.Application do
 
       {false, _} ->
         Logger.warning("""
-        The :prima_auth0_ex, :redis, :enabled option is depracated. You can safely remove it
+        The :prima_auth0_ex, :redis, :enabled option is deprecated. You can safely remove it
           :prima_auth0_ex, :token_cache,
         is used instead
         """)
