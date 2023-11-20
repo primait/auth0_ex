@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.4] - 2023-11-20
 
-- `Logger.warn` is now replaced in favour of `Logger.warning` (thanks to `neslinesli93`)
+- `Logger.warn` is now replaced in favour of `Logger.warning` (thanks to @neslinesli93)
 
 ---
 
