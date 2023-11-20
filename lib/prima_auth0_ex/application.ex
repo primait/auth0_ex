@@ -7,6 +7,8 @@ defmodule PrimaAuth0Ex.Application do
 
   alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.Telemetry
+  alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
+  alias PrimaAuth0Ex.TokenCache.NoopCache
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
 
   def start(_type, _args) do
@@ -14,11 +16,52 @@ defmodule PrimaAuth0Ex.Application do
       Logger.warning("No configuration found neither for client(s) nor for server")
     end
 
+    migrate_deprecated_cache_options()
+
     Telemetry.setup()
 
     children = client_children() ++ cache_children() ++ server_children()
     opts = [strategy: :one_for_one, name: PrimaAuth0Ex.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp migrate_deprecated_cache_options do
+    redis_enabled = Config.redis(:enabled)
+    cache_provieder = Config.token_cache(nil)
+
+    case {redis_enabled, cache_provieder} do
+      {nil, _} ->
+        nil
+
+      {true, nil} ->
+        Application.put_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
+
+        Logger.warning("""
+        The 
+          :prima_auth0_ex, :redis, :enabled option 
+        is deprecated.
+        Set
+          :prima_auth0_ex, token_cache: EncryptedRedisTokenCache 
+        instead
+        """)
+
+      {false, nil} ->
+        Application.put_env(:prima_auth0_ex, :token_cache, NoopCache)
+
+        Logger.warning("""
+        The :prima_auth0_ex, :redis, :enabled option is deprecated.
+        Set
+          :prima_auth0_ex, token_cache: NoopCache
+        instead to disable caching
+        """)
+
+      {false, _} ->
+        Logger.warning("""
+        The :prima_auth0_ex, :redis, :enabled option is deprecated. You can safely remove it
+          :prima_auth0_ex, :token_cache,
+        is used instead
+        """)
+    end
   end
 
   defp client_children do
@@ -39,13 +82,7 @@ defmodule PrimaAuth0Ex.Application do
     end
   end
 
-  defp cache_children do
-    if Config.redis(:enabled, false) do
-      [{Redix, {Config.redis!(:connection_uri), [name: PrimaAuth0Ex.Redix] ++ redis_ssl_opts()}}]
-    else
-      []
-    end
-  end
+  defp cache_children, do: [PrimaAuth0Ex.TokenCache]
 
   defp server_children do
     if Config.server() && not Config.server(:ignore_signature, false) do
@@ -54,21 +91,4 @@ defmodule PrimaAuth0Ex.Application do
       []
     end
   end
-
-  def redis_ssl_opts do
-    if Config.redis(:ssl_enabled, false) do
-      append_if([ssl: true], Config.redis(:ssl_allow_wildcard_certificates, false),
-        socket_opts: [
-          customize_hostname_check: [
-            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-          ]
-        ]
-      )
-    else
-      []
-    end
-  end
-
-  defp append_if(list, false, _value), do: list
-  defp append_if(list, true, value), do: list ++ value
 end

@@ -4,6 +4,9 @@ defmodule PrimaAuth0Ex.Config do
   def authorization_service(default),
     do: get_env(:authorization_service, default)
 
+  def cache(prop, default \\ nil), do: get_env(:cache, prop, default)
+  def cache!(prop), do: fetch_env!(:cache, prop)
+
   def clients, do: get_env(:clients, nil)
   def clients(client_id), do: :clients |> get_env([]) |> Keyword.get(client_id)
 
@@ -20,6 +23,8 @@ defmodule PrimaAuth0Ex.Config do
   def jwks_kids_fetcher(default),
     do: get_env(:jwks_kids_fetcher, default)
 
+  def memory_cache(prop, default \\ nil), do: get_env(:memory_cache, prop, default)
+
   def redis(prop, default \\ nil), do: get_env(:redis, prop, default)
   def redis!(prop), do: fetch_env!(:redis, prop)
 
@@ -31,6 +36,11 @@ defmodule PrimaAuth0Ex.Config do
   def server!(prop), do: fetch_env!(:server, prop)
   def telemetry_reporter, do: get_env(:telemetry_reporter, nil)
 
+  @doc """
+  Module to use for caching tokens.
+  Needs to implement the PrimaAuth0Ex.TokenCache behavior.
+  Modules with the PrimaAuth0Ex.TokenCache prefix (EncryptedRedisTokenCache, NoopCache and MemoryCache) can be used without the prefix
+  """
   def token_cache(default), do: get_env(:token_cache, default)
 
   def token_service(default), do: get_env(:token_service, default)

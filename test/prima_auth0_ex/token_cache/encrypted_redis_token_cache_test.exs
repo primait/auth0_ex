@@ -1,17 +1,31 @@
-defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
+defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
   use ExUnit.Case, async: false
 
   import ExUnit.CaptureLog
   import PrimaAuth0Ex.TestSupport.TimeUtils
+
   alias PrimaAuth0Ex.Config
-  alias PrimaAuth0Ex.TokenProvider.{EncryptedRedisTokenCache, TokenInfo}
+  alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
+  alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @test_audience "redis-integration-test-audience"
 
+  setup_all do
+    start_supervised(EncryptedRedisTokenCache)
+    :ok
+  end
+
   setup do
-    redis_connection_uri = Config.redis!(:connection_uri)
-    Redix.start_link(redis_connection_uri, name: PrimaAuth0Ex.Redix)
     Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
+
+    redis_env = Application.fetch_env!(:prima_auth0_ex, :redis)
+    cache_env = Application.fetch_env!(:prima_auth0_ex, :token_cache)
+    Application.put_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
+
+    on_exit(fn ->
+      Application.put_env(:prima_auth0_ex, :redis, redis_env)
+      Application.put_env(:prima_auth0_ex, :token_cache, cache_env)
+    end)
 
     :ok
   end
@@ -29,13 +43,7 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
     end
 
     test "wrong cache_encryption_key" do
-      env_to_restore = Application.fetch_env!(:prima_auth0_ex, :redis)
-
-      Application.put_env(
-        :prima_auth0_ex,
-        :redis,
-        Keyword.put(env_to_restore, :encryption_key, "abcd")
-      )
+      put_redis_config(encryption_key: "abcd")
 
       log =
         capture_log(fn ->
@@ -45,8 +53,6 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
       assert String.match?(log, ~r/reason=/)
       assert String.match?(log, ~r/audience=redis-integration-test-audience/)
       assert String.match?(log, ~r/Error setting token on redis./)
-
-      Application.put_env(:prima_auth0_ex, :redis, env_to_restore)
     end
   end
 
@@ -93,10 +99,14 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   end
 
   test "tokens are deleted from cache when they expire" do
-    token = %TokenInfo{sample_token() | expires_at: in_two_seconds()}
+    token = %TokenInfo{sample_token() | expires_at: shifted_by_seconds(2)}
     :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token)
 
+    # Token shouldn't have expired yet
+    :timer.sleep(1000)
     assert {:ok, ^token} = EncryptedRedisTokenCache.get_token_for(@test_audience)
+
+    # Token expired
     :timer.sleep(2100)
     assert {:ok, nil} = EncryptedRedisTokenCache.get_token_for(@test_audience)
   end
@@ -111,6 +121,18 @@ defmodule Integration.TokenProvider.EncryptedRedisTokenCacheTest do
   end
 
   defp token_key(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
-  defp in_two_seconds, do: Timex.now() |> Timex.shift(seconds: 2) |> Timex.to_unix()
   defp namespace, do: Config.default_client!(:cache_namespace)
+
+  defp put_redis_config(new_conf) do
+    config =
+      :prima_auth0_ex
+      |> Application.get_env(:redis)
+      |> Keyword.merge(new_conf)
+
+    Application.put_env(
+      :prima_auth0_ex,
+      :redis,
+      config
+    )
+  end
 end

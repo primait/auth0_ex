@@ -3,13 +3,16 @@ defmodule Integration.TokenProvider.MultiClientsTest do
 
   import PrimaAuth0Ex.TestSupport.TimeUtils
   alias PrimaAuth0Ex.Config
-  alias PrimaAuth0Ex.TokenProvider.{EncryptedRedisTokenCache, TokenInfo}
+  alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
+  alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @test_audience "redis-integration-test-audience"
   @test_client :test_client
   @clients [@test_client, :default_client]
 
   setup do
+    start_supervised(EncryptedRedisTokenCache)
+
     for client <- @clients do
       Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(client, @test_audience)])
     end

@@ -18,6 +18,15 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenServiceTest do
 
   setup :verify_on_exit!
 
+  setup do
+    saved_env = Application.get_env(:prima_auth0_ex, :token_cache)
+    Application.put_env(:prima_auth0_ex, :token_cache, TokenCacheMock)
+
+    on_exit(fn ->
+      Application.put_env(:prima_auth0_ex, :token_cache, saved_env)
+    end)
+  end
+
   describe "retrieve_token/2" do
     test "returns a token from cache, when available" do
       cached_token = %TokenInfo{jwt: "CACHED-TOKEN", issued_at: one_hour_ago(), expires_at: in_one_hour()}

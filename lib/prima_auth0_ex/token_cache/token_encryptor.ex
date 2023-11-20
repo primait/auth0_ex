@@ -1,24 +1,17 @@
-defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptor do
+defmodule PrimaAuth0Ex.TokenCache.TokenEncryptor do
   @moduledoc """
-  Module to perform authenticated symmetric encryption of binaries.
-
-  The key used for encryption is set from config:
-
-    config :prima_auth0_ex, :redis,
-      encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA="
+  Module to perform authenticated symmetric encryption of tokens.
   """
-  alias PrimaAuth0Ex.Config
-
   @aad "AES256GCM"
 
-  @spec encrypt(String.t()) :: {:ok, String.t()} | {:error, any()}
-  def encrypt(plaintext) do
+  @spec encrypt(String.t(), <<_::32>>) :: {:ok, String.t()} | {:error, any()}
+  def encrypt(plaintext, key) do
     iv = :crypto.strong_rand_bytes(16)
 
     {ciphertext, tag} =
       :crypto.crypto_one_time_aead(
         :aes_256_gcm,
-        token_encryption_key(),
+        key,
         iv,
         plaintext,
         @aad,
@@ -31,13 +24,13 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptor do
     err -> {:error, err}
   end
 
-  @spec decrypt(String.t()) :: {:ok, String.t()} | {:error, any()}
-  def decrypt(encrypted) do
+  @spec decrypt(String.t(), <<_::32>>) :: {:ok, String.t()} | {:error, any()}
+  def decrypt(encrypted, key) do
     <<iv::binary-16, tag::binary-16, ciphertext::binary>> = Base.decode64!(encrypted)
 
     case :crypto.crypto_one_time_aead(
            :aes_256_gcm,
-           token_encryption_key(),
+           key,
            iv,
            ciphertext,
            @aad,
@@ -49,10 +42,5 @@ defmodule PrimaAuth0Ex.TokenProvider.TokenEncryptor do
     end
   rescue
     err -> {:error, err}
-  end
-
-  defp token_encryption_key do
-    encoded_key = Config.redis!(:encryption_key)
-    Base.decode64!(encoded_key)
   end
 end

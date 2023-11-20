@@ -9,10 +9,10 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
   one from the authorization provider.
   """
   alias PrimaAuth0Ex.Config
+  alias PrimaAuth0Ex.TokenCache
 
   alias PrimaAuth0Ex.TokenProvider.{
     Auth0AuthorizationService,
-    EncryptedRedisTokenCache,
     TokenService
   }
 
@@ -21,14 +21,14 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
   @impl TokenService
   def retrieve_token(credentials, audience) do
     credentials.client
-    |> token_cache().get_token_for(audience)
+    |> TokenCache.get_token_for(audience)
     |> refresh_token_on_cache_miss(credentials, audience)
   end
 
   @impl TokenService
   def refresh_token(credentials, audience, current_token, false = _force_cache_bust) do
     credentials.client
-    |> token_cache().get_token_for(audience)
+    |> TokenCache.get_token_for(audience)
     |> refresh_token_unless_it_changed(current_token, credentials, audience)
   end
 
@@ -68,7 +68,7 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
   defp do_refresh_token(credentials, audience) do
     case authorization_service().retrieve_token(credentials, audience) do
       {:ok, token} ->
-        token_cache().set_token_for(credentials.client, audience, token)
+        TokenCache.set_token_for(credentials.client, audience, token)
         {:ok, token}
 
       {:error, description} ->
@@ -78,6 +78,4 @@ defmodule PrimaAuth0Ex.TokenProvider.CachedTokenService do
 
   defp authorization_service,
     do: Config.authorization_service(Auth0AuthorizationService)
-
-  defp token_cache, do: Config.token_cache(EncryptedRedisTokenCache)
 end

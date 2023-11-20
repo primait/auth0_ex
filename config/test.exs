@@ -4,7 +4,7 @@ config :prima_auth0_ex,
   authorization_service: AuthorizationServiceMock,
   jwks_kids_fetcher: JwksKidsFetcherMock,
   refresh_strategy: RefreshStrategyMock,
-  token_cache: TokenCacheMock,
+  token_cache: NoopCache,
   token_service: TokenServiceMock
 
 config :prima_auth0_ex, :server,
@@ -15,7 +15,6 @@ config :prima_auth0_ex, :server,
   first_jwks_fetch_sync: true
 
 config :prima_auth0_ex, :redis,
-  enabled: true,
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
   connection_uri: "redis://redis:6379",
   ssl_enabled: false,
