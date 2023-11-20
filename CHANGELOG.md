@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Deprecate the `:prima_auth0_ex, :redis, :enabled` option in favor of `:prima_auth0_ex, :token_cache`
+
+To migrate set `:prima_auth0_ex, :token_cache` to `EncryptedRedisTokenCache` or `NoopCache`
+
 ---
 
 ## [0.6.3] - 2023-08-31
