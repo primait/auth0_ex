@@ -8,10 +8,10 @@ config :prima_auth0_ex,
   token_service: TokenServiceMock
 
 config :prima_auth0_ex, :server,
-  auth0_base_url: "server",
+  auth0_base_url: "http://localauth0:3000",
   ignore_signature: false,
   audience: "server",
-  issuer: "server",
+  issuer: "https://your-auth0-tenant.com",
   first_jwks_fetch_sync: true
 
 config :prima_auth0_ex, :redis,
@@ -22,9 +22,9 @@ config :prima_auth0_ex, :redis,
 
 config :prima_auth0_ex, :clients,
   default_client: [
-    auth0_base_url: "default",
-    client_id: "default",
-    client_secret: "default",
+    auth0_base_url: "http://localauth0:3000",
+    client_id: "client_id",
+    client_secret: "client_secret",
     cache_namespace: "default",
     token_check_interval: :timer.seconds(1),
     signature_check_interval: :timer.seconds(1)

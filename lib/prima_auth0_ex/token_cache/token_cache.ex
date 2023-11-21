@@ -22,7 +22,7 @@ defmodule PrimaAuth0Ex.TokenCache do
   end
 
   def get_configured_cache_provider do
-    cache_provider = Config.token_cache(NoopCache)
+    cache_provider = Config.token_cache(MemoryCache)
 
     with builtin_cache_provider <- Module.concat(PrimaAuth0Ex.TokenCache, cache_provider),
          {:module, ^builtin_cache_provider} <- Code.ensure_compiled(builtin_cache_provider) do

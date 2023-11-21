@@ -11,7 +11,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Deprecate the `:prima_auth0_ex, :redis, :enabled` option in favor of `:prima_auth0_ex, :token_cache`
 
-To migrate set `:prima_auth0_ex, :token_cache` to `EncryptedRedisTokenCache` or `NoopCache`
+To migrate set `:prima_auth0_ex, :token_cache` to `EncryptedRedisTokenCache`, `NoopCache` or `MemoryCache`(default)
+
+- Tokens are now cached by default using the MemoryCache backend
+
+You can disable it by setting `:prima_auth0_ex, :token_cache` to `NoopCache`.
+
+- Use the [rfc8414](https://www.rfc-editor.org/rfc/rfc8414) metadata endpoint to fetch information about the auth server.
+
+This allows auth0_ex to be used with other compliant openid servers, like okta.
+
+Note that if you're using [localauth0](https://github.com/primait/localauth0), you will need to update to version 0.6.2 or later(public.ecr.aws/c6i9l4r6/localauth0:0.6.2).
+
+### Changed
+
+- Use the [rfc8414](https://www.rfc-editor.org/rfc/rfc8414) metadata endpoint to fetch information about the auth server
+
+This allows auth0_ex to be used with other compliant openid servers, like okta.
+
+Note that if you're using [localauth0](https://github.com/primait/localauth0), you will need to update to version 0.6.2 or later(public.ecr.aws/c6i9l4r6/localauth0:0.6.2).
 
 ---
 

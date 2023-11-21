@@ -11,14 +11,30 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    container:
-      image: elixir:1.13
     env:
       MIX_ENV: test
     steps:
+      - uses: erlef/setup-beam@v1
+        with:
+          elixir-version: 1.13
+          otp-version: 24
+
       # Check out the code.
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Restart localuth0
+        # Restart localauth0 after checking out so it can load the config
+        run: docker restart localauth0
+
+      - name: Add hosts entries
+        run: |
+          echo "
+          127.0.0.1 localauth0
+          127.0.0.1 redis
+          " | sudo tee /etc/hosts
+
+
       # Define how to cache deps. Restores existing cache if present.
       - name: Cache deps
         id: cache-deps
@@ -53,10 +69,6 @@ jobs:
         run: |
           mix deps.clean --all
           mix clean
-      - name: Elixir setup
-        run: |
-          mix local.hex --force
-          mix local.rebar --force
       - name: Deps get
         run: mix deps.get
       - name: Dependencies Check
@@ -84,6 +96,16 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
+
+      localauth0:
+        image: public.ecr.aws/c6i9l4r6/localauth0:0.6.2
+        ports: 
+          - 3000:3000
+        env:
+          LOCALAUTH0_CONFIG_PATH: /repo/localauth0.toml
+        volumes:
+          - ./:/repo:ro
+        options: --name localauth0
 
   alls-green:
     if: always()
