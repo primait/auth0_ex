@@ -105,9 +105,10 @@ config :prima_auth0_ex, :server,
 Clients can be configured to use caching through Redis. To use cachine you can use the following configuration:
 
 ```elixir
+# Enables cache on redis for tokens obtained from Auth0. Defaults to MemoryCache.
+config :prima_auth0_ex, :token_cache, EncryptedRedisTokenCache
+
 config :prima_auth0_ex, :redis,
-  # Enables cache on redis for tokens obtained from Auth0. Defaults to false.
-  enabled: true,
   # AES 256 key used to encrypt tokens on the shared cache.
   # Can be generated via `:crypto.strong_rand_bytes(32) |> Base.encode64()`.
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
