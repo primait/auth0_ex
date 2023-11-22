@@ -112,7 +112,7 @@ config :prima_auth0_ex, :token_cache, NoopCache
 Note that right now caching is assumed to be all-or-nothing with respect to multiple clients i.e. either all clients use caching or none of them do. If you have a use case that is not supported by this please contact us so that we can see what we can do.
 
 ### Redis
-Clients can be configured to use caching through Redis. To use cachine you can use the following configuration:
+Clients can be configured to use caching through Redis. To use caching you can use the following configuration:
 
 ```elixir
 config :prima_auth0_ex, :token_cache, EncryptedRedisTokenCache
