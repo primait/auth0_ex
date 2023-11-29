@@ -40,4 +40,4 @@ config :prima_auth0_ex, :clients,
     token_check_interval: :timer.seconds(1)
   ]
 
-config :logger, level: :warn
+config :logger, level: :warning

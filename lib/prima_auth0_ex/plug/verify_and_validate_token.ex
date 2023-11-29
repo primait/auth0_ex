@@ -118,6 +118,6 @@ if Code.ensure_loaded?(Plug) do
       do: Config.server(:ignore_signature, false)
 
     defp global_missing_auth_header_log_level,
-      do: Config.server(:missing_auth_header_log_level, :warn)
+      do: Config.server(:missing_auth_header_log_level, :warning)
   end
 end

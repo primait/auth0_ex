@@ -97,7 +97,7 @@ config :prima_auth0_ex, :server,
   # Defaults to false.
   ignore_signature: false,
   # Level used to log requests where the authorization header is missing. 
-  missing_auth_header_log_level: :warn
+  missing_auth_header_log_level: :warning
 ```
 
 ## Caching
