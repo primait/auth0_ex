@@ -27,9 +27,9 @@ defmodule PrimaAuth0Ex.Application do
 
   defp migrate_deprecated_cache_options do
     redis_enabled = Config.redis(:enabled)
-    cache_provieder = Config.token_cache(nil)
+    cache_provider = Config.token_cache(nil)
 
-    case {redis_enabled, cache_provieder} do
+    case {redis_enabled, cache_provider} do
       {nil, _} ->
         nil
 
