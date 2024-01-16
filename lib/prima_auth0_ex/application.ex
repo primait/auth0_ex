@@ -37,12 +37,22 @@ defmodule PrimaAuth0Ex.Application do
         Application.put_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
 
         Logger.warning("""
-        The 
-          :prima_auth0_ex, :redis, :enabled option 
+        The
+          :prima_auth0_ex, :redis, :enabled option
         is deprecated.
         Set
-          :prima_auth0_ex, token_cache: EncryptedRedisTokenCache 
+          :prima_auth0_ex, token_cache: EncryptedRedisTokenCache
         instead
+        """)
+
+      {true, :'Elixir.EncryptedRedisTokenCache'} ->
+        Logger.warning("""
+        The
+          :prima_auth0_ex, :redis, :enabled option
+        is deprecated.
+        Setting
+          :prima_auth0_ex, token_cache: EncryptedRedisTokenCache
+        alone is sufficient
         """)
 
       {false, nil} ->
