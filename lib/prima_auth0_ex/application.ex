@@ -45,7 +45,7 @@ defmodule PrimaAuth0Ex.Application do
         instead
         """)
 
-      {true, :'Elixir.EncryptedRedisTokenCache'} ->
+      {true, :"Elixir.EncryptedRedisTokenCache"} ->
         Logger.warning("""
         The
           :prima_auth0_ex, :redis, :enabled option
