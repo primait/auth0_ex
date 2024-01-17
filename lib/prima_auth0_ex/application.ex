@@ -45,13 +45,13 @@ defmodule PrimaAuth0Ex.Application do
         instead
         """)
 
-      {true, :"Elixir.EncryptedRedisTokenCache"} ->
+      {true, _} ->
         Logger.warning("""
         The
           :prima_auth0_ex, :redis, :enabled option
         is deprecated.
         Setting
-          :prima_auth0_ex, token_cache: EncryptedRedisTokenCache
+          :prima_auth0_ex, token_cache: #{cache_provider}
         alone is sufficient
         """)
 
