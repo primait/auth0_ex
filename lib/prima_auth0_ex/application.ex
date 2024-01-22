@@ -27,9 +27,9 @@ defmodule PrimaAuth0Ex.Application do
 
   defp migrate_deprecated_cache_options do
     redis_enabled = Config.redis(:enabled)
-    cache_provieder = Config.token_cache(nil)
+    cache_provider = Config.token_cache(nil)
 
-    case {redis_enabled, cache_provieder} do
+    case {redis_enabled, cache_provider} do
       {nil, _} ->
         nil
 
@@ -37,12 +37,22 @@ defmodule PrimaAuth0Ex.Application do
         Application.put_env(:prima_auth0_ex, :token_cache, EncryptedRedisTokenCache)
 
         Logger.warning("""
-        The 
-          :prima_auth0_ex, :redis, :enabled option 
+        The
+          :prima_auth0_ex, :redis, :enabled option
         is deprecated.
         Set
-          :prima_auth0_ex, token_cache: EncryptedRedisTokenCache 
+          :prima_auth0_ex, token_cache: EncryptedRedisTokenCache
         instead
+        """)
+
+      {true, _} ->
+        Logger.warning("""
+        The
+          :prima_auth0_ex, :redis, :enabled option
+        is deprecated.
+        Setting
+          :prima_auth0_ex, token_cache: #{cache_provider}
+        alone is sufficient
         """)
 
       {false, nil} ->
