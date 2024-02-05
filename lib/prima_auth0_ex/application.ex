@@ -107,7 +107,7 @@ defmodule PrimaAuth0Ex.Application do
   end
 
   defp validate_server_config do
-    if Config.server(:audience) |> is_atom do
+    if :audience |> Config.server() |> is_atom do
       raise """
       Server :audience needs to be a string, #{Config.server(:audience)}.
 
@@ -115,7 +115,7 @@ defmodule PrimaAuth0Ex.Application do
 
         config :prima_auth0_ex, :server,
           ...
-          audience: #{Config.server(:audience) |> to_string},
+          audience: #{:audience |> Config.server() |> to_string},
           ...
       """
     end
