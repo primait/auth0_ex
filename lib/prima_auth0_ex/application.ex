@@ -107,15 +107,15 @@ defmodule PrimaAuth0Ex.Application do
   end
 
   defp validate_server_config do
-    if :audience |> Config.server() |> is_atom do
+    if not is_binary(Config.server(:audience)) do
       raise """
-      Server :audience needs to be a string, #{Config.server(:audience)}.
+      Server :audience needs to be a string, got #{Config.server(:audience)} instead.
 
       Suggestion:
 
         config :prima_auth0_ex, :server,
           ...
-          audience: #{:audience |> Config.server() |> to_string},
+          audience: #{to_string(Config.server(:audience))},
           ...
       """
     end
