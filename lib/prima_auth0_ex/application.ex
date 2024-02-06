@@ -16,6 +16,10 @@ defmodule PrimaAuth0Ex.Application do
       Logger.warning("No configuration found neither for client(s) nor for server")
     end
 
+    if Config.server() do
+      validate_server_config()
+    end
+
     migrate_deprecated_cache_options()
 
     Telemetry.setup()
@@ -99,6 +103,21 @@ defmodule PrimaAuth0Ex.Application do
       [{JwksStrategy, [first_fetch_sync: Config.server(:first_jwks_fetch_sync, false)]}]
     else
       []
+    end
+  end
+
+  defp validate_server_config do
+    if not is_binary(Config.server(:audience)) do
+      raise """
+      Server :audience needs to be a string, got #{Config.server(:audience)} instead.
+
+      Suggestion:
+
+        config :prima_auth0_ex, :server,
+          ...
+          audience: #{to_string(Config.server(:audience))},
+          ...
+      """
     end
   end
 end
