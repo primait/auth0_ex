@@ -46,7 +46,7 @@ config :prima_auth0_ex, :clients, default_client: [
   # Credentials on Auth0
   client_id: "",
   client_secret: "",
-  # Namespace for tokens of this client on the shared cache. Should be unique per client
+  # Namespace for tokens of this client on the shared cache. Should be unique per client.
   cache_namespace: "my-client"
 ]
 ```
@@ -127,6 +127,15 @@ config :prima_auth0_ex, :redis,
   ssl_enabled: false,
   ssl_allow_wildcard_certificates: false
 ```
+
+Keep in mind that when saving the token, its value will be stored within a key generated through interpolation, 
+structured as `prima_auth0_ex_tokens:${cache_namespace}:${requested_audience}`. It's important to note that this 
+implementation detail could potentially be subject to change in the future.
+
+In case a particular need emerges, you can develop a personalized iteration of the `EncryptedRedisTokenCache` by directly
+applying the `PrimaAuth0Ex.TokenCache` behavior. This involves substituting the 
+`config :prima_auth0_ex, :token_cache, EncryptedRedisTokenCache` configuration with the newly crafted custom TokenCache
+implementation.
 
 #### Operational requirements
 
