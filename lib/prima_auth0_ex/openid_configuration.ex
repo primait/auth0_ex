@@ -36,5 +36,11 @@ defmodule PrimaAuth0Ex.OpenIDConfiguration do
     struct!(__MODULE__, metadata)
   end
 
-  defp metadata_url(base_url), do: base_url <> "/.well-known/openid-configuration"
+  @spec metadata_url(String.t()) :: String.t() | no_return
+  defp metadata_url(base_url),
+    do:
+      base_url
+      |> URI.new!()
+      |> URI.append_path("/.well-known/openid-configuration")
+      |> URI.to_string()
 end
