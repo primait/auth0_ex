@@ -41,6 +41,6 @@ defmodule PrimaAuth0Ex.OpenIDConfiguration do
     do:
       base_url
       |> URI.new!()
-      |> URI.append_path("/.well-known/openid-configuration")
+      |> URI.merge("/.well-known/openid-configuration")
       |> URI.to_string()
 end
