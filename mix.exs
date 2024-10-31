@@ -41,7 +41,8 @@ defmodule PrimaAuth0Ex.MixProject do
       {:redix, "~> 0.9 or ~> 1.0"},
       {:telepoison, "~> 2.0"},
       {:telemetry, "~> 1.0"},
-      {:timex, "~> 3.6"}
+      {:timex, "~> 3.6"},
+      {:ex_aws_dynamo, "~> 4.0"}
     ] ++ optional_deps() ++ dev_deps()
   end
 

@@ -40,4 +40,14 @@ config :prima_auth0_ex, :clients,
     token_check_interval: :timer.seconds(1)
   ]
 
+config :ex_aws,
+  access_key_id: "ABCD",
+  secret_access_key: "secret"
+
+config :ex_aws, :dynamodb,
+  scheme: "http://",
+  host: "dynamodb",
+  port: 8000,
+  region: "us-east-1"
+
 config :logger, level: :warning

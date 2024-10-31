@@ -21,19 +21,27 @@ services:
     stdin_open: true
     depends_on:
       - redis
+      - dynamodb
       - localauth0
 
   redis:
     image: public.ecr.aws/bitnami/redis:5.0
     ports:
       - "6379:6379"
-    hostname: 'redis'
+    hostname: "redis"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
 
+  dynamodb:
+    #    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb
+    ports:
+      - "8000:8000"
+
   localauth0:
     image: public.ecr.aws/c6i9l4r6/localauth0:0.6.2
-    ports: 
+    ports:
       - 3000:3000
     environment:
       LOCALAUTH0_CONFIG_PATH: /localauth0.toml
