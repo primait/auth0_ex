@@ -7,7 +7,6 @@ defmodule PrimaAuth0Ex.TokenCache.NoopCacheTest do
     cache_module: NoopCache,
     test_persists_tokens: false
 
-
   test "doesn't store tokens" do
     cached_token = %TokenInfo{jwt: "CACHED-TOKEN", issued_at: one_hour_ago(), expires_at: in_one_hour()}
     :ok = NoopCache.set_token_for(:noop_test_client, "audience", cached_token)

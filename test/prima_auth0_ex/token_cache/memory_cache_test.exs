@@ -2,6 +2,7 @@ defmodule Integration.TokenCache.MemoryCacheTest do
   alias PrimaAuth0Ex.TokenCache.MemoryCache
 
   use PrimaAuth0Ex.TestSupport.TokenCacheBehaviorCaseTemplate, async: true, cache_module: MemoryCache
+
   setup_all do
     Application.put_env(:prima_auth0_ex, :memory_cache, cleanup_interval: 25)
   end
