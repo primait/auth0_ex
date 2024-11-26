@@ -21,7 +21,7 @@ services:
     stdin_open: true
     depends_on:
       - redis
-      - dynamodb
+      - aws
       - localauth0
 
   redis:
@@ -32,13 +32,6 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
 
-  dynamodb:
-    #    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-    image: "amazon/dynamodb-local:latest"
-    container_name: dynamodb
-    ports:
-      - "8000:8000"
-
   localauth0:
     image: public.ecr.aws/c6i9l4r6/localauth0:0.6.2
     ports:
@@ -47,6 +40,13 @@ services:
       LOCALAUTH0_CONFIG_PATH: /localauth0.toml
     volumes:
       - ./localauth0.toml:/localauth0.toml:ro
+
+  aws:
+    image: public.ecr.aws/localstack/localstack:4
+    ports:
+      - "4566:4566"
+    environment:
+      ALLOW_NONSTANDARD_REGIONS: 1
 
 volumes:
   app:
