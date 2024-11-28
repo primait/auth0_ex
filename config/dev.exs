@@ -11,5 +11,5 @@ config :ex_aws,
 config :ex_aws, :dynamodb,
   scheme: "http://",
   host: "dynamodb",
-  port: 8000,
+  port: 4566,
   region: "us-east-1"
