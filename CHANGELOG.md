@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.7.2] - 2024-11-28
+## [0.8.0] - 2024-11-29
 
 ### Changed
 
+- Now requires elixir ~> 1.14
 - Normalized auth0_base_url config value
 - Bumped absinthe, credo, dialyxir, ex_doc, jason, joken, plug, redix, stream_data, telemetry, telepoison
 
@@ -304,7 +305,8 @@ Bug fixes
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
 
-[Unreleased]: https://github.com/primait/auth0_ex/compare/0.7.1...HEAD
+[Unreleased]: https://github.com/primait/auth0_ex/compare/0.8.0...HEAD
+[0.8.0]: https://github.com/primait/auth0_ex/compare/0.7.1...0.8.0
 [0.7.1]: https://github.com/primait/auth0_ex/compare/0.7.0...0.7.1
 [0.7.0]: https://github.com/primait/auth0_ex/compare/0.7.0-pre.0...0.7.0
 [0.7.0-pre.0]: https://github.com/primait/auth0_ex/compare/0.6.4...0.7.0-pre.0
