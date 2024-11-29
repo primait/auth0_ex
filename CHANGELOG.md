@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.7.2] - 2024-11-28
+## [0.8.0] - 2024-11-29
 
 ### Changed
 
+- Now requires elixir ~> 1.14
 - Normalized auth0_base_url config value
 - Bumped absinthe, credo, dialyxir, ex_doc, jason, joken, plug, redix, stream_data, telemetry, telepoison
 
