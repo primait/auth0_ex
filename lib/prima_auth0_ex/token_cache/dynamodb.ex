@@ -57,6 +57,10 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
   end
 
   @impl TokenCache
+  # Dialyzer complains about the %{:ok, %{}} pattern never matching
+  # This is incorrect, most likely an issue with ExAws types.
+  # We do have a unit case that covers this
+  @dialyzer {:nowarn_function, get_token_for: 2}
   def get_token_for(client \\ :default_client, audience) do
     with request <- Dynamo.get_item(table_name(), %{key: key(client, audience)}, consistent_read: false),
          {:ok, res} when res != %{} <- ExAws.request(request),
@@ -83,6 +87,8 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
     end
   end
 
+  # More ExAws typing issues
+  @dialyzer {:nowarn_function, create_update_table: 0}
   def create_update_table() do
     if {:error, _} = Dynamo.describe_table(table_name()) |> ExAws.request() do
       Dynamo.create_table(table_name(), "key", %{key: :string}, 4, 1)
@@ -91,6 +97,8 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
 
     Dynamo.update_time_to_live(table_name(), "expires_at", true)
     |> ExAws.request!()
+
+    nil
   end
 
   def delete_table() do
