@@ -14,6 +14,8 @@ config :prima_auth0_ex, :server,
   issuer: "https://your-auth0-tenant.com",
   first_jwks_fetch_sync: true
 
+config :prima_auth0_ex, :dynamodb, table_name: "prima_auth0_ex_test_table"
+
 config :prima_auth0_ex, :redis,
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
   connection_uri: "redis://redis:6379",

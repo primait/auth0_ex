@@ -41,12 +41,13 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
   @behaviour TokenCache
 
   @impl TokenCache
-  def child_spec(_),
-    do: %{
+  def child_spec(_) do
+    %{
       id: __MODULE__,
       start: {__MODULE__, :start, []},
       restart: :transient
     }
+  end
 
   def start do
     if create_table?() do
@@ -90,9 +91,13 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
   # More ExAws typing issues
   @dialyzer {:nowarn_function, create_update_table: 0}
   def create_update_table() do
-    if {:error, _} = Dynamo.describe_table(table_name()) |> ExAws.request() do
-      Dynamo.create_table(table_name(), "key", %{key: :string}, 4, 1)
-      |> ExAws.request!()
+    case Dynamo.describe_table(table_name()) |> ExAws.request() do
+      {:error, _} ->
+        Dynamo.create_table(table_name(), "key", %{key: :string}, 4, 1)
+        |> ExAws.request!()
+
+      _ ->
+        nil
     end
 
     Dynamo.update_time_to_live(table_name(), "expires_at", true)
@@ -103,7 +108,7 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
 
   def delete_table() do
     Dynamo.delete_table(table_name())
-    |> ExAws.request!()
+    |> ExAws.request()
   end
 
   def create_table? do

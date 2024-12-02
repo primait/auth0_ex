@@ -20,6 +20,7 @@ defmodule Integration.TokenCache.DynamoDBTest do
     end)
 
     DynamoDB.delete_table()
-    DynamoDB.init()
+    start_supervised!(DynamoDB)
+    :ok
   end
 end
