@@ -95,13 +95,13 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
       {:error, _} ->
         Dynamo.create_table(table_name(), "key", %{key: :string}, 4, 1)
         |> ExAws.request!()
-
       _ ->
-        nil
+        case Dynamo.describe_time_to_live(table_name()) |> ExAws.request!() do
+          %{"TimeToLiveDescription" => %{"TimeToLiveStatus" => "DISABLED"}} ->
+            Dynamo.update_time_to_live(table_name(), "expires_at", true)
+            |> ExAws.request!()
+        end
     end
-
-    Dynamo.update_time_to_live(table_name(), "expires_at", true)
-    |> ExAws.request!()
 
     nil
   end
