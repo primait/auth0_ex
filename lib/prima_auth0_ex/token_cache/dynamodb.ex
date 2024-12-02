@@ -10,6 +10,25 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB.StoredToken do
           expires_at: non_neg_integer(),
           kid: String.t()
         }
+
+  def from_token_info(key, %TokenInfo{expires_at: expires_at, issued_at: issued_at, kid: kid, jwt: jwt}) do
+    %__MODULE__{
+      key: key,
+      expires_at: expires_at,
+      issued_at: issued_at,
+      kid: kid,
+      jwt: jwt
+    }
+  end
+
+  def to_token_info(%__MODULE__{issued_at: issued_at, expires_at: expires_at, jwt: jwt, kid: kid}) do
+    %TokenInfo{
+      jwt: jwt,
+      kid: kid,
+      expires_at: expires_at,
+      issued_at: issued_at
+    }
+  end
 end
 
 defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
@@ -41,15 +60,9 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
   def get_token_for(client \\ :default_client, audience) do
     with request <- Dynamo.get_item(table_name(), %{key: key(client, audience)}, consistent_read: false),
          {:ok, res} when res != %{} <- ExAws.request(request),
-         %StoredToken{issued_at: issued_at, expires_at: expires_at, jwt: jwt, kid: kid} <-
+         %StoredToken{} = stored_token <-
            Dynamo.decode_item(res, as: StoredToken) do
-      {:ok,
-       %TokenInfo{
-         jwt: jwt,
-         kid: kid,
-         expires_at: expires_at,
-         issued_at: issued_at
-       }}
+      {:ok, StoredToken.to_token_info(stored_token)}
     else
       {:ok, %{}} -> {:ok, nil}
       {:error, error} -> {:error, error}
@@ -60,15 +73,9 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
   def set_token_for(
         client \\ :default_client,
         audience,
-        %TokenInfo{expires_at: expires_at, issued_at: issued_at, kid: kid, jwt: jwt} = token_info
+        %TokenInfo{} = token_info
       ) do
-    stored_token = %StoredToken{
-      key: key(client, audience),
-      expires_at: expires_at,
-      issued_at: issued_at,
-      kid: kid,
-      jwt: jwt
-    }
+    stored_token = StoredToken.from_token_info(key(client, audience), token_info)
 
     case Dynamo.put_item(table_name(), stored_token) |> ExAws.request() do
       {:ok, _} -> :ok
