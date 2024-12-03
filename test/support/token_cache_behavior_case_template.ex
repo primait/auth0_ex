@@ -1,4 +1,6 @@
 defmodule PrimaAuth0Ex.TestSupport.TokenCacheBehaviorCaseTemplate do
+  @moduledoc false
+
   use ExUnit.CaseTemplate
   import PrimaAuth0Ex.TestSupport.TimeUtils
 

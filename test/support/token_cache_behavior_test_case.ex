@@ -1,2 +1,0 @@
-defmodule PrimaAuth0Ex.TestSupport.TokenCacheBehaviorTestCase do
-end

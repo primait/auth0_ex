@@ -1,4 +1,6 @@
 defmodule PrimaAuth0Ex.TokenCache.DynamoDB.StoredToken do
+  @moduledoc false
+
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
   @derive [ExAws.Dynamo.Encodable]
   defstruct [:key, :jwt, :issued_at, :expires_at, :kid]
@@ -32,11 +34,16 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB.StoredToken do
 end
 
 defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
-  alias PrimaAuth0Ex.TokenCache.DynamoDB.StoredToken
-  alias PrimaAuth0Ex.TokenCache
-  alias PrimaAuth0Ex.Config
-  alias PrimaAuth0Ex.TokenProvider.TokenInfo
+  @moduledoc """
+  Implementation of `PrimaAuth0Ex.TokenCache` that persists tokens on aws dynamodb
+  """
+
   alias ExAws.Dynamo
+
+  alias PrimaAuth0Ex.Config
+  alias PrimaAuth0Ex.TokenCache
+  alias PrimaAuth0Ex.TokenCache.DynamoDB.StoredToken
+  alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @behaviour TokenCache
 
@@ -82,7 +89,7 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
       ) do
     stored_token = StoredToken.from_token_info(key(client, audience), token_info)
 
-    case Dynamo.put_item(table_name(), stored_token) |> ExAws.request() do
+    case table_name() |> Dynamo.put_item(stored_token) |> ExAws.request() do
       {:ok, _} -> :ok
       {:error, err} -> {:error, err}
     end
@@ -90,15 +97,18 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
 
   # More ExAws typing issues
   @dialyzer {:nowarn_function, create_update_table: 0}
-  def create_update_table() do
-    case Dynamo.describe_table(table_name()) |> ExAws.request() do
+  def create_update_table do
+    case table_name() |> Dynamo.describe_table() |> ExAws.request() do
       {:error, _} ->
-        Dynamo.create_table(table_name(), "key", %{key: :string}, 4, 1)
+        table_name()
+        |> Dynamo.create_table("key", %{key: :string}, 4, 1)
         |> ExAws.request!()
+
       _ ->
-        case Dynamo.describe_time_to_live(table_name()) |> ExAws.request!() do
+        case table_name() |> Dynamo.describe_time_to_live() |> ExAws.request!() do
           %{"TimeToLiveDescription" => %{"TimeToLiveStatus" => "DISABLED"}} ->
-            Dynamo.update_time_to_live(table_name(), "expires_at", true)
+            table_name()
+            |> Dynamo.update_time_to_live("expires_at", true)
             |> ExAws.request!()
         end
     end
@@ -106,8 +116,9 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
     nil
   end
 
-  def delete_table() do
-    Dynamo.delete_table(table_name())
+  def delete_table do
+    table_name()
+    |> Dynamo.delete_table()
     |> ExAws.request()
   end
 
