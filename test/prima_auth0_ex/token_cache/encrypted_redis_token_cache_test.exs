@@ -1,6 +1,4 @@
 defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
-  use ExUnit.Case, async: false
-
   import ExUnit.CaptureLog
   import PrimaAuth0Ex.TestSupport.TimeUtils
 
@@ -8,7 +6,9 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
   alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
-  @test_audience "redis-integration-test-audience"
+  use PrimaAuth0Ex.TestSupport.TokenCacheBehaviorCaseTemplate,
+    async: false,
+    cache_module: EncryptedRedisTokenCache
 
   setup_all do
     start_supervised(EncryptedRedisTokenCache)
@@ -16,7 +16,7 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
   end
 
   setup do
-    Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(@test_audience)])
+    Redix.command!(PrimaAuth0Ex.Redix, ["DEL", token_key(test_audience())])
 
     redis_env = Application.fetch_env!(:prima_auth0_ex, :redis)
     cache_env = Application.fetch_env!(:prima_auth0_ex, :token_cache)
@@ -34,11 +34,11 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
     test "malformed token" do
       log =
         capture_log(fn ->
-          EncryptedRedisTokenCache.set_token_for(@test_audience, <<0x80>>)
+          EncryptedRedisTokenCache.set_token_for(test_audience(), <<0x80>>)
         end)
 
       assert String.match?(log, ~r/reason=/)
-      assert String.match?(log, ~r/audience=redis-integration-test-audience/)
+      assert String.contains?(log, "audience=#{test_audience()}")
       assert String.match?(log, ~r/Error setting token on redis./)
     end
 
@@ -47,40 +47,29 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
 
       log =
         capture_log(fn ->
-          EncryptedRedisTokenCache.set_token_for(@test_audience, sample_token())
+          EncryptedRedisTokenCache.set_token_for(test_audience(), sample_token())
         end)
 
       assert String.match?(log, ~r/reason=/)
-      assert String.match?(log, ~r/audience=redis-integration-test-audience/)
+      assert String.contains?(log, "audience=#{test_audience()}")
       assert String.match?(log, ~r/Error setting token on redis./)
     end
-  end
-
-  test "persists and retrieves tokens" do
-    token = sample_token()
-    :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token)
-
-    assert {:ok, token} == EncryptedRedisTokenCache.get_token_for(@test_audience)
   end
 
   test "retrieves tokens set by a previous version of prima_auth0_ex, hence without kid" do
     issued_at = one_hour_ago()
     expires_at = in_one_hour()
     token_without_kid = %{jwt: "my-token", issued_at: issued_at, expires_at: expires_at}
-    :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token_without_kid)
+    :ok = EncryptedRedisTokenCache.set_token_for(test_audience(), token_without_kid)
 
     assert {:ok, %TokenInfo{jwt: "my-token", issued_at: ^issued_at, expires_at: ^expires_at, kid: nil}} =
-             EncryptedRedisTokenCache.get_token_for(@test_audience)
-  end
-
-  test "returns {:ok, nil} when token is not cached" do
-    assert {:ok, nil} == EncryptedRedisTokenCache.get_token_for(@test_audience)
+             EncryptedRedisTokenCache.get_token_for(test_audience())
   end
 
   test "encrypts tokens" do
-    :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, sample_token())
+    :ok = EncryptedRedisTokenCache.set_token_for(test_audience(), sample_token())
 
-    persisted_token = Redix.command!(PrimaAuth0Ex.Redix, ["GET", token_key(@test_audience)])
+    persisted_token = Redix.command!(PrimaAuth0Ex.Redix, ["GET", token_key(test_audience())])
 
     assert is_binary(persisted_token)
     assert {:error, _} = Jason.decode(persisted_token)
@@ -91,33 +80,11 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
     # this may happen e.g., if the secret key changes
     Redix.command!(PrimaAuth0Ex.Redix, [
       "SET",
-      token_key(@test_audience),
+      token_key(test_audience()),
       "malformed-encrypted-token"
     ])
 
-    assert {:error, _} = EncryptedRedisTokenCache.get_token_for(@test_audience)
-  end
-
-  test "tokens are deleted from cache when they expire" do
-    token = %TokenInfo{sample_token() | expires_at: shifted_by_seconds(2)}
-    :ok = EncryptedRedisTokenCache.set_token_for(@test_audience, token)
-
-    # Token shouldn't have expired yet
-    :timer.sleep(1000)
-    assert {:ok, ^token} = EncryptedRedisTokenCache.get_token_for(@test_audience)
-
-    # Token expired
-    :timer.sleep(2100)
-    assert {:ok, nil} = EncryptedRedisTokenCache.get_token_for(@test_audience)
-  end
-
-  defp sample_token do
-    %TokenInfo{
-      jwt: "my-token",
-      issued_at: one_hour_ago(),
-      expires_at: in_one_hour(),
-      kid: "my-kid"
-    }
+    assert {:error, _} = EncryptedRedisTokenCache.get_token_for(test_audience())
   end
 
   defp token_key(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"

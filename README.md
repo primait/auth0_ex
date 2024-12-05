@@ -137,6 +137,27 @@ applying the `PrimaAuth0Ex.TokenCache` behavior. This involves substituting the
 `config :prima_auth0_ex, :token_cache, EncryptedRedisTokenCache` configuration with the newly crafted custom TokenCache
 implementation.
 
+### DynamoDB
+
+A new, dynamodb base caching mechanism is available. To use it you will need to configure `ex_aws` credentials, and set a table name for auth0_ex to use. For example:
+
+```
+config :prima_auth0_ex,
+  token_cache: DynamoDB,
+
+# See ex_aws docs
+config :ex_aws,
+  access_key_id: "key-id",
+  secret_access_key: "secret"
+
+config :ex_aws, :dynamodb,
+  region: "eu-west-1"
+
+config :prima_auth0_ex, :dynamodb, table_name: "prima_auth0_ex_token_cache"
+```
+
+Make sure auth0_ex has full permissions to create, read, write and update the table.
+
 #### Operational requirements
 
 To cache tokens on Redis you'll need to generate a `cache_encryption_key`. This can be done either by running `mix keygen` or by using the following snippet:

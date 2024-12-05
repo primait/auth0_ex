@@ -21,24 +21,32 @@ services:
     stdin_open: true
     depends_on:
       - redis
+      - aws
       - localauth0
 
   redis:
     image: public.ecr.aws/bitnami/redis:5.0
     ports:
       - "6379:6379"
-    hostname: 'redis'
+    hostname: "redis"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
 
   localauth0:
     image: public.ecr.aws/c6i9l4r6/localauth0:0.6.2
-    ports: 
+    ports:
       - 3000:3000
     environment:
       LOCALAUTH0_CONFIG_PATH: /localauth0.toml
     volumes:
       - ./localauth0.toml:/localauth0.toml:ro
+
+  aws:
+    image: public.ecr.aws/localstack/localstack:4
+    ports:
+      - "4566:4566"
+    environment:
+      ALLOW_NONSTANDARD_REGIONS: 1
 
 volumes:
   app:

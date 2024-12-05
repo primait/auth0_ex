@@ -28,6 +28,9 @@ defmodule PrimaAuth0Ex.Config do
   def redis(prop, default \\ nil), do: get_env(:redis, prop, default)
   def redis!(prop), do: fetch_env!(:redis, prop)
 
+  def dynamodb(prop, default \\ nil), do: get_env(:dynamodb, prop, default)
+  def dynamodb!(prop), do: fetch_env!(:dynamodb, prop)
+
   def refresh_strategy(default),
     do: get_env(:refresh_strategy, default)
 

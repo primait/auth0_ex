@@ -32,6 +32,7 @@ jobs:
           echo "
           127.0.0.1 localauth0
           127.0.0.1 redis
+          127.0.0.1 aws
           " | sudo tee /etc/hosts
 
 
@@ -106,6 +107,12 @@ jobs:
         volumes:
           - ./:/repo:ro
         options: --name localauth0
+      aws:
+        image: public.ecr.aws/localstack/localstack:4
+        ports:
+          - "4566:4566"
+        env:
+          ALLOW_NONSTANDARD_REGIONS: 1
 
   alls-green:
     if: always()

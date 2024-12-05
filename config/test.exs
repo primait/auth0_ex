@@ -14,6 +14,8 @@ config :prima_auth0_ex, :server,
   issuer: "https://your-auth0-tenant.com",
   first_jwks_fetch_sync: true
 
+config :prima_auth0_ex, :dynamodb, table_name: "prima_auth0_ex_test_table"
+
 config :prima_auth0_ex, :redis,
   encryption_key: "uhOrqKvUi9gHnmwr60P2E1hiCSD2dtXK1i6dqkU4RTA=",
   connection_uri: "redis://redis:6379",
@@ -39,5 +41,15 @@ config :prima_auth0_ex, :clients,
     signature_check_interval: :timer.seconds(1),
     token_check_interval: :timer.seconds(1)
   ]
+
+config :ex_aws,
+  access_key_id: "ABCD",
+  secret_access_key: "secret"
+
+config :ex_aws, :dynamodb,
+  scheme: "http://",
+  host: "aws",
+  port: 4566,
+  region: "us-east-1"
 
 config :logger, level: :warning

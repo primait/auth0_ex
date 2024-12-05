@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.0] - 2024-12-04
+
+# Added
+
+A new DynamoDB cache provider
+
+---
+
 ## [0.8.0] - 2024-11-29
 
 ### Changed
@@ -305,7 +313,9 @@ Bug fixes
 
 - Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
 
-[Unreleased]: https://github.com/primait/auth0_ex/compare/0.8.0...HEAD
+
+[Unreleased]: https://github.com/primait/auth0_ex/compare/0.9.0...HEAD
+[0.9.0]: https://github.com/primait/auth0_ex/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/primait/auth0_ex/compare/0.7.1...0.8.0
 [0.7.1]: https://github.com/primait/auth0_ex/compare/0.7.0...0.7.1
 [0.7.0]: https://github.com/primait/auth0_ex/compare/0.7.0-pre.0...0.7.0
