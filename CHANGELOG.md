@@ -7,13 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Logs on dynamodb errors
+
 ---
 
 ## [0.9.0] - 2024-12-04
 
-# Added
+### Added
 
-A new DynamoDB cache provider
+- A new DynamoDB cache provider
 
 ---
 
