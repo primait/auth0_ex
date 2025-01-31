@@ -38,6 +38,8 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
   Implementation of `PrimaAuth0Ex.TokenCache` that persists tokens on aws dynamodb
   """
 
+  require Logger
+
   alias ExAws.Dynamo
 
   alias PrimaAuth0Ex.Config
@@ -76,8 +78,12 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
            Dynamo.decode_item(res, as: StoredToken) do
       {:ok, StoredToken.to_token_info(stored_token)}
     else
-      {:ok, %{}} -> {:ok, nil}
-      {:error, error} -> {:error, error}
+      {:ok, %{}} ->
+        {:ok, nil}
+
+      {:error, reason} ->
+        Logger.error("Error getting token on DynamoDB.", audience: audience, reason: inspect(reason))
+        {:error, reason}
     end
   end
 
@@ -90,8 +96,12 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
     stored_token = StoredToken.from_token_info(key(client, audience), token_info)
 
     case table_name() |> Dynamo.put_item(stored_token) |> ExAws.request() do
-      {:ok, _} -> :ok
-      {:error, err} -> {:error, err}
+      {:ok, _} ->
+        :ok
+
+      {:error, reason} ->
+        Logger.error("Error setting token on DynamoDB.", audience: audience, reason: inspect(reason))
+        {:error, reason}
     end
   end
 
