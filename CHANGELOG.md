@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `first_jwks_fetch_sync` now defaults to true, as the docs indicate
+
 ---
 
 ## [0.9.1] - 2025-01-31
