@@ -100,7 +100,7 @@ defmodule PrimaAuth0Ex.Application do
 
   defp server_children do
     if Config.server() && not Config.server(:ignore_signature, false) do
-      [{JwksStrategy, [first_fetch_sync: Config.server(:first_jwks_fetch_sync, false)]}]
+      [{JwksStrategy, [first_fetch_sync: Config.server(:first_jwks_fetch_sync, true)]}]
     else
       []
     end
