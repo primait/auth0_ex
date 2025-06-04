@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Crashes due to ensure_compiled failing.
+
+### Changed
+
+- `TokenProvider`s child_spec callback is no longer optional.
+This is a minor change since the application previously always crashed if it wasn't defined.
+
 ---
 
 ## [0.9.2] - 2025-05-26
