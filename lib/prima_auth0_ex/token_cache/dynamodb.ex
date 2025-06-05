@@ -116,6 +116,9 @@ defmodule PrimaAuth0Ex.TokenCache.DynamoDB do
 
       _ ->
         case table_name() |> Dynamo.describe_time_to_live() |> ExAws.request!() do
+          %{"TimeToLiveDescription" => %{"TimeToLiveStatus" => "ENABLED"}} ->
+            nil
+
           %{"TimeToLiveDescription" => %{"TimeToLiveStatus" => "DISABLED"}} ->
             table_name()
             |> Dynamo.update_time_to_live("expires_at", true)
