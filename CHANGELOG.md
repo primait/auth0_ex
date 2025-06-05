@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.4] - 2025-06-05
+
+### Fixed
+
+- DynamoDB cache raising if table already exists and ttl is enabled
+
+---
+
 ## [0.9.3] - 2025-06-04
 
 ### Fixed
@@ -346,7 +354,9 @@ Bug fixes
 
 
 
-[Unreleased]: https://github.com/primait/auth0_ex/compare/0.9.3...HEAD
+
+[Unreleased]: https://github.com/primait/auth0_ex/compare/0.9.4...HEAD
+[0.9.4]: https://github.com/primait/auth0_ex/compare/0.9.3...0.9.4
 [0.9.3]: https://github.com/primait/auth0_ex/compare/0.9.2...0.9.3
 [0.9.2]: https://github.com/primait/auth0_ex/compare/0.9.1...0.9.2
 [0.9.1]: https://github.com/primait/auth0_ex/compare/0.9.0...0.9.1
