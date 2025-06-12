@@ -6,7 +6,8 @@ config :prima_auth0_ex, :clients,
     auth0_base_url: "http://localauth0:3000",
     client_id: "client_id",
     client_secret: "client_secret",
-    cache_namespace: "my-service",
+    cache_namespace: "my-namespace",
+    cache_key_prefix: "my-key-prefix",
     token_check_interval: :timer.seconds(1),
     signature_check_interval: :timer.seconds(1)
   ]

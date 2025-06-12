@@ -57,7 +57,7 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
     end
   end
 
-  defp key_for(client, audience), do: "prima_auth0_ex_tokens:#{namespace(client)}:#{audience}"
+  defp key_for(client, audience), do: "#{key_prefix(client)}:prima_auth0_ex_tokens:#{namespace(client)}:#{audience}"
 
   defp save(token, key, expires_at) do
     expires_in = expires_at - current_time()
@@ -89,6 +89,12 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
 
   defp namespace(client),
     do: Config.clients!(client, :cache_namespace)
+
+  defp key_prefix(:default_client),
+    do: Config.default_client!(:cache_key_prefix)
+
+  defp key_prefix(client),
+    do: Config.clients!(client, :cache_key_prefix)
 
   defp current_time, do: Timex.to_unix(Timex.now())
 

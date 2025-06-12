@@ -28,6 +28,7 @@ config :prima_auth0_ex, :clients,
     client_id: "client_id",
     client_secret: "client_secret",
     cache_namespace: "default",
+    cache_key_prefix: "default",
     token_check_interval: :timer.seconds(1),
     signature_check_interval: :timer.seconds(1)
   ]
@@ -38,6 +39,7 @@ config :prima_auth0_ex, :clients,
     client_id: "test",
     client_secret: "test",
     cache_namespace: "test",
+    cache_key_prefix: "test",
     signature_check_interval: :timer.seconds(1),
     token_check_interval: :timer.seconds(1)
   ]

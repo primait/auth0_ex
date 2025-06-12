@@ -87,7 +87,8 @@ defmodule Integration.TokenCache.EncryptedRedisTokenCacheTest do
     assert {:error, _} = EncryptedRedisTokenCache.get_token_for(test_audience())
   end
 
-  defp token_key(audience), do: "prima_auth0_ex_tokens:#{namespace()}:#{audience}"
+  defp token_key(audience), do: "#{key_prefix()}:prima_auth0_ex_tokens:#{namespace()}:#{audience}"
+  defp key_prefix, do: Config.default_client!(:cache_key_prefix)
   defp namespace, do: Config.default_client!(:cache_namespace)
 
   defp put_redis_config(new_conf) do

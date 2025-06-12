@@ -11,6 +11,7 @@ defmodule ConfigTest do
       assert config[:client_id] == "client_id"
       assert config[:client_secret] == "client_secret"
       assert config[:cache_namespace] == "default"
+      assert config[:cache_key_prefix] == "default"
       assert config[:token_check_interval] == :timer.seconds(1)
       assert config[:signature_check_interval] == :timer.seconds(1)
     end
@@ -20,6 +21,7 @@ defmodule ConfigTest do
       assert Config.default_client(:client_id) == "client_id"
       assert Config.default_client(:client_secret) == "client_secret"
       assert Config.default_client(:cache_namespace) == "default"
+      assert Config.default_client(:cache_key_prefix) == "default"
       assert Config.default_client(:token_check_interval) == :timer.seconds(1)
       assert Config.default_client(:signature_check_interval) == :timer.seconds(1)
     end
@@ -47,6 +49,7 @@ defmodule ConfigTest do
       assert config[:client_id] == "test"
       assert config[:client_secret] == "test"
       assert config[:cache_namespace] == "test"
+      assert config[:cache_key_prefix] == "test"
       assert config[:token_check_interval] == :timer.seconds(1)
       assert config[:signature_check_interval] == :timer.seconds(1)
     end
@@ -56,6 +59,7 @@ defmodule ConfigTest do
       assert Config.clients(:test_client, :client_id, "default") == "test"
       assert Config.clients(:test_client, :client_secret, "default") == "test"
       assert Config.clients(:test_client, :cache_namespace, "default") == "test"
+      assert Config.clients(:test_client, :cache_key_prefix, "default") == "test"
       assert Config.clients(:test_client, :token_check_interval, 0) == :timer.seconds(1)
       assert Config.clients(:test_client, :signature_check_interval, 0) == :timer.seconds(1)
     end
