@@ -113,7 +113,7 @@ defmodule Integration.TokenProvider.MultiClientsTest do
     }
   end
 
-  defp token_key(client, audience), do: "prima_auth0_ex_tokens:#{namespace(client)}:#{audience}"
+  defp token_key(client, audience), do: "#{namespace(client)}:prima_auth0_ex_tokens:#{audience}"
 
   defp namespace(client),
     do: Config.clients!(client, :cache_namespace)

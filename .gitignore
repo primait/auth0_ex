@@ -25,3 +25,5 @@ auth0_ex-*.tar
 
 # Temporary files for e.g. tests
 /tmp
+
+.elixir-tools/

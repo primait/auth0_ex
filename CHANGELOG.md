@@ -3,9 +3,20 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+
+- Cached token keys will now be prefixed with the `cache_namespace` i.e. will be
+  of the form `{cache_namespace}:prima_auth0_ex_tokens:{audience}`. This will
+  allow you to better handle permissions on your tokens. For instance, if you
+  set `cache_namespace` to `service_name:client_name` and your service has
+  permissions on tokens of the form `service_name:*`, then you will be able to
+  properly cache tokens per client name (& audience) while keeping the
+  permission set easy to manage
 
 ---
 
@@ -25,8 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `TokenProvider`s child_spec callback is no longer optional.
-This is a minor change since the application previously always crashed if it wasn't defined.
+- `TokenProvider`s child_spec callback is no longer optional. This is a minor
+  change since the application previously always crashed if it wasn't defined.
 
 ---
 
@@ -60,7 +71,8 @@ This is a minor change since the application previously always crashed if it was
 
 - Now requires elixir ~> 1.14
 - Normalized auth0_base_url config value
-- Bumped absinthe, credo, dialyxir, ex_doc, jason, joken, plug, redix, stream_data, telemetry, telepoison
+- Bumped absinthe, credo, dialyxir, ex_doc, jason, joken, plug, redix,
+  stream_data, telemetry, telepoison
 
 ## [0.7.1] - 2024-02-06
 
@@ -82,33 +94,42 @@ This is a minor change since the application previously always crashed if it was
 
 ### Changed
 
-- Deprecate the `:prima_auth0_ex, :redis, :enabled` option in favor of `:prima_auth0_ex, :token_cache`
+- Deprecate the `:prima_auth0_ex, :redis, :enabled` option in favor of
+  `:prima_auth0_ex, :token_cache`
 
-To migrate set `:prima_auth0_ex, :token_cache` to `EncryptedRedisTokenCache`, `NoopCache` or `MemoryCache`(default)
+To migrate set `:prima_auth0_ex, :token_cache` to `EncryptedRedisTokenCache`,
+`NoopCache` or `MemoryCache`(default)
 
 - Tokens are now cached by default using the MemoryCache backend
 
 You can disable it by setting `:prima_auth0_ex, :token_cache` to `NoopCache`.
 
-- Use the [rfc8414](https://www.rfc-editor.org/rfc/rfc8414) metadata endpoint to fetch information about the auth server.
+- Use the [rfc8414](https://www.rfc-editor.org/rfc/rfc8414) metadata endpoint to
+  fetch information about the auth server.
 
 This allows auth0_ex to be used with other compliant openid servers, like okta.
 
-Note that if you're using [localauth0](https://github.com/primait/localauth0), you will need to update to version 0.6.2 or later(public.ecr.aws/c6i9l4r6/localauth0:0.6.2).
+Note that if you're using [localauth0](https://github.com/primait/localauth0),
+you will need to update to version 0.6.2 or
+later(public.ecr.aws/c6i9l4r6/localauth0:0.6.2).
 
 ### Changed
 
-- Use the [rfc8414](https://www.rfc-editor.org/rfc/rfc8414) metadata endpoint to fetch information about the auth server
+- Use the [rfc8414](https://www.rfc-editor.org/rfc/rfc8414) metadata endpoint to
+  fetch information about the auth server
 
 This allows auth0_ex to be used with other compliant openid servers, like okta.
 
-Note that if you're using [localauth0](https://github.com/primait/localauth0), you will need to update to version 0.6.2 or later(public.ecr.aws/c6i9l4r6/localauth0:0.6.2).
+Note that if you're using [localauth0](https://github.com/primait/localauth0),
+you will need to update to version 0.6.2 or
+later(public.ecr.aws/c6i9l4r6/localauth0:0.6.2).
 
 ---
 
 ## [0.6.4] - 2023-11-20
 
-- `Logger.warn` is now replaced in favour of `Logger.warning` (thanks to @neslinesli93)
+- `Logger.warn` is now replaced in favour of `Logger.warning` (thanks to
+  @neslinesli93)
 
 ---
 
@@ -143,18 +164,23 @@ Bug fixes
 ### Added
 
 - `:clients` config, which can now be used to configure multiple clients
-- `config :prima_auth0_ex, :clients, default_client: [...]` can be used to configure a default client, so that `token_for` and other methods can be used without specifying a client
+- `config :prima_auth0_ex, :clients, default_client: [...]` can be used to
+  configure a default client, so that `token_for` and other methods can be used
+  without specifying a client
 - `:redis` configuration, which is now separate from the clients' ones
 
 ### Changed
 
 - `:clients` and `:server` now have an `:auth0_base_url` parameter
-- `token_for` and `refresh_token_for` have an additional `client` parameter, which defaults to `:default_client`
+- `token_for` and `refresh_token_for` have an additional `client` parameter,
+  which defaults to `:default_client`
 
 ### Removed
 
-- `config :prima_auth0_ex, :client` no longer works, `:clients, default_client: [...]` can be used instead
-- `config :prima_auth0_ex, auth0_base_url: ...` is not used anymore, each base url is now client and server specific
+- `config :prima_auth0_ex, :client` no longer works,
+  `:clients, default_client: [...]` can be used instead
+- `config :prima_auth0_ex, auth0_base_url: ...` is not used anymore, each base
+  url is now client and server specific
 
 ---
 
@@ -162,7 +188,8 @@ Bug fixes
 
 ### Fixed
 
-- [Breaking] Do not disable certificate verification connecting to Redis when the `redis_ssl_allow_wildcard_certificates` option is enabled.
+- [Breaking] Do not disable certificate verification connecting to Redis when
+  the `redis_ssl_allow_wildcard_certificates` option is enabled.
 
 ---
 
@@ -170,7 +197,8 @@ Bug fixes
 
 ### Fixed
 
-- `redis_ssl_allow_wildcard_certificates` only works if `redis_ssl_enabled` is true
+- `redis_ssl_allow_wildcard_certificates` only works if `redis_ssl_enabled` is
+  true
 
 ---
 
@@ -178,7 +206,8 @@ Bug fixes
 
 ### Fixed
 
-- `PrimaAuth0Ex.TokenProvider.TokenEncryptor.decrypt` will now return a proper error on decrypt error
+- `PrimaAuth0Ex.TokenProvider.TokenEncryptor.decrypt` will now return a proper
+  error on decrypt error
 
 ---
 
@@ -186,7 +215,8 @@ Bug fixes
 
 ### Fixed
 
-- Rename the metric defined by the default telemetry handler from `retrieve_token:*` (invalid) to `auth0.token`
+- Rename the metric defined by the default telemetry handler from
+  `retrieve_token:*` (invalid) to `auth0.token`
 
 ---
 
@@ -202,7 +232,8 @@ Bug fixes
 
 ### Fixed
 
-- Fix compilation error when only `:absinthe` dependency is present without `:absinthe_plug`
+- Fix compilation error when only `:absinthe` dependency is present without
+  `:absinthe_plug`
 
 ---
 
@@ -233,11 +264,13 @@ Bug fixes
 
 ### Changed
 
-- [Breaking] When Plug configuration miss the required_permissions field a runtime error will be thrown
-  
+- [Breaking] When Plug configuration miss the required_permissions field a
+  runtime error will be thrown
+
 ### Added
 
-- Added `missing_auth_header_log_level` configuration option to control log level when the autorization header is missing.
+- Added `missing_auth_header_log_level` configuration option to control log
+  level when the autorization header is missing.
 
 ---
 
@@ -249,7 +282,9 @@ Bug fixes
 
 ### Changed
 
-- Token validation configurations are now read at runtime instead of compile time so the library doesn't have to be forcibly recompiled when configurations change.
+- Token validation configurations are now read at runtime instead of compile
+  time so the library doesn't have to be forcibly recompiled when configurations
+  change.
 - Bumped `telepoison` to 1.0
 
 ---
@@ -284,7 +319,8 @@ Bug fixes
 ### Changed
 
 - Published project to [Hex.pm](https://hex.pm).
-- Renamed project to `prima_auth0_ex`. This is a breaking change, and it impacts both configuration and usage of the library.
+- Renamed project to `prima_auth0_ex`. This is a breaking change, and it impacts
+  both configuration and usage of the library.
 
 ---
 
@@ -316,11 +352,13 @@ Bug fixes
 
 ### Added
 
-- Added periodic check on the client to ensure that the signing keys of the tokens are still valid - according to the JWKS server
+- Added periodic check on the client to ensure that the signing keys of the
+  tokens are still valid - according to the JWKS server
 
 ### Fixed
 
-- Fixed config issue that prevented the redis cache from being enabled in version 0.2.0
+- Fixed config issue that prevented the redis cache from being enabled in
+  version 0.2.0
 
 ---
 
@@ -329,14 +367,18 @@ Bug fixes
 ### Added
 
 - Added support for validation of tokens with multiple audiences
-- Added utilities to forge tokens for local development (see `Auth0Ex.LocalToken`)
-- Added documentation for use of library to validate permissions in Graphql APIs with Absinthe
+- Added utilities to forge tokens for local development (see
+  `Auth0Ex.LocalToken`)
+- Added documentation for use of library to validate permissions in Graphql APIs
+  with Absinthe
 
 ### Changed
 
 - Config parameter names have changed - refer to README to see how to update
-- Refresh time for a token is now decided upfront as soon as the token is obtained.
-- `token_check_interval`, `min_token_duration` and `max_token_duration` are no longer public configurations. It is suggested not to rely on them.
+- Refresh time for a token is now decided upfront as soon as the token is
+  obtained.
+- `token_check_interval`, `min_token_duration` and `max_token_duration` are no
+  longer public configurations. It is suggested not to rely on them.
 
 ### Fixed
 
@@ -348,12 +390,8 @@ Bug fixes
 
 ### Fixed
 
-- Fixed compilation error when `:auth0_ex, :server` is not configured in `config.exs`
-
-
-
-
-
+- Fixed compilation error when `:auth0_ex, :server` is not configured in
+  `config.exs`
 
 [Unreleased]: https://github.com/primait/auth0_ex/compare/0.9.4...HEAD
 [0.9.4]: https://github.com/primait/auth0_ex/compare/0.9.3...0.9.4
