@@ -8,20 +8,15 @@ and this project adheres to
 
 ## [Unreleased]
 
-### Added
-
-- New required config: `cache_key_prefix`. This is used to set the prefix for
-  the cached tokens and is useful to ensure your microservice has access to
-  those tokens.
-
-  Usually it's set to your microservice's name, since permissions on Redis are
-  of `{microservice}:*` form. That said, be sure to check-in with your SRE to
-  make sure you are using the correct prefix
-
 ### Changed
 
-- Cached token keys will now be prefixed with a `cache_prefix_key` i.e. will be
-  of the form `{cache_prefix_key}:prima_auth0_ex_tokens:...`
+- Cached token keys will now be prefixed with the `cache_namespace` i.e. will be
+  of the form `{cache_namespace}:prima_auth0_ex_tokens:{audience}`. This will
+  allow you to better handle permissions on your tokens. For instance, if you
+  set `cache_namespace` to `service_name:client_name` and your service has
+  permissions on tokens of the form `service_name:*`, then you will be able to
+  properly cache tokens per client name (& audience) while keeping the
+  permission set easy to manage
 
 ---
 

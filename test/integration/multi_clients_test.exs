@@ -113,13 +113,10 @@ defmodule Integration.TokenProvider.MultiClientsTest do
     }
   end
 
-  defp token_key(client, audience), do: "#{key_prefix(client)}:prima_auth0_ex_tokens:#{namespace(client)}:#{audience}"
+  defp token_key(client, audience), do: "#{namespace(client)}:prima_auth0_ex_tokens:#{audience}"
 
   defp namespace(client),
     do: Config.clients!(client, :cache_namespace)
-
-  defp key_prefix(client),
-    do: Config.clients!(client, :cache_key_prefix)
 
   defp in_one_second, do: Timex.now() |> Timex.shift(seconds: 1) |> Timex.to_unix()
 end

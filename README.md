@@ -51,10 +51,6 @@ config :prima_auth0_ex, :clients, default_client: [
   client_secret: "",
   # Namespace for tokens of this client on the shared cache. Should be unique per client.
   cache_namespace: "my-client",
-  # Key prefix for tokens of this client on the shared cache. Should be unique per service.
-  # This will most likely be your microservice name or whatever prefix your microservices has
-  # permission to access. Reach out to your SRE for this information or DevEx for any questions
-  cache_key_prefix: "my-key-prefix",
 ]
 ```
 
@@ -79,7 +75,6 @@ config :prima_auth0_ex, :clients, your_client_name: [
   client_id: "",
   client_secret: "",
   cache_namespace: "my-client",
-  cache_key_prefix: "my-key-prefix"
 ]
 ```
 
@@ -149,9 +144,9 @@ config :prima_auth0_ex, :redis,
 
 Keep in mind that when saving the token, its value will be stored within a key
 generated through interpolation, structured as
-`#{cache_key_prefix}:prima_auth0_ex_tokens:#{cache_namespace}:#{requested_audience}`.
-It's important to note that this implementation detail could potentially be
-subject to change in the future.
+`#{cache_namespace}:prima_auth0_ex_tokens:#{requested_audience}`. It's important
+to note that this implementation detail could potentially be subject to change
+in the future.
 
 In case a particular need emerges, you can develop a personalized iteration of
 the `EncryptedRedisTokenCache` by directly applying the
