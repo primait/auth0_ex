@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+---
+
+## [0.10.0] - 2025-06-17
+
 ### Changed
 
 - Cached token keys will now be prefixed with the `cache_namespace` i.e. will be
@@ -393,7 +397,9 @@ Bug fixes
 - Fixed compilation error when `:auth0_ex, :server` is not configured in
   `config.exs`
 
-[Unreleased]: https://github.com/primait/auth0_ex/compare/0.9.4...HEAD
+
+[Unreleased]: https://github.com/primait/auth0_ex/compare/0.10.0...HEAD
+[0.10.0]: https://github.com/primait/auth0_ex/compare/0.9.4...0.10.0
 [0.9.4]: https://github.com/primait/auth0_ex/compare/0.9.3...0.9.4
 [0.9.3]: https://github.com/primait/auth0_ex/compare/0.9.2...0.9.3
 [0.9.2]: https://github.com/primait/auth0_ex/compare/0.9.1...0.9.2
