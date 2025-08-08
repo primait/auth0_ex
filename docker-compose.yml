@@ -25,12 +25,10 @@ services:
       - localauth0
 
   redis:
-    image: public.ecr.aws/bitnami/redis:5.0
+    image: docker.io/redis:5.0
     ports:
       - "6379:6379"
     hostname: "redis"
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
 
   localauth0:
     image: public.ecr.aws/c6i9l4r6/localauth0:0.6.2
