@@ -2,8 +2,8 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   use ExUnit.Case
 
   import Hammox
-  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.{Auth0Credentials, TokenProvider}
+  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.TokenProvider.TokenInfo
 
   @target_client :default_client
