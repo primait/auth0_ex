@@ -6,8 +6,8 @@ defmodule PrimaAuth0Ex.Application do
   require Logger
 
   alias PrimaAuth0Ex.Config
-  alias PrimaAuth0Ex.Telemetry
   alias PrimaAuth0Ex.{JwksStrategy, TokenProvider}
+  alias PrimaAuth0Ex.Telemetry
   alias PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache
   alias PrimaAuth0Ex.TokenCache.NoopCache
 
