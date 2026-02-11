@@ -37,7 +37,7 @@ defmodule PrimaAuth0Ex.MixProject do
     [
       {:jason, "~> 1.0"},
       {:joken, "~> 2.4"},
-      {:joken_jwks, "~> 1.4"},
+      {:joken_jwks, "~> 1.0"},
       {:redix, "~> 0.9 or ~> 1.0"},
       {:telepoison, "~> 2.0"},
       {:telemetry, "~> 1.0"},
