@@ -40,11 +40,14 @@ services:
       - ./localauth0.toml:/localauth0.toml:ro
 
   aws:
-    image: public.ecr.aws/localstack/localstack:4
+    image: motoserver/moto:5.1.21
+    environment:
+      # Set up moto in a way that matches localstack
+      MOTO_PORT: 4566
+      MOTO_ACCOUNT_ID: "000000000000"
+
     ports:
       - "4566:4566"
-    environment:
-      ALLOW_NONSTANDARD_REGIONS: 1
 
 volumes:
   app:
