@@ -15,14 +15,14 @@ defmodule PrimaAuth0Ex.LocalTokenTest do
     jwt = LocalToken.forge("audience")
     %{"iat" => issued_at} = claims_of(jwt)
 
-    assert Timex.before?(Timex.from_unix(issued_at), Timex.now())
+    assert DateTime.before?(DateTime.from_unix!(issued_at), DateTime.utc_now())
   end
 
   test "default expiration time is in the future" do
     jwt = LocalToken.forge("audience")
     %{"exp" => expires_at} = claims_of(jwt)
 
-    assert Timex.after?(Timex.from_unix(expires_at), Timex.now())
+    assert DateTime.after?(DateTime.from_unix!(expires_at), DateTime.utc_now())
   end
 
   test "default issuer is the same configured for the server" do
@@ -45,15 +45,15 @@ defmodule PrimaAuth0Ex.LocalTokenTest do
 
     %{"exp" => expires_at} = claims_of(jwt)
 
-    assert Timex.before?(Timex.from_unix(expires_at), Timex.now())
+    assert DateTime.before?(DateTime.from_unix!(expires_at), DateTime.utc_now())
   end
 
   test "time_from_now/1 allows to easily create unix timestamps" do
-    one_hour_ago = LocalToken.time_from_now(hours: -1)
+    one_hour_ago = LocalToken.time_from_now(hour: -1)
 
-    assert Timex.before?(Timex.from_unix(one_hour_ago), Timex.now())
-    assert one_hour_ago > LocalToken.time_from_now(minutes: -61)
-    assert one_hour_ago < LocalToken.time_from_now(minutes: -59)
+    assert DateTime.before?(DateTime.from_unix!(one_hour_ago), DateTime.utc_now())
+    assert one_hour_ago > LocalToken.time_from_now(minute: -61)
+    assert one_hour_ago < LocalToken.time_from_now(minute: -59)
   end
 
   defp claims_of(jwt) do

@@ -1,6 +1,8 @@
 defmodule PrimaAuth0Ex.Plug.AbsintheTest do
   use ExUnit.Case
-  use Plug.Test
+
+  import Plug.Conn
+  import Plug.Test
 
   alias Absinthe.Resolution
   alias PrimaAuth0Ex.Absinthe.CreateSecurityContext

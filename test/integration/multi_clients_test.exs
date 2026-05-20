@@ -118,5 +118,5 @@ defmodule Integration.TokenProvider.MultiClientsTest do
   defp namespace(client),
     do: Config.clients!(client, :cache_namespace)
 
-  defp in_one_second, do: Timex.now() |> Timex.shift(seconds: 1) |> Timex.to_unix()
+  defp in_one_second, do: DateTime.utc_now() |> DateTime.shift(second: 1) |> DateTime.to_unix()
 end

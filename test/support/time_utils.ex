@@ -8,10 +8,10 @@ defmodule PrimaAuth0Ex.TestSupport.TimeUtils do
   def in_two_hours, do: shifted_by_hours(2)
 
   def shifted_by_hours(n) do
-    Timex.now() |> Timex.shift(hours: n) |> Timex.to_unix()
+    DateTime.utc_now() |> DateTime.shift(hour: n) |> DateTime.to_unix()
   end
 
   def shifted_by_seconds(n) do
-    Timex.now() |> Timex.shift(seconds: n) |> Timex.to_unix()
+    DateTime.utc_now() |> DateTime.shift(second: n) |> DateTime.to_unix()
   end
 end
