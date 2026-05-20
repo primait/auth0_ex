@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+- Bump required elixir version to 1.17
+- Drop timex dependency
+- `LocalToken.time_from_now` now accepts only singular form of its arguments (hour, minute, second)
+
 ---
 
 ## [0.10.0] - 2025-06-17
