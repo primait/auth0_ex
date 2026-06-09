@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+---
+
+## [0.11.0] - 2026-06-09
+
 - Bump required elixir version to 1.17
 - Drop timex dependency
 - `LocalToken.time_from_now` now accepts only singular form of its arguments (hour, minute, second)
@@ -403,7 +407,9 @@ Bug fixes
   `config.exs`
 
 
-[Unreleased]: https://github.com/primait/auth0_ex/compare/0.10.0...HEAD
+
+[Unreleased]: https://github.com/primait/auth0_ex/compare/0.11.0...HEAD
+[0.11.0]: https://github.com/primait/auth0_ex/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/primait/auth0_ex/compare/0.9.4...0.10.0
 [0.9.4]: https://github.com/primait/auth0_ex/compare/0.9.3...0.9.4
 [0.9.3]: https://github.com/primait/auth0_ex/compare/0.9.2...0.9.3
