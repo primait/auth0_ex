@@ -12,10 +12,6 @@ updates:
   - dependency-name: dialyxir
     versions:
     - 1.1.0
-  - dependency-name: timex
-    versions:
-    - 3.7.3
-    - 3.7.5
   - dependency-name: joken_jwks
     versions:
     - 1.4.1

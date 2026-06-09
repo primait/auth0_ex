@@ -23,8 +23,8 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategyTest do
 
       refresh_time = ProbabilisticRefreshStrategy.refresh_time_for(:default_client, token)
 
-      assert Timex.after?(refresh_time, Timex.from_unix(issued_at))
-      assert Timex.before?(refresh_time, Timex.from_unix(expires_at))
+      assert DateTime.after?(refresh_time, DateTime.from_unix!(issued_at))
+      assert DateTime.before?(refresh_time, DateTime.from_unix!(expires_at))
     end
   end
 end

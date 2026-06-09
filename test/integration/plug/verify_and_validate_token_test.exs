@@ -1,6 +1,8 @@
 defmodule PrimaAuth0Ex.Plug.VerifyAndValidateTokenTest do
   use ExUnit.Case, async: true
-  use Plug.Test
+
+  import Plug.Conn
+  import Plug.Test
 
   alias PrimaAuth0Ex.Auth0Credentials
   alias PrimaAuth0Ex.Config

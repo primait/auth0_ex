@@ -23,7 +23,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
   @type t() :: %__MODULE__{
           credentials: PrimaAuth0Ex.Auth0Credentials,
           tokens: %{required(String.t()) => TokenInfo.t()},
-          refresh_times: %{required(String.t()) => Timex.Types.valid_datetime()}
+          refresh_times: %{required(String.t()) => DateTime.t()}
         }
   @enforce_keys [:credentials]
   defstruct [:credentials, tokens: %{}, refresh_times: %{}]
@@ -180,7 +180,7 @@ defmodule PrimaAuth0Ex.TokenProvider do
   defp should_refresh?(audience, state) do
     state.refresh_times
     |> Map.get(audience)
-    |> Timex.before?(Timex.now())
+    |> DateTime.before?(DateTime.utc_now())
   end
 
   defp token_check_interval(:default_client),

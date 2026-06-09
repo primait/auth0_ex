@@ -29,14 +29,14 @@ defmodule PrimaAuth0Ex.LocalToken do
   Generate a UNIX timestamp shifted by the given time.
   Can be used to quickly generate timestamps for `iat` and `exp` claims.
 
-  `options` must be compliant to `Timex.shift_options()`.
-  E.g. `PrimaAuth0Ex.LocalToken.time_from_now(hours: -1)` will return the UNIX timestamp for one hour ago.
+  `duration` must be compliant to `Duration.duration()`.
+  E.g. `PrimaAuth0Ex.LocalToken.time_from_now(hour: -1)` will return the UNIX timestamp for one hour ago.
   """
-  @spec time_from_now(Timex.shift_options()) :: non_neg_integer()
-  def time_from_now(options) do
-    Timex.now()
-    |> Timex.shift(options)
-    |> Timex.to_unix()
+  @spec time_from_now(Duration.duration()) :: non_neg_integer()
+  def time_from_now(duration) do
+    DateTime.utc_now()
+    |> DateTime.shift(duration)
+    |> DateTime.to_unix()
   end
 
   defp merge_claims(base_claims, extra_claims) do
@@ -49,7 +49,7 @@ defmodule PrimaAuth0Ex.LocalToken do
   end
 
   defp default_claims(audience) do
-    %{"aud" => audience, "iat" => time_from_now(seconds: -1), "exp" => time_from_now(hours: 24), "iss" => issuer()}
+    %{"aud" => audience, "iat" => time_from_now(second: -1), "exp" => time_from_now(hour: 24), "iss" => issuer()}
   end
 
   defp issuer, do: Config.server!(:issuer)

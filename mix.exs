@@ -8,7 +8,7 @@ defmodule PrimaAuth0Ex.MixProject do
     [
       app: :prima_auth0_ex,
       version: @version,
-      elixir: "~> 1.14",
+      elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
@@ -41,7 +41,6 @@ defmodule PrimaAuth0Ex.MixProject do
       {:redix, "~> 0.9 or ~> 1.0"},
       {:telepoison, "~> 2.0"},
       {:telemetry, "~> 1.0"},
-      {:timex, "~> 3.6"},
       {:ex_aws_dynamo, "~> 4.0"}
     ] ++ optional_deps() ++ dev_deps()
   end

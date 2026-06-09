@@ -90,7 +90,7 @@ defmodule PrimaAuth0Ex.TokenCache.EncryptedRedisTokenCache do
   defp namespace(client),
     do: Config.clients!(client, :cache_namespace)
 
-  defp current_time, do: Timex.to_unix(Timex.now())
+  defp current_time, do: DateTime.to_unix(DateTime.utc_now())
 
   defp token_encryption_key do
     encoded_key = Config.redis!(:encryption_key)

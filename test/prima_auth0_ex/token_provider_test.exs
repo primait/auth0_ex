@@ -29,7 +29,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   setup do
     {:ok, pid} = TokenProvider.start_link(credentials: @sample_credentials)
 
-    in_one_hour = Timex.shift(Timex.now(), hours: 1)
+    in_one_hour = DateTime.shift(DateTime.utc_now(), hour: 1)
     stub(RefreshStrategyMock, :refresh_time_for, fn @target_client, _ -> in_one_hour end)
     stub(JwksKidsFetcherMock, :fetch_kids, fn _ -> {:ok, ["valid-kid"]} end)
 
@@ -61,7 +61,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   end
 
   test "does not refresh token unless necessary", %{pid: pid} do
-    sometime_after_next_check = Timex.shift(Timex.now(), hours: 1)
+    sometime_after_next_check = DateTime.shift(DateTime.utc_now(), hour: 1)
 
     expect(RefreshStrategyMock, :refresh_time_for, 1, fn @target_client, _ ->
       sometime_after_next_check
@@ -77,7 +77,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   end
 
   test "refreshes its tokens when necessary", %{pid: pid} do
-    before_next_check = Timex.shift(Timex.now(), milliseconds: token_check_interval() - 100)
+    before_next_check = DateTime.shift(DateTime.utc_now(), microsecond: {token_check_interval() - 100, 0})
 
     expect(RefreshStrategyMock, :refresh_time_for, 2, fn @target_client, _ ->
       before_next_check
@@ -101,7 +101,7 @@ defmodule PrimaAuth0Ex.TokenProviderTest do
   test "refreshes its tokens when their signature is not valid (eg. for keys revoked)", %{
     pid: pid
   } do
-    sometime_after_next_check = Timex.shift(Timex.now(), hours: 1)
+    sometime_after_next_check = DateTime.shift(DateTime.utc_now(), hour: 1)
 
     expect(RefreshStrategyMock, :refresh_time_for, 2, fn @target_client, _ ->
       sometime_after_next_check

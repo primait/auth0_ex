@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+- Bump required elixir version to 1.17
+- Drop timex dependency
+- `LocalToken.time_from_now` now accepts only singular form of its arguments (hour, minute, second)
+- the `refresh_time_for` function exposed by modules implementing the `TokenProvider.RefreshStrategy` behaviour only takes `DateTime.t()` as a parameter
+
 ---
 
 ## [0.10.0] - 2025-06-17

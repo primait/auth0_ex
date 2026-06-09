@@ -32,7 +32,7 @@ defmodule PrimaAuth0Ex.TokenProvider.ProbabilisticRefreshStrategy do
 
     refresh_time = random_time_between(refresh_window_start, refresh_window_end)
 
-    Timex.from_unix(refresh_time)
+    DateTime.from_unix!(refresh_time)
   end
 
   defp random_time_between(start, finish), do: Enum.random(start..finish)
