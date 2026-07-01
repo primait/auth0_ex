@@ -18,3 +18,14 @@ updates:
   - dependency-name: plug
     versions:
     - 1.11.1
+- package-ecosystem: docker
+  directories:
+    - "*"
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+  ignore:
+    - dependency-name: "*"
+      update-types:
+        - "version-update:semver-major"
