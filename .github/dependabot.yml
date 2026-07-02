@@ -4,6 +4,10 @@ updates:
   directory: "/"
   schedule:
     interval: weekly
+    time: "21:00"
+    day: monday
+  cooldown:
+    default-days: 7
   open-pull-requests-limit: 10
   ignore:
   - dependency-name: hammox
@@ -23,6 +27,8 @@ updates:
     - "*"
   schedule:
     interval: weekly
+    time: "21:00"
+    day: monday
   cooldown:
     default-days: 7
   ignore:
