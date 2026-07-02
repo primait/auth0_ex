@@ -1,4 +1,4 @@
-FROM public.ecr.aws/primaassicurazioni/elixir:1.17.3-bookworm
+FROM public.ecr.aws/primaassicurazioni/elixir:1.19.1-1-bookworm
 
 USER root
 WORKDIR /drone/src
