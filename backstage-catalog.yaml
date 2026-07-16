@@ -3,7 +3,7 @@ kind: Component
 spec:
   type: library
   lifecycle: production
-  owner: team-developer-experience
+  owner: group:default/team-iam
   system: prima.it
 metadata:
   name: prima_auth0_ex
