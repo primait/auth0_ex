@@ -59,7 +59,7 @@ defmodule PrimaAuth0Ex.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
       {:ex_doc, ">= 0.25.3", only: :dev, runtime: false},
-      {:hammox, "~> 0.5", only: :test},
+      {:hammox, "~> 1.0", only: :test},
       {:stream_data, "~> 1.0", only: :test}
     ]
   end
