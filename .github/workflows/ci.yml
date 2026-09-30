@@ -97,7 +97,7 @@ jobs:
           - 6379:6379
 
       localauth0:
-        image: public.ecr.aws/c6i9l4r6/localauth0:0.6.2
+        image: public.ecr.aws/primaassicurazioni/localauth0:0.6.2
         ports: 
           - 3000:3000
         env:
