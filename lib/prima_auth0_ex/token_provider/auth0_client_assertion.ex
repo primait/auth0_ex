@@ -44,23 +44,10 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0ClientAssertion do
       "exp" => issued_at + @assertion_lifetime_seconds,
       "iat" => issued_at,
       "iss" => credentials.client_id,
-      "jti" => generate_jti(),
+      "jti" => UUID.uuid4(),
       "sub" => credentials.client_id
     }
 
     Joken.Signer.sign(claims, signer)
-  end
-
-  defp generate_jti do
-    random = :crypto.strong_rand_bytes(16)
-    <<first::48, _version::4, version_suffix::12, _variant::2, variant_suffix::62>> = random
-
-    # Auth0 recommends a UUID jti; set the version and variant bits for UUIDv4.
-    uuid = <<first::48, 4::4, version_suffix::12, 2::2, variant_suffix::62>>
-
-    <<part_1::binary-size(8), part_2::binary-size(4), part_3::binary-size(4), part_4::binary-size(4),
-      part_5::binary-size(12)>> = Base.encode16(uuid, case: :lower)
-
-    Enum.join([part_1, part_2, part_3, part_4, part_5], "-")
   end
 end

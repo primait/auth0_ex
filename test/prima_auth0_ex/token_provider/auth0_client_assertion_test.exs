@@ -32,7 +32,9 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0ClientAssertionTest do
     assert claims["sub"] == credentials.client_id
     assert claims["aud"] == "https://tenant.eu.auth0.com/"
     assert claims["exp"] - claims["iat"] == 60
-    assert String.match?(claims["jti"], ~r/\A[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}\z/)
+    jti_info = UUID.info!(claims["jti"])
+    assert jti_info[:version] == 4
+    assert jti_info[:variant] == :rfc4122
   end
 
   test "omits the key id header when none is configured", %{private_key: private_key} do
