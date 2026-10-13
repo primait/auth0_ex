@@ -1,8 +1,8 @@
 defmodule ConfigTest do
   use ExUnit.Case, async: true
 
-  alias PrimaAuth0Ex.Config
   alias PrimaAuth0Ex.Auth0Credentials
+  alias PrimaAuth0Ex.Config
 
   describe "can read default client config" do
     test "by getting whole config" do
