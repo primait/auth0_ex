@@ -17,6 +17,17 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
     client_secret: "client_secret"
   }
 
+  setup_all do
+    {:ok, _started_apps} = Application.ensure_all_started(:bypass)
+    {:ok, _started_apps} = Application.ensure_all_started(:hackney)
+
+    rsa_private_key = :public_key.generate_key({:rsa, 2048, 65_537})
+    pem_entry = :public_key.pem_entry_encode(:RSAPrivateKey, rsa_private_key)
+    private_key = :public_key.pem_encode([pem_entry])
+
+    {:ok, private_key: private_key}
+  end
+
   setup do
     bypass = Bypass.open()
 
@@ -27,8 +38,54 @@ defmodule PrimaAuth0Ex.TokenProvider.Auth0AuthorizationServiceTest do
     {:ok, bypass: bypass}
   end
 
+  test "uses a private key assertion instead of the client secret", %{
+    bypass: bypass,
+    private_key: private_key
+  } do
+    Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
+      {:ok, request_body, conn} = Plug.Conn.read_body(conn)
+      request = Jason.decode!(request_body)
+
+      assert request["grant_type"] == "client_credentials"
+
+      assert request["client_assertion_type"] ==
+               "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+
+      assert request["audience"] == @test_audience
+      refute Map.has_key?(request, "client_secret")
+      assert is_binary(request["client_assertion"])
+
+      signer = Joken.Signer.create("RS256", %{"pem" => private_key})
+      assert {:ok, claims} = Joken.Signer.verify(request["client_assertion"], signer)
+      assert claims["iss"] == "client_id"
+      assert claims["sub"] == "client_id"
+      assert claims["aud"] == "https://tenant.eu.auth0.com/"
+
+      Plug.Conn.resp(conn, 200, valid_auth0_response())
+    end)
+
+    credentials = %{
+      @sample_credentials
+      | base_url: "http://localhost:#{bypass.port}",
+        client_secret: nil,
+        authentication_method: :private_key_jwt,
+        private_key: private_key
+    }
+
+    {:ok, _token} = Auth0AuthorizationService.retrieve_token(credentials, @test_audience)
+  end
+
   test "returns JWT obtained from Auth0", %{bypass: bypass} do
     Bypass.expect_once(bypass, "POST", "/oauth/token", fn conn ->
+      {:ok, request_body, conn} = Plug.Conn.read_body(conn)
+
+      assert Jason.decode!(request_body) == %{
+               "grant_type" => "client_credentials",
+               "client_id" => "client_id",
+               "client_secret" => "client_secret",
+               "audience" => @test_audience
+             }
+
       Plug.Conn.resp(conn, 200, valid_auth0_response())
     end)
 

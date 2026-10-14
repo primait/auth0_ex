@@ -1,6 +1,7 @@
 defmodule ConfigTest do
   use ExUnit.Case, async: true
 
+  alias PrimaAuth0Ex.Auth0Credentials
   alias PrimaAuth0Ex.Config
 
   describe "can read default client config" do
@@ -10,6 +11,7 @@ defmodule ConfigTest do
       assert config[:auth0_base_url] == "http://localauth0:3000"
       assert config[:client_id] == "client_id"
       assert config[:client_secret] == "client_secret"
+      assert Auth0Credentials.from_env().authentication_method == :client_secret
       assert config[:cache_namespace] == "default"
       assert config[:token_check_interval] == :timer.seconds(1)
       assert config[:signature_check_interval] == :timer.seconds(1)
@@ -46,6 +48,12 @@ defmodule ConfigTest do
       assert config[:auth0_base_url] == "test"
       assert config[:client_id] == "test"
       assert config[:client_secret] == "test"
+      credentials = Auth0Credentials.from_env(:test_client)
+
+      assert credentials.authentication_method == :private_key_jwt
+      assert credentials.private_key == "test-private-key"
+      assert credentials.private_key_id == "test-key-id"
+      assert credentials.signing_algorithm == :rs256
       assert config[:cache_namespace] == "test"
       assert config[:token_check_interval] == :timer.seconds(1)
       assert config[:signature_check_interval] == :timer.seconds(1)
