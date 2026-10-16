@@ -10,6 +10,14 @@ and this project adheres to
 
 ---
 
+## [0.12.0] - 2026-10-16
+
+### Added
+
+- Support private_key_jwt authentication
+
+---
+
 ## [0.11.0] - 2026-06-09
 
 - Bump required elixir version to 1.17
@@ -408,7 +416,8 @@ Bug fixes
 
 
 
-[Unreleased]: https://github.com/primait/auth0_ex/compare/0.11.0...HEAD
+[Unreleased]: https://github.com/primait/auth0_ex/compare/0.12.0...HEAD
+[0.12.0]: https://github.com/primait/auth0_ex/compare/0.11.0...0.12.0
 [0.11.0]: https://github.com/primait/auth0_ex/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/primait/auth0_ex/compare/0.9.4...0.10.0
 [0.9.4]: https://github.com/primait/auth0_ex/compare/0.9.3...0.9.4
