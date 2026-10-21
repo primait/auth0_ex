@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451 # ratchet:erlef/setup-beam@v1
         with:
-          elixir-version: 1.20
+          elixir-version: 1.17
           otp-version: 27
 
       # Check out the code.
