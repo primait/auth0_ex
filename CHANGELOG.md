@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+---
+
+## [0.12.1] - 2026-10-21
+
+### Changed
+
 - Replace `:uuid` dependency with `:elixir_uuid`
 
 ---
@@ -418,7 +424,8 @@ Bug fixes
 
 
 
-[Unreleased]: https://github.com/primait/auth0_ex/compare/0.12.0...HEAD
+[Unreleased]: https://github.com/primait/auth0_ex/compare/0.12.1...HEAD
+[0.12.1]: https://github.com/primait/auth0_ex/compare/0.12.0...0.12.1
 [0.12.0]: https://github.com/primait/auth0_ex/compare/0.11.0...0.12.0
 [0.11.0]: https://github.com/primait/auth0_ex/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/primait/auth0_ex/compare/0.9.4...0.10.0
