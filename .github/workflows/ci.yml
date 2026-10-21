@@ -14,7 +14,7 @@ jobs:
     env:
       MIX_ENV: test
     steps:
-      - uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451 # ratchet:erlef/setup-beam@v1
+      - uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # ratchet:erlef/setup-beam@v1
         with:
           elixir-version: 1.17
           otp-version: 27
