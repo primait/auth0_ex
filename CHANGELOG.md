@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- Replace `:uuid` dependency with `:elixir_uuid`
+
 ---
 
 ## [0.12.0] - 2026-10-16
