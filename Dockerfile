@@ -1,4 +1,4 @@
-FROM 279066465364.dkr.ecr.eu-west-1.amazonaws.com/prima-elixir:1.20.4-bookworm
+FROM 279066465364.dkr.ecr.eu-west-1.amazonaws.com/prima-elixir:1.20.4-1-bookworm
 
 USER root
 WORKDIR /drone/src
