@@ -10,7 +10,7 @@ and this project adheres to
 
 ---
 
-## [0.12.1] - 2026-10-21
+## [0.12.1] - 2026-10-22
 
 ### Changed
 
